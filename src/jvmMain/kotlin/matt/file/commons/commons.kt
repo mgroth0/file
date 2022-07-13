@@ -3,6 +3,7 @@ package matt.file.commons
 import matt.file.Folder
 import matt.file.mFile
 import matt.klib.commons.thisMachine
+import matt.klib.lang.NOT_IMPLEMENTED
 import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OPEN_MIND
@@ -67,14 +68,23 @@ val OPEN_NEARST_KOTLIN_DESCENDENT = "OPEN_NEARST_KOTLIN_DESCENDENT"
 
 val KJG_NAV_KEY = "NAV"
 
+private val projectFolder by lazy {
+  when (thisMachine) {
+	is NEW_MAC   -> IDE_FOLDER
+	is OPEN_MIND -> mFile(OPEN_MIND.homeDir)
+	else         -> NOT_IMPLEMENTED
+  }
+}
 
 enum class RootProjects {
   /*not adding more yet because I don't want to select from others in KJG*/
   flow, kcomp;
 
-  val folder = IDE_FOLDER + name
+  val folder = projectFolder + name
   val subRootFolders = listOf(/*folder + "KJ", */folder + "k")
 }
+
+val JAR_FOLDER = REGISTERED_FOLDER + "jar"
 
 val DNN_FOLDER = when (thisMachine) {
   NEW_MAC            -> IDE_FOLDER + "dnn"
