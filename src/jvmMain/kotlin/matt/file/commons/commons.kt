@@ -7,7 +7,7 @@ import matt.klib.lang.NOT_IMPLEMENTED
 import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OPEN_MIND
-import matt.klib.sys.WINDOWS
+import matt.klib.sys.GAMING_WINDOWS
 
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
@@ -89,12 +89,12 @@ val JAR_FOLDER = REGISTERED_FOLDER + "jar"
 
 val DNN_FOLDER = when (thisMachine) {
   NEW_MAC            -> IDE_FOLDER + "dnn"
-  OLD_MAC            -> REGISTERED_FOLDER["todo/science/dnn"]
-  WINDOWS, OPEN_MIND -> null
+  OLD_MAC                   -> REGISTERED_FOLDER["todo/science/dnn"]
+  GAMING_WINDOWS, OPEN_MIND -> null
 }
 val HEP_FOLDER = when (thisMachine) {
   NEW_MAC            -> IDE_FOLDER + "hep"
-  OLD_MAC            -> REGISTERED_FOLDER["todo/science/hep"]
-  WINDOWS, OPEN_MIND -> null
+  OLD_MAC                   -> REGISTERED_FOLDER["todo/science/hep"]
+  GAMING_WINDOWS, OPEN_MIND -> null
 }
 
