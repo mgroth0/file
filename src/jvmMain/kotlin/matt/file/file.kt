@@ -335,11 +335,11 @@ sealed class CodeFile(userPath: String): MFile(userPath)
 @Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
 sealed interface Zip
 @Extensions("zip") open class ZipFile(userPath: String): MFile(userPath), Zip
+val String.jar get() = JarFile("$this.jar")
 @Extensions("jar") class JarFile(userPath: String): MFile(userPath), Zip
 sealed class DataFile(userPath: String): MFile(userPath)
 
 val String.json get() = JsonFile("$this.json")
-
 @Extensions("json") class JsonFile(userPath: String): DataFile(userPath)
 
 @Extensions("log") class LogFile(userPath: String): MFile(userPath)
