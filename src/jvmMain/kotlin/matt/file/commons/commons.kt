@@ -16,6 +16,7 @@ val USER_HOME = mFile(thisMachine.homeDir)
 val REGISTERED_FOLDER = USER_HOME[thisMachine.registeredDir]
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER = REGISTERED_FOLDER + "bin"
+val BIN_JAR_FOLDER = BIN_FOLDER + "jar"
 val APPLESCRIPT_FOLDER = (BIN_FOLDER + "applescript").apply { mkdirs() }
 val IDE_FOLDER = REGISTERED_FOLDER["IDE"]
 val APPLICATIONS_FOLDER = mFile("/Applications")
