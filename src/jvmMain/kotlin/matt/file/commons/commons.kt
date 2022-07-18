@@ -77,12 +77,14 @@ private val projectFolder by lazy {
   }
 }
 
+val subRoots = listOf(/*"KJ",*/"k")
+
 enum class RootProjects {
   /*not adding more yet because I don't want to select from others in KJG*/
   flow, kcomp, all;
 
   val folder by lazy { projectFolder + name }
-  val subRootFolders by lazy { listOf(/*folder + "KJ", */folder + "k") }
+  val subRootFolders by lazy { subRoots.map { folder + it } }
 }
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
