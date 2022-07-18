@@ -8,6 +8,8 @@ import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OPEN_MIND
 import matt.klib.sys.Windows
+import java.net.URI
+import java.net.URL
 
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
@@ -19,6 +21,7 @@ val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
 val APPLESCRIPT_FOLDER by lazy { (BIN_FOLDER + "applescript").apply { mkdirs() } }
 val IDE_FOLDER by lazy { REGISTERED_FOLDER["IDE"] }
+val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
 val APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
@@ -38,6 +41,7 @@ val KJG_DATA_FOLDER by lazy { DATA_FOLDER.resolve("kjg") }
 val REL_ROOT_FILES by lazy { mFile("RootFiles") }
 val LIBS_VERSIONS_TOML by lazy { "libs.versions.toml" }
 val REL_LIBS_VERSIONS_TOML by lazy { REL_ROOT_FILES + LIBS_VERSIONS_TOML }
+val LIBS_VERSIONS_TOML_ONLINE by lazy { URI("https://raw.githubusercontent.com/mgroth0/common/master/libs.versions.toml").toURL() }
 
 
 //object CommonFileNames {
