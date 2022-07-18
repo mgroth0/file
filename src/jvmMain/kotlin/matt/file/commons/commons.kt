@@ -71,7 +71,7 @@ val KJG_NAV_KEY = "NAV"
 
 private val projectFolder by lazy {
   when (thisMachine) {
-	is NEW_MAC   -> IDE_FOLDER
+	is NEW_MAC, is Windows   -> IDE_FOLDER
 	is OPEN_MIND -> mFile(OPEN_MIND.homeDir)
 	else         -> NOT_IMPLEMENTED
   }
