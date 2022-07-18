@@ -7,6 +7,9 @@ import matt.klib.commons.thisMachine
 import matt.klib.dmap.withStoringDefault
 import matt.klib.str.lower
 import matt.klib.stream.search
+import matt.klib.sys.OS
+import matt.klib.sys.Unix
+import matt.klib.sys.Windows
 import matt.klib.tfx.isInt
 import matt.stream.recurse.recurse
 import java.io.File
@@ -459,3 +462,8 @@ fun MFile.recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
 
 val MFile.ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
 val MFile.absolutePathEnforced: String get() = ensureAbsolute.absolutePath
+
+fun String.makeFileSeparatorsCompatibleWith(os: OS) = when (os) {
+  is Windows -> replace("/", "\\")
+  is Unix    -> replace("\\", "/")
+}
