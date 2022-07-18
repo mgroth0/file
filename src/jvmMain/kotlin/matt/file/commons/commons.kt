@@ -14,7 +14,6 @@ import matt.klib.sys.Windows
 //object CommonFiles {
 val USER_HOME = mFile(thisMachine.homeDir)
 val REGISTERED_FOLDER = USER_HOME[thisMachine.registeredDir]
-val PAR_FOLDER = REGISTERED_FOLDER + "par"
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER = REGISTERED_FOLDER + "bin"
 val BIN_JAR_FOLDER = BIN_FOLDER + "jar"
