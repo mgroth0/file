@@ -49,11 +49,7 @@ sealed class MFile(internal val userPath: String): File(userPath) {
 
   companion object {
 
-	val osFun = when (thisMachine) {
-	  is Mac   -> { s: String -> s.lower() }
-	  is Linux -> { s: String -> s }
-	  else     -> NOT_IMPLEMENTED
-	}
+	val osFun = if (thisMachine.caseSensitive) { s: String -> s } else { s: String -> s.lower() }
 
 	fun String.osFun() = osFun(this)
 
