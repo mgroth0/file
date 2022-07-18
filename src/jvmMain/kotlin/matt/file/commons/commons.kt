@@ -22,9 +22,9 @@ val IDE_FOLDER = REGISTERED_FOLDER["IDE"]
 val APPLICATIONS_FOLDER = mFile("/Applications")
 val DATA_FOLDER = REGISTERED_FOLDER.resolve("data")
 val SOUND_FOLDER = REGISTERED_FOLDER + "sound"
-val LOG_FOLDER by lazy{ REGISTERED_FOLDER["log"].apply { mkdir() } }
+val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 val exceptionFolder = LOG_FOLDER["errorReports"]
-val USER_DIR = mFile(System.getProperty("user.dir"))
+val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
 val WINDOW_GEOMETRY_FOLDER = DATA_FOLDER["window"]
 val SETTINGS_FOLDER = DATA_FOLDER["settings"]
@@ -71,9 +71,9 @@ val KJG_NAV_KEY = "NAV"
 
 private val projectFolder by lazy {
   when (thisMachine) {
-	is NEW_MAC, is Windows   -> IDE_FOLDER
-	is OPEN_MIND -> mFile(OPEN_MIND.homeDir)
-	else         -> NOT_IMPLEMENTED
+	is NEW_MAC, is Windows -> IDE_FOLDER
+	is OPEN_MIND           -> mFile(OPEN_MIND.homeDir)
+	else                   -> NOT_IMPLEMENTED
   }
 }
 
@@ -81,20 +81,23 @@ enum class RootProjects {
   /*not adding more yet because I don't want to select from others in KJG*/
   flow, kcomp;
 
-  val folder = projectFolder + name
-  val subRootFolders = listOf(/*folder + "KJ", */folder + "k")
+  val folder by lazy { projectFolder + name }
+  val subRootFolders by lazy { listOf(/*folder + "KJ", */folder + "k") }
 }
 
-val JAR_FOLDER = REGISTERED_FOLDER + "jar"
+val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
 
-val DNN_FOLDER = when (thisMachine) {
-  NEW_MAC               -> IDE_FOLDER + "dnn"
-  OLD_MAC               -> REGISTERED_FOLDER["todo/science/dnn"]
-  is Windows, OPEN_MIND -> null
+val DNN_FOLDER by lazy {
+  when (thisMachine) {
+	NEW_MAC               -> IDE_FOLDER + "dnn"
+	OLD_MAC               -> REGISTERED_FOLDER["todo/science/dnn"]
+	is Windows, OPEN_MIND -> null
+  }
 }
-val HEP_FOLDER = when (thisMachine) {
-  NEW_MAC               -> IDE_FOLDER + "hep"
-  OLD_MAC               -> REGISTERED_FOLDER["todo/science/hep"]
-  is Windows, OPEN_MIND -> null
+val HEP_FOLDER by lazy {
+  when (thisMachine) {
+	NEW_MAC               -> IDE_FOLDER + "hep"
+	OLD_MAC               -> REGISTERED_FOLDER["todo/science/hep"]
+	is Windows, OPEN_MIND -> null
+  }
 }
-
