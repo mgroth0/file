@@ -79,7 +79,7 @@ private val projectFolder by lazy {
 
 enum class RootProjects {
   /*not adding more yet because I don't want to select from others in KJG*/
-  flow, kcomp;
+  flow, kcomp, all;
 
   val folder by lazy { projectFolder + name }
   val subRootFolders by lazy { listOf(/*folder + "KJ", */folder + "k") }
