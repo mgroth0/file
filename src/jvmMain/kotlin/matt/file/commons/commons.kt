@@ -2,6 +2,8 @@ package matt.file.commons
 
 import matt.file.Folder
 import matt.file.mFile
+import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
+import matt.klib.commons.GITHUB_USERNAME
 import matt.klib.commons.thisMachine
 import matt.klib.lang.NOT_IMPLEMENTED
 import matt.klib.sys.NEW_MAC
@@ -41,7 +43,10 @@ val KJG_DATA_FOLDER by lazy { DATA_FOLDER.resolve("kjg") }
 val REL_ROOT_FILES by lazy { mFile("RootFiles") }
 val LIBS_VERSIONS_TOML by lazy { "libs.versions.toml" }
 val REL_LIBS_VERSIONS_TOML by lazy { REL_ROOT_FILES + LIBS_VERSIONS_TOML }
-val LIBS_VERSIONS_TOML_ONLINE by lazy { URI("https://raw.githubusercontent.com/mgroth0/common/master/libs.versions.toml").toURL() }
+
+val LIBS_VERSIONS_ONLINE_URI by lazy { URI("https://raw.githubusercontent.com/$GITHUB_USERNAME/${COMMON_PROJ_FOLDER.name}/$DEFAULT_GITHUB_BRANCH_NAME/$LIBS_VERSIONS_TOML") }
+val LIBS_VERSIONS_ONLINE_URL by lazy { LIBS_VERSIONS_ONLINE_URI.toURL() }
+val LIBS_VERSIONS_ONLINE_FILE by lazy { mFile(LIBS_VERSIONS_ONLINE_URI) }
 
 
 //object CommonFileNames {
