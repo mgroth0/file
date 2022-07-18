@@ -354,6 +354,8 @@ sealed interface MarkupLanguageFile
 @Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
 @Extensions("md") class MarkDownFile(userPath: String): MFile(userPath), MarkupLanguageFile
 
+@Extensions("properties") class PropsFile(userPath: String): DataFile(userPath, binary = false)
+
 @Extensions("yaml", "yml") class YamlFile(userPath: String): DataFile(userPath, binary = false)
 @Extensions("toml") class TomlFile(userPath: String): DataFile(userPath, binary = false)
 
