@@ -22,7 +22,7 @@ val IDE_FOLDER = REGISTERED_FOLDER["IDE"]
 val APPLICATIONS_FOLDER = mFile("/Applications")
 val DATA_FOLDER = REGISTERED_FOLDER.resolve("data")
 val SOUND_FOLDER = REGISTERED_FOLDER + "sound"
-val LOG_FOLDER = REGISTERED_FOLDER["log"].apply { mkdir() }
+val LOG_FOLDER by lazy{ REGISTERED_FOLDER["log"].apply { mkdir() } }
 val exceptionFolder = LOG_FOLDER["errorReports"]
 val USER_DIR = mFile(System.getProperty("user.dir"))
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
