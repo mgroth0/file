@@ -335,16 +335,31 @@ sealed class CodeFile(userPath: String): MFile(userPath)
 @Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
 sealed interface Zip
 @Extensions("zip") open class ZipFile(userPath: String): MFile(userPath), Zip
+
 val String.jar get() = JarFile("$this.jar")
+
 @Extensions("jar") class JarFile(userPath: String): MFile(userPath), Zip
-sealed class DataFile(userPath: String): MFile(userPath)
+sealed class DataFile(userPath: String, val binary: Boolean): MFile(userPath)
+//sealed class HumanReadableDataFile(userPath: String): DataFile(userPath)
+//sealed class BinaryDataFile(userPath: String): DataFile(userPath)
+
 
 val String.json get() = JsonFile("$this.json")
-@Extensions("json") class JsonFile(userPath: String): DataFile(userPath)
+
+@Extensions("json") class JsonFile(userPath: String): DataFile(userPath, binary = false)
+@Extensions("cbor") class CborFile(userPath: String): DataFile(userPath, binary = true)
+
+sealed interface MarkupLanguageFile
+@Extensions("xml") class XMLFile(userPath: String): DataFile(userPath, binary = false), MarkupLanguageFile
+@Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
+@Extensions("md") class MarkDownFile(userPath: String): MFile(userPath), MarkupLanguageFile
+
+@Extensions("yaml", "yml") class YamlFile(userPath: String): DataFile(userPath, binary = false)
+@Extensions("toml") class TomlFile(userPath: String): DataFile(userPath, binary = false)
 
 @Extensions("log") class LogFile(userPath: String): MFile(userPath)
 @Extensions("txt") class TxtFile(userPath: String): MFile(userPath)
-@Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath)
+@Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
 
 
 fun MFile.size() = ByteSize(Files.size(this.toPath()))
