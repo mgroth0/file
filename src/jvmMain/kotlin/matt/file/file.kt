@@ -178,14 +178,11 @@ sealed class MFile(internal val userPath: String): File(userPath) {
   fun getNextSubIndexedFileWork(filename: String, maxN: Int): ()->MFile {
 	require(maxN > 0)
 	val firstSubIndexFold = this + "1"
-	val existingSubIndexFolds = listFiles()!!
-	  .filter {
+	val existingSubIndexFolds = listFiles()!!.filter {
 		it.name.isInt()
-	  }
-	  .sorted()
-	val nextSubIndexFold = if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else
-	  existingSubIndexFolds
-		.firstOrNull { (it + filename).doesNotExist }
+	  }.sorted()
+	val nextSubIndexFold =
+	  if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
 		?: this.resolve((existingSubIndexFolds.last().name.toInt() + 1).toString())
 
 
@@ -259,8 +256,7 @@ sealed class MFile(internal val userPath: String): File(userPath) {
   }
 
   operator fun <F: MFile> plus(item: F): F {
-	@Suppress("UNCHECKED_CAST")
-	return resolve(item) as F
+	@Suppress("UNCHECKED_CAST") return resolve(item) as F
   }
 
 }
@@ -307,19 +303,14 @@ sealed class CodeFile(userPath: String): MFile(userPath)
 	const val FILE_ANNO_LINE_MARKER = "@file:"
   }
 
-  fun fileAnnotationSimpleClassNames() = useLines {
-	/*there must be a space after package or UnnamedPackageIsOk will not be detected*/
-	it.takeWhile { "package " !in it }.filter { FILE_ANNO_LINE_MARKER in it }
-	  .map {
-		it
-		  .substringAfter(FILE_ANNO_LINE_MARKER)
-		  .substringAfterLast(".")
-		  .substringBefore("\n")
-		  .substringBefore("(")
-		  .trim()
-	  }.toList()
+  fun fileAnnotationSimpleClassNames() =
+	useLines {	/*there must be a space after package or UnnamedPackageIsOk will not be detected*/
+	  it.takeWhile { "package " !in it }.filter { FILE_ANNO_LINE_MARKER in it }.map {
+		  it.substringAfter(FILE_ANNO_LINE_MARKER).substringAfterLast(".").substringBefore("\n").substringBefore("(")
+			.trim()
+		}.toList()
 
-  }
+	}
 
   inline fun <reified A> hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
 }
@@ -327,7 +318,9 @@ sealed class CodeFile(userPath: String): MFile(userPath)
 @Extensions("py") class PythonFile(userPath: String): CodeFile(userPath)
 @Extensions("java") class JavaFile(userPath: String): CodeFile(userPath)
 @Extensions("groovy") class GroovyFile(userPath: String): CodeFile(userPath)
-@Extensions("sh") class ShellFile(userPath: String): CodeFile(userPath)
+interface ShellFile
+@Extensions("sh") class ShellFileImpl(userPath: String): CodeFile(userPath), ShellFile
+@Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
 @Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
 sealed interface Zip
 @Extensions("zip") open class ZipFile(userPath: String): MFile(userPath), Zip
@@ -335,8 +328,8 @@ sealed interface Zip
 val String.jar get() = JarFile("$this.jar")
 
 @Extensions("jar") class JarFile(userPath: String): MFile(userPath), Zip
-sealed class DataFile(userPath: String, val binary: Boolean): MFile(userPath)
-//sealed class HumanReadableDataFile(userPath: String): DataFile(userPath)
+sealed class DataFile(userPath: String, val binary: Boolean):
+  MFile(userPath) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath)
 //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
 
 
@@ -396,10 +389,7 @@ fun MFile.doubleBackupWrite(s: String, thread: Boolean = false) {
   mkparents()
   createNewFile()
 
-  /*this is important. Extra security is always good.*/
-  /*now I'm backing up version before AND after the change. */
-  /*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
-  /*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
+  /*this is important. Extra security is always good.*//*now I'm backing up version before AND after the change. *//*yes, there is redundancy. In some contexts redundancy is good. Safe.*//*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
 
   val old = readText()
   val work1 = backupWork(text = old)
@@ -423,8 +413,7 @@ fun MFile.doubleBackupWrite(s: String, thread: Boolean = false) {
 
 
 internal fun MFile.backupWork(
-  @Suppress("UNUSED_PARAMETER") thread: Boolean = false,
-  text: String? = null
+  @Suppress("UNUSED_PARAMETER") thread: Boolean = false, text: String? = null
 ): ()->Unit {
 
   require(this.exists()) {
