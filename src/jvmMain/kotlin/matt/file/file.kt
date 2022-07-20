@@ -180,8 +180,8 @@ sealed class MFile(internal val userPath: String): File(userPath) {
 	require(maxN > 0)
 	val firstSubIndexFold = this + "1"
 	val existingSubIndexFolds = listFiles()!!.filter {
-		it.name.isInt()
-	  }.sorted()
+	  it.name.isInt()
+	}.sorted()
 	val nextSubIndexFold =
 	  if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
 		?: this.resolve((existingSubIndexFolds.last().name.toInt() + 1).toString())
@@ -299,17 +299,19 @@ open class Folder(userPath: String): MFile(userPath)
 
 sealed class CodeFile(userPath: String): MFile(userPath)
 
+val String.kt get() = KotlinFile("$this.kt")
+
 @Extensions("kt") class KotlinFile(userPath: String): CodeFile(userPath) {
   companion object {
 	const val FILE_ANNO_LINE_MARKER = "@file:"
   }
 
   fun fileAnnotationSimpleClassNames() =
-	useLines {	/*there must be a space after package or UnnamedPackageIsOk will not be detected*/
+	useLines {    /*there must be a space after package or UnnamedPackageIsOk will not be detected*/
 	  it.takeWhile { "package " !in it }.filter { FILE_ANNO_LINE_MARKER in it }.map {
-		  it.substringAfter(FILE_ANNO_LINE_MARKER).substringAfterLast(".").substringBefore("\n").substringBefore("(")
-			.trim()
-		}.toList()
+		it.substringAfter(FILE_ANNO_LINE_MARKER).substringAfterLast(".").substringBefore("\n").substringBefore("(")
+		  .trim()
+	  }.toList()
 
 	}
 
@@ -457,12 +459,6 @@ fun String.makeFileSeparatorsCompatibleWith(os: OS) = when (os) {
   is Windows -> replace("/", "\\")
   is Unix    -> replace("\\", "/")
 }
-
-
-
-
-
-
 
 
 fun jumpToKotlinSourceString(
