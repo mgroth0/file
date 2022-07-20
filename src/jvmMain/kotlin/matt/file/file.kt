@@ -514,3 +514,9 @@ fun jumpToKotlinSourceString(
   println("matt.kjlib.jumpToKotlinSourceString: dur:${System.currentTimeMillis()}ms worked?: ${pair != null}")
   return pair
 }
+
+fun MFile.writeIfDifferent(s: String) {
+  if (doesNotExist || readText() != s) {
+	write(s)
+  }
+}
