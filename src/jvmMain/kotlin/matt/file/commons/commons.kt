@@ -11,7 +11,6 @@ import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OPEN_MIND
 import matt.klib.sys.Windows
 import java.net.URI
-import java.net.URL
 
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
@@ -93,7 +92,7 @@ private val projectFolder by lazy {
 
 val subRoots = listOf(/*"KJ",*/"k")
 
-enum class RootProjects {
+enum class IdeProject {
   /*not adding more yet because I don't want to select from others in KJG*/
   flow, kcomp, all;
 
