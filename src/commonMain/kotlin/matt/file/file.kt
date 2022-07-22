@@ -1,20 +1,14 @@
 package matt.file
 
-import kotlin.jvm.JvmName
-
 interface CommonFile {
   fun getParentFile(): MFile?
-
-
+  val parent get() = getParentFile()
 }
 
 expect fun mFile(userPath: String): MFile
 expect sealed class MFile(userPath: String): CommonFile {
   internal val userPath: String
   override fun getParentFile(): MFile?
-
-//  @JvmName("parentFileFix")
-  val parentFile: MFile?
 }
 
 

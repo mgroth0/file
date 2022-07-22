@@ -264,6 +264,7 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
 	@Suppress("UNCHECKED_CAST") return resolve(item) as F
   }
 
+
 }
 
 fun mFile(file: MFile) = mFile(file.userPath)
