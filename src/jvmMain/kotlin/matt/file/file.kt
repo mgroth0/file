@@ -2,8 +2,7 @@
 
 package matt.file
 
-import com.sun.org.apache.xalan.internal.lib.Extensions
-import matt.file.KotlinFile.Companion
+import matt.file.Extensions
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
 import matt.klib.dmap.withStoringDefault

@@ -7,7 +7,7 @@ expect sealed class MFile(userPath: String): CommonFile {
 }
 
 
-private annotation class Extensions(vararg val exts: String)
+internal annotation class Extensions(vararg val exts: String)
 
 
 class UnknownFile(userPath: String): MFile(userPath)
