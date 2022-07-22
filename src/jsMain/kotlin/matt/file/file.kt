@@ -1,5 +1,15 @@
 package matt.file
 
+/*file or url*/
+open class Path(path: String) {
+  protected val path = path.removePrefix(SEP).removeSuffix(SEP)
+  operator fun plus(other: Path) = Path(path + SEP + other.path)
+  open operator fun plus(other: MFile) = mFile(path + SEP + other.path)
+  open operator fun plus(other: String) = this + Path(other)
+  override fun toString() = path
+}
+
+
 actual fun mFile(userPath: String): MFile {
 
   /*val f = File(userPath)
@@ -10,14 +20,13 @@ actual fun mFile(userPath: String): MFile {
 
 }
 
-private const val SEP = "/"
 
-actual sealed class MFile actual constructor(internal actual val userPath: String): CommonFile {
+actual sealed class MFile actual constructor(userPath: String): Path(userPath), CommonFile {
 
-  private val path = userPath.removePrefix(SEP).removeSuffix(SEP)
-  operator fun plus(other: MFile) = mFile(path + SEP + other.path)
-  operator fun plus(other: String) = this + mFile(other)
-  override fun toString() = path
+  internal actual val userPath = path
+
+  override operator fun plus(other: MFile) = mFile(path + SEP + other.path)
+  override operator fun plus(other: String) = this + mFile(other)
 
   actual override fun getParentFile(): MFile? {
 	val names = path.split(SEP)
@@ -26,3 +35,5 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
   }
 
 }
+
+private const val SEP = "/"
