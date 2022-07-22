@@ -1,16 +1,58 @@
 package matt.file
 
-interface CommonFile {
+internal expect val SEP: String
+
+/*file or url*/
+interface FileOrURL {
+  val cpath: String
+
+  fun resolve(other: String): FileOrURL
+
+  operator fun plus(other: String) = resolve(other)
+}
+
+
+class CommonURL(override val cpath: String): FileOrURL {
+  companion object {
+	const val URL_SEP = "/"
+  }
+
+  override fun resolve(other: String) = CommonURL(
+	cpath.removeSuffix(URL_SEP) + URL_SEP + other.removePrefix(URL_SEP)
+  )
+
+  final override fun toString() = cpath
+
+}
+
+interface CommonFile: FileOrURL {
+
+
   fun getParentFile(): MFile?
   val parent get() = getParentFile()
+
+
+  //  fun resolve(other: MFile): MFile
+  //  fun resolve(other: String): MFile
+  //
+  //  operator fun plus(other: MFile) = resolve(other)
+  //  operator fun plus(other: String) = resolve(other)
 }
 
 expect fun mFile(userPath: String): MFile
-expect sealed class MFile(userPath: String): CommonFile {
-  internal val userPath: String
-  override fun getParentFile(): MFile?
-}
 
+expect sealed class MFile(userPath: String): CommonFile {
+  val userPath: String
+  override val cpath: String
+
+  override fun getParentFile(): MFile?
+
+  fun resolve(other: MFile): MFile
+  override fun resolve(other: String): MFile
+
+  final override fun toString(): String
+
+}
 
 internal annotation class Extensions(vararg val exts: String)
 

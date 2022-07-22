@@ -3,7 +3,6 @@
 
 package matt.file
 
-import matt.file.Extensions
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
 import matt.klib.dmap.withStoringDefault
@@ -22,8 +21,6 @@ import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.annotation.AnnotationTarget.FILE
-import kotlin.io.path.Path
-import kotlin.io.path.useLines
 import kotlin.reflect.KClass
 
 @Target(FILE) annotation class JavaIoFileIsOk
@@ -36,20 +33,20 @@ fun File.toMFile() = mFile(this)
   I'm actually shocked it took me so long to figure this out*/
 
 /*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
-actual sealed class MFile actual constructor(internal actual val userPath: String): File(userPath), CommonFile {
+actual sealed class MFile actual constructor(actual val userPath: String): File(userPath), CommonFile {
+
+  actual override val cpath = path
+  val userFile = File(this.cpath)
 
 
-  val userFile = File(this.path)
-
-
-  final override fun toString() =
+  actual final override fun toString() =
 	super.toString() /*at least one java standard lib class expects File.toString() to just print the path... (Runtime.exec or something like that)*/
 
 
   constructor(file: MFile): this(file.userPath)
   constructor(file: File): this(file.path)
   constructor(parent: String, child: String): this(File(parent, child))
-  constructor(parent: MFile, child: String): this(parent.path, child)
+  constructor(parent: MFile, child: String): this(parent.cpath, child)
   constructor(uri: URI): this(File(uri))
 
   companion object {
@@ -129,8 +126,8 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
   fun endsWith(other: String): Boolean = idFile.endsWith(other.osFun())
 
 
-  fun resolve(relative: MFile): MFile = userFile.resolve(relative).toMFile()
-  fun resolve(relative: String): MFile = userFile.resolve(relative).toMFile()
+  actual fun resolve(other: MFile): MFile = userFile.resolve(other).toMFile()
+  actual override fun resolve(other: String): MFile = userFile.resolve(other).toMFile()
 
 
   fun resolveSibling(relative: MFile) = userFile.resolveSibling(relative).toMFile()
@@ -231,8 +228,8 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
   infix fun withExtension(ext: String): MFile {
 	return when (this.extension) {
 	  ext  -> this
-	  ""   -> mFile(this.path + "." + ext)
-	  else -> mFile(this.path.replace("." + this.extension, ".$ext"))
+	  ""   -> mFile(this.cpath + "." + ext)
+	  else -> mFile(this.cpath.replace("." + this.extension, ".$ext"))
 	}
   }
 
@@ -252,7 +249,7 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
 	return resolve(item.toString())
   }
 
-  operator fun plus(item: String): MFile {
+  override operator fun plus(item: String): MFile {
 	return resolve(item)
   }
 
@@ -270,7 +267,7 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
 fun mFile(file: MFile) = mFile(file.userPath)
 fun mFile(file: File) = mFile(file.path)
 fun mFile(parent: String, child: String) = mFile(File(parent, child))
-fun mFile(parent: MFile, child: String) = mFile(parent.path, child)
+fun mFile(parent: MFile, child: String) = mFile(parent.cpath, child)
 fun mFile(uri: URI) = mFile(File(uri))
 
 fun KotlinFile.fileAnnotationSimpleClassNames() =
@@ -470,3 +467,5 @@ fun MFile.writeIfDifferent(s: String) {
 	write(s)
   }
 }
+
+internal actual val SEP = MFile.pathSeparator
