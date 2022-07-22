@@ -1,3 +1,5 @@
 package matt.file
 
-actual class MFile
+actual sealed class MFile actual constructor(internal actual val userPath: String): CommonFile {
+
+}

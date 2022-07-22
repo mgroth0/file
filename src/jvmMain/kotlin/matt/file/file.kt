@@ -2,6 +2,8 @@
 
 package matt.file
 
+import com.sun.org.apache.xalan.internal.lib.Extensions
+import matt.file.KotlinFile.Companion
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
 import matt.klib.dmap.withStoringDefault
@@ -20,6 +22,8 @@ import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.annotation.AnnotationTarget.FILE
+import kotlin.io.path.Path
+import kotlin.io.path.useLines
 import kotlin.reflect.KClass
 
 @Target(FILE) annotation class JavaIoFileIsOk
@@ -32,7 +36,7 @@ fun File.toMFile() = mFile(this)
   I'm actually shocked it took me so long to figure this out*/
 
 /*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
-actual sealed class MFile(internal val userPath: String): File(userPath) {
+actual sealed class MFile actual constructor(internal actual val userPath: String): File(userPath), CommonFile {
 
 
   val userFile = File(this.path)
@@ -268,7 +272,16 @@ fun mFile(parent: String, child: String) = mFile(File(parent, child))
 fun mFile(parent: MFile, child: String) = mFile(parent.path, child)
 fun mFile(uri: URI) = mFile(File(uri))
 
-private annotation class Extensions(vararg val exts: String)
+fun KotlinFile.fileAnnotationSimpleClassNames() =
+  useLines {    /*there must be a space after package or UnnamedPackageIsOk will not be detected*/
+	it.takeWhile { "package " !in it }.filter { KotlinFile.FILE_ANNO_LINE_MARKER in it }.map {
+	  it.substringAfter(KotlinFile.FILE_ANNO_LINE_MARKER).substringAfterLast(".").substringBefore("\n")
+		.substringBefore("(")
+		.trim()
+	}.toList()
+  }
+
+inline fun <reified A> KotlinFile.hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
 
 private val fileTypes = mutableMapOf<String, KClass<out MFile>>().withStoringDefault { extension ->
   MFile::class.sealedSubclasses.flatMap { it.recurse { it.sealedSubclasses } }.firstOrNull {
@@ -279,6 +292,7 @@ private val fileTypes = mutableMapOf<String, KClass<out MFile>>().withStoringDef
 
 fun mFile(userPath: String): MFile {
   val f = File(userPath)
+  Path("a").useLines { }
   if (f.isDirectory) return Folder(userPath)
   return fileTypes[f.extension].constructors.first().call(userPath)
 
@@ -292,68 +306,6 @@ fun mFile(userPath: String): MFile {
   //	else   -> UnknownFile(userPath)
   //  }
 }
-
-class UnknownFile(userPath: String): MFile(userPath)
-
-open class Folder(userPath: String): MFile(userPath)
-
-sealed class CodeFile(userPath: String): MFile(userPath)
-
-val String.kt get() = KotlinFile("$this.kt")
-
-@Extensions("kt") class KotlinFile(userPath: String): CodeFile(userPath) {
-  companion object {
-	const val FILE_ANNO_LINE_MARKER = "@file:"
-  }
-
-  fun fileAnnotationSimpleClassNames() =
-	useLines {    /*there must be a space after package or UnnamedPackageIsOk will not be detected*/
-	  it.takeWhile { "package " !in it }.filter { FILE_ANNO_LINE_MARKER in it }.map {
-		it.substringAfter(FILE_ANNO_LINE_MARKER).substringAfterLast(".").substringBefore("\n").substringBefore("(")
-		  .trim()
-	  }.toList()
-
-	}
-
-  inline fun <reified A> hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
-}
-
-@Extensions("py") class PythonFile(userPath: String): CodeFile(userPath)
-@Extensions("java") class JavaFile(userPath: String): CodeFile(userPath)
-@Extensions("groovy") class GroovyFile(userPath: String): CodeFile(userPath)
-interface ShellFile: CommonFile
-@Extensions("sh") class ShellFileImpl(userPath: String): CodeFile(userPath), ShellFile
-@Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
-@Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
-open class BaseZip internal constructor(userPath: String): MFile(userPath)
-@Extensions("zip") open class ZipFile(userPath: String): BaseZip(userPath)
-
-val String.jar get() = JarFile("$this.jar")
-
-@Extensions("jar") class JarFile(userPath: String): BaseZip(userPath)
-sealed class DataFile(userPath: String, val binary: Boolean):
-  MFile(userPath) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath)
-//sealed class BinaryDataFile(userPath: String): DataFile(userPath)
-
-
-val String.json get() = JsonFile("$this.json")
-
-@Extensions("json") class JsonFile(userPath: String): DataFile(userPath, binary = false)
-@Extensions("cbor") class CborFile(userPath: String): DataFile(userPath, binary = true)
-
-sealed interface MarkupLanguageFile: CommonFile
-@Extensions("xml") class XMLFile(userPath: String): DataFile(userPath, binary = false), MarkupLanguageFile
-@Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
-@Extensions("md") class MarkDownFile(userPath: String): MFile(userPath), MarkupLanguageFile
-
-@Extensions("properties") class PropsFile(userPath: String): DataFile(userPath, binary = false)
-
-@Extensions("yaml", "yml") class YamlFile(userPath: String): DataFile(userPath, binary = false)
-@Extensions("toml") class TomlFile(userPath: String): DataFile(userPath, binary = false)
-
-@Extensions("log") class LogFile(userPath: String): MFile(userPath)
-@Extensions("txt") class TxtFile(userPath: String): MFile(userPath)
-@Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
 
 
 fun MFile.size() = ByteSize(Files.size(this.toPath()))
