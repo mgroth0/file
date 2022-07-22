@@ -67,6 +67,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
   }
 
+  actual val fname: String = name
+
+
   actual override fun getParentFile(): MFile? {
 	return super.getParentFile()?.toMFile()
   }
@@ -164,8 +167,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	writeText(s)
   }
 
-  @Suppress("unused") val fname: String
-	get() = name
+
+
   val abspath: String
 	get() = absolutePath
 
@@ -260,6 +263,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   operator fun <F: MFile> plus(item: F): F {
 	@Suppress("UNCHECKED_CAST") return resolve(item) as F
   }
+
 
 
 }

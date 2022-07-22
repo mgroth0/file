@@ -52,6 +52,7 @@ interface CommonFile: FileOrURL {
 
   fun getParentFile(): MFile?
   val parent get() = getParentFile()
+  val fname: String
 
 
   //  fun resolve(other: MFile): MFile
@@ -66,6 +67,8 @@ expect fun mFile(userPath: String): MFile
 expect sealed class MFile(userPath: String): CommonFile {
   val userPath: String
   override val cpath: String
+
+  override val fname: String
 
   override fun getParentFile(): MFile?
 

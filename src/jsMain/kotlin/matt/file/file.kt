@@ -20,6 +20,10 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
   actual val userPath = userPath.removePrefix(SEP).removeSuffix(SEP)
   actual override val cpath: String = userPath
 
+  val names by lazy { cpath.split(SEP) }
+
+  actual override val fname by lazy { names.first() }
+
   actual fun resolve(other: MFile) = mFile(cpath + SEP + other.cpath)
   actual override fun resolve(other: String): MFile = this.resolve(mFile(other))
 
