@@ -124,6 +124,17 @@ sealed interface MarkupLanguageFile: CommonFile
 @Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
 @Extensions("md") class MarkDownFile(userPath: String): MFile(userPath), MarkupLanguageFile
 
+
+sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
+sealed class RasterImageFile(userPath: String): MFile(userPath)
+@Extensions("png") sealed class PngFile(userPath: String): ImageFile(userPath, raster = true)
+@Extensions("jpg,jpeg") sealed class JpgFile(userPath: String): ImageFile(userPath, raster = true)
+@Extensions("tif", "tiff") sealed class TiffFile(userPath: String): ImageFile(userPath, raster = true)
+@Extensions("svg") sealed class SvgFile(userPath: String): ImageFile(userPath, raster = false)
+
+
+@Extensions("pdf") sealed class PdfFile(userPath: String): MFile(userPath)
+
 @Extensions("properties") class PropsFile(userPath: String): DataFile(userPath, binary = false)
 
 @Extensions("yaml", "yml") class YamlFile(userPath: String): DataFile(userPath, binary = false)
