@@ -24,6 +24,10 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
   actual override fun resolve(other: String): MFile = this.resolve(mFile(other))
 
 
+  operator fun plus(other: MFile) = resolve(other)
+  override operator fun plus(other: String) = resolve(other)
+
+
   actual override fun getParentFile(): MFile? {
 	val names = cpath.split(SEP)
 	if (names.size > 1) return mFile(names.dropLast(1).joinToString(SEP))

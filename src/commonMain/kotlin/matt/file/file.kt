@@ -9,7 +9,6 @@ interface FileOrURL {
   val cpath: String
 
   fun resolve(other: String): FileOrURL
-
   operator fun plus(other: String) = resolve(other)
 }
 
