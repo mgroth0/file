@@ -54,14 +54,14 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
 
   companion object {
 
-	val osFun = if (thisMachine.caseSensitive) { s: String -> s } else { s: String -> s.lower() }
+	val osFun by lazy { if (thisMachine.caseSensitive) { s: String -> s } else { s: String -> s.lower() } }
 
 	fun String.osFun() = osFun(this)
 
-	val separatorChar = File.separatorChar
-	val separator: String = File.separator
-	val pathSeparatorChar = File.pathSeparatorChar
-	val pathSeparator = File.pathSeparator
+	val separatorChar by lazy { File.separatorChar }
+	val separator: String by lazy { File.separator }
+	val pathSeparatorChar by lazy { File.pathSeparatorChar }
+	val pathSeparator by lazy { File.pathSeparator }
 
 	fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
 	fun createTempFile(prefix: String, suffix: String?, directory: MFile?) =
@@ -283,11 +283,13 @@ fun KotlinFile.fileAnnotationSimpleClassNames() =
 
 inline fun <reified A> KotlinFile.hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
 
-private val fileTypes = mutableMapOf<String, KClass<out MFile>>().withStoringDefault { extension ->
-  MFile::class.sealedSubclasses.flatMap { it.recurse { it.sealedSubclasses } }.firstOrNull {
-	val b = it.annotations.filterIsInstance<Extensions>().firstOrNull()?.exts?.let { extension in it } ?: false
-	b
-  } ?: UnknownFile::class
+private val fileTypes by lazy {
+  mutableMapOf<String, KClass<out MFile>>().withStoringDefault { extension ->
+	MFile::class.sealedSubclasses.flatMap { it.recurse { it.sealedSubclasses } }.firstOrNull {
+	  val b = it.annotations.filterIsInstance<Extensions>().firstOrNull()?.exts?.let { extension in it } ?: false
+	  b
+	} ?: UnknownFile::class
+  }
 }
 
 fun mFile(userPath: String): MFile {
