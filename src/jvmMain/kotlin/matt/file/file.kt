@@ -249,8 +249,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return resolve(item.toString())
   }
 
-  override operator fun plus(item: String): MFile {
-	return resolve(item)
+  override operator fun plus(other: String): MFile {
+	return resolve(other)
   }
 
   operator fun plus(item: Char): MFile {
