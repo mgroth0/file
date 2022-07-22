@@ -70,7 +70,7 @@ actual sealed class MFile actual constructor(internal actual val userPath: Strin
 	fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
   }
 
-  override fun getParentFile(): MFile? {
+  actual override fun getParentFile(): MFile? {
 	return super.getParentFile()?.toMFile()
   }
 
@@ -292,7 +292,7 @@ private val fileTypes by lazy {
   }
 }
 
-fun mFile(userPath: String): MFile {
+actual fun mFile(userPath: String): MFile {
   val f = File(userPath)
   if (f.isDirectory) return Folder(userPath)
   return fileTypes[f.extension].constructors.first().call(userPath)

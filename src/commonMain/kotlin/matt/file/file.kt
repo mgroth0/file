@@ -1,9 +1,13 @@
 package matt.file
 
-interface CommonFile
+interface CommonFile {
+  fun getParentFile(): MFile?
+}
 
+expect fun mFile(userPath: String): MFile
 expect sealed class MFile(userPath: String): CommonFile {
   internal val userPath: String
+  override fun getParentFile(): MFile?
 }
 
 
