@@ -2,6 +2,7 @@ package matt.file
 
 interface CommonFile {
   fun getParentFile(): MFile?
+  val parentFile get() = getParentFile()
 }
 
 expect fun mFile(userPath: String): MFile
