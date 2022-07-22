@@ -67,7 +67,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
   }
 
-  actual val fname: String = name
+  actual override val fname: String = name
 
 
   actual override fun getParentFile(): MFile? {
