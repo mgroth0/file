@@ -294,7 +294,6 @@ private val fileTypes by lazy {
 
 fun mFile(userPath: String): MFile {
   val f = File(userPath)
-  Path("a").useLines { }
   if (f.isDirectory) return Folder(userPath)
   return fileTypes[f.extension].constructors.first().call(userPath)
 
