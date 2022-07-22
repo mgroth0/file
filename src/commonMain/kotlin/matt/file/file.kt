@@ -126,11 +126,10 @@ sealed interface MarkupLanguageFile: CommonFile
 
 
 sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
-sealed class RasterImageFile(userPath: String): MFile(userPath)
-@Extensions("png") sealed class PngFile(userPath: String): ImageFile(userPath, raster = true)
-@Extensions("jpg,jpeg") sealed class JpgFile(userPath: String): ImageFile(userPath, raster = true)
-@Extensions("tif", "tiff") sealed class TiffFile(userPath: String): ImageFile(userPath, raster = true)
-@Extensions("svg") sealed class SvgFile(userPath: String): ImageFile(userPath, raster = false)
+@Extensions("png") class PngFile(userPath: String): ImageFile(userPath, raster = true)
+@Extensions("jpg,jpeg") class JpgFile(userPath: String): ImageFile(userPath, raster = true)
+@Extensions("tif", "tiff") class TiffFile(userPath: String): ImageFile(userPath, raster = true)
+@Extensions("svg") class SvgFile(userPath: String): ImageFile(userPath, raster = false)
 
 
 @Extensions("pdf") sealed class PdfFile(userPath: String): MFile(userPath)
