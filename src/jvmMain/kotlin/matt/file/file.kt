@@ -469,3 +469,22 @@ fun MFile.writeIfDifferent(s: String) {
 }
 
 internal actual val SEP = MFile.pathSeparator
+
+
+
+
+actual class MURL actual constructor(path: String): CommonURL {
+
+  override val cpath = path
+
+  val jURL = URI(path).toURL()
+
+  actual val protocol = jURL.protocol
+
+  actual override fun resolve(other: String): MURL {
+	return MURL(jURL.toURI().resolve(other).toString())
+  }
+
+  actual override fun toString() = cpath
+
+}

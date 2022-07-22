@@ -1,5 +1,7 @@
 package matt.file
 
+import matt.file.CommonURL.Companion
+
 internal expect val SEP: String
 
 /*file or url*/
@@ -12,18 +14,39 @@ interface FileOrURL {
 }
 
 
-class CommonURL(override val cpath: String): FileOrURL {
+fun String.isValidHttpUrl(): Boolean {
+  val url = try {
+	MURL(this)
+  } catch (e: Exception) {
+	return false
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
+
+
+fun fileOrURL(s: String): FileOrURL {
+  return if (s.isValidHttpUrl()) MURL(s) else mFile(s)
+}
+
+
+interface CommonURL: FileOrURL {
+
+  override val cpath: String
+
   companion object {
 	const val URL_SEP = "/"
   }
-
-  override fun resolve(other: String) = CommonURL(
-	cpath.removeSuffix(URL_SEP) + URL_SEP + other.removePrefix(URL_SEP)
-  )
-
-  final override fun toString() = cpath
-
 }
+
+expect class MURL(path: String): CommonURL {
+  val protocol: String
+
+  override fun resolve(other: String): MURL
+
+  final override fun toString(): String
+}
+
 
 interface CommonFile: FileOrURL {
 
