@@ -43,7 +43,7 @@ val REL_ROOT_FILES by lazy { mFile("RootFiles") }
 val LIBS_VERSIONS_TOML by lazy { "libs.versions.toml" }
 val REL_LIBS_VERSIONS_TOML by lazy { REL_ROOT_FILES + LIBS_VERSIONS_TOML }
 
-val COMMON_LIBS_VERSIONS_FILE by lazy{ COMMON_PROJ_FOLDER + LIBS_VERSIONS_TOML }
+val COMMON_LIBS_VERSIONS_FILE by lazy { COMMON_PROJ_FOLDER + LIBS_VERSIONS_TOML }
 
 val LIBS_VERSIONS_ONLINE_URI by lazy {
   URI(
@@ -94,16 +94,13 @@ val subRoots = listOf(/*"KJ",*/"k")
 
 enum class IdeProject {
   /*not adding more yet because I don't want to select from others in KJG*/
-  flow, kcomp, all;
+  /*flow, */kcomp, all;
 
   val folder by lazy { projectFolder + name }
   val subRootFolders by lazy { subRoots.map { folder + it } }
 
 
-
 }
-
-
 
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
