@@ -132,7 +132,7 @@ sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
 @Extensions("svg") class SvgFile(userPath: String): ImageFile(userPath, raster = false)
 
 
-@Extensions("pdf") sealed class PdfFile(userPath: String): MFile(userPath)
+@Extensions("pdf") class PdfFile(userPath: String): MFile(userPath)
 
 @Extensions("properties") class PropsFile(userPath: String): DataFile(userPath, binary = false)
 
