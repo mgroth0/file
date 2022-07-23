@@ -116,3 +116,5 @@ val HEP_FOLDER by lazy {
 	is Windows, OPEN_MIND -> null
   }
 }
+
+const val GRADLEW_NAME = "gradlew"
