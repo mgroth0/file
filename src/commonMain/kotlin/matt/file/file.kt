@@ -103,12 +103,19 @@ interface ShellFile: CommonFile
 @Extensions("sh") class ShellFileImpl(userPath: String): CodeFile(userPath), ShellFile
 @Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
 @Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
-open class BaseZip internal constructor(userPath: String): MFile(userPath)
-@Extensions("zip") open class ZipFile(userPath: String): BaseZip(userPath)
+
+interface ArchiveFile: CommonFile
+
+sealed class BaseZip(userPath: String): MFile(userPath), ArchiveFile
+
+@Extensions("zip") class ZipFile(userPath: String): BaseZip(userPath)
 
 val String.jar get() = JarFile("$this.jar")
-
 @Extensions("jar") class JarFile(userPath: String): BaseZip(userPath)
+
+
+
+
 sealed class DataFile(userPath: String, val binary: Boolean):
   MFile(userPath) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath)
 //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
