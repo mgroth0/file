@@ -98,7 +98,13 @@ enum class IdeProject {
 
   val folder by lazy { projectFolder + name }
   val subRootFolders by lazy { subRoots.map { folder + it } }
+
+
+
 }
+
+
+
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
 
