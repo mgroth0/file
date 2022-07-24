@@ -19,6 +19,7 @@ import java.io.FileFilter
 import java.io.FilenameFilter
 import java.net.URI
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.annotation.AnnotationTarget.FILE
 import kotlin.reflect.KClass
@@ -26,6 +27,7 @@ import kotlin.reflect.KClass
 @Target(FILE) annotation class JavaIoFileIsOk
 @Target(FILE) annotation class UnnamedPackageIsOk
 
+fun Path.toMFile() = toFile().toMFile()
 fun File.toMFile() = mFile(this)
 
 
@@ -168,7 +170,6 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   }
 
 
-
   val abspath: String
 	get() = absolutePath
 
@@ -263,7 +264,6 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   operator fun <F: MFile> plus(item: F): F {
 	@Suppress("UNCHECKED_CAST") return resolve(item) as F
   }
-
 
 
 }
@@ -473,8 +473,6 @@ fun MFile.writeIfDifferent(s: String) {
 }
 
 internal actual val SEP = MFile.pathSeparator
-
-
 
 
 actual class MURL actual constructor(path: String): CommonURL {
