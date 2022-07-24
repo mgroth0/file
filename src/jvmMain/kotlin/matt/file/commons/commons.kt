@@ -20,6 +20,7 @@ val REGISTERED_FOLDER by lazy { USER_HOME[thisMachine.registeredDir] }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
+
 val APPLESCRIPT_FOLDER by lazy { (BIN_FOLDER + "applescript").apply { mkdirs() } }
 val IDE_FOLDER by lazy { REGISTERED_FOLDER["IDE"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
@@ -104,6 +105,7 @@ enum class IdeProject {
 
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
+val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 
 val DNN_FOLDER by lazy {
   when (thisMachine) {
