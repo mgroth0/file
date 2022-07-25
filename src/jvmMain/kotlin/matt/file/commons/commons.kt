@@ -17,7 +17,7 @@ import java.net.URI
 //object CommonFiles {
 val USER_HOME by lazy { mFile(thisMachine.homeDir) }
 const val M2_FILE_NAME = ".m2"
-val M2 = USER_HOME + M2_FILE_NAME
+val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy { USER_HOME[thisMachine.registeredDir] }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
