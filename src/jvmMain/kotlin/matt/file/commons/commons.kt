@@ -6,6 +6,8 @@ import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
 import matt.klib.commons.GITHUB_USERNAME
 import matt.klib.commons.thisMachine
 import matt.klib.lang.NOT_IMPLEMENTED
+import matt.klib.lang.err
+import matt.klib.sys.Linux
 import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OpenMind
@@ -18,7 +20,12 @@ import java.net.URI
 val USER_HOME by lazy { mFile(thisMachine.homeDir) }
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
-val REGISTERED_FOLDER by lazy { USER_HOME[thisMachine.registeredDir] }
+val REGISTERED_FOLDER by lazy {
+  if (thisMachine is Linux) {
+	err("do I see this now?")
+  }
+  USER_HOME[thisMachine.registeredDir]
+}
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
