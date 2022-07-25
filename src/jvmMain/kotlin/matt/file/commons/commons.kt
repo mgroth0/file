@@ -128,3 +128,5 @@ val HEP_FOLDER by lazy {
 
 const val GRADLEW_NAME = "gradlew"
 
+
+val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
