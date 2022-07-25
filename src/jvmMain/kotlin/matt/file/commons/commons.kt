@@ -16,6 +16,8 @@ import java.net.URI
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
 val USER_HOME by lazy { mFile(thisMachine.homeDir) }
+const val M2_FILE_NAME = ".m2"
+val M2 = USER_HOME + M2_FILE_NAME
 val REGISTERED_FOLDER by lazy { USER_HOME[thisMachine.registeredDir] }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
@@ -37,8 +39,7 @@ val VAL_JSON_FILE by lazy { DATA_FOLDER.resolve("VAL.json") }
 val VAR_JSON_FILE by lazy { DATA_FOLDER["VAR.json"] }
 val SCREENSHOT_FOLDER by lazy { REGISTERED_FOLDER["screenshots"] }
 val CACHE_FOLDER by lazy { REGISTERED_FOLDER["cache"] }
-val KJG_DATA_FOLDER by lazy { DATA_FOLDER.resolve("kjg") }
-//}
+val KJG_DATA_FOLDER by lazy { DATA_FOLDER.resolve("kjg") } //}
 
 val REL_ROOT_FILES by lazy { mFile("RootFiles") }
 val LIBS_VERSIONS_TOML by lazy { "libs.versions.toml" }
@@ -63,8 +64,7 @@ const val BUILD_GRADLE_GROOVY_NAME = "build.gradle"
 const val SETTINGS_GRADLE_GROOVY_NAME = "settings.gradle"
 const val BUILD_GRADLE_KTS_NAME = "build.gradle.kts"
 const val SETTINGS_GRADLE_KTS_NAME = "settings.gradle.kts"
-const val BUILD_JSON_NAME = "build.json"
-//}
+const val BUILD_JSON_NAME = "build.json" //}
 
 
 object MavenLocalFolder: Folder((USER_HOME + ".m2").userPath) {
@@ -82,8 +82,7 @@ val OPEN_KEY = "OPEN"
 val OPEN_RELATIVE_KEY = "OPEN_REL"
 val OPEN_NEAREST_GRADLE_BUILDSCRIPT = "OPEN_NEAREST_GRADLE_BUILDSCRIPT"
 val OPEN_NEAREST_BUILD_JSON = "OPEN_NEAREST_BUILD_JSON"
-val OPEN_NEARST_KOTLIN_DESCENDENT = "OPEN_NEARST_KOTLIN_DESCENDENT"
-//val OPEN_NEARST = "OPEN_NEARST"
+val OPEN_NEARST_KOTLIN_DESCENDENT = "OPEN_NEARST_KOTLIN_DESCENDENT" //val OPEN_NEARST = "OPEN_NEARST"
 //}
 
 
@@ -100,8 +99,7 @@ private val projectFolder by lazy {
 val subRoots = listOf(/*"KJ",*/"k")
 
 enum class IdeProject {
-  /*not adding more yet because I don't want to select from others in KJG*/
-  /*flow, */kcomp, all;
+  /*not adding more yet because I don't want to select from others in KJG*//*flow, */kcomp, all;
 
   val folder by lazy { projectFolder + name }
   val subRootFolders by lazy { subRoots.map { folder + it } }

@@ -410,11 +410,7 @@ fun MFile.recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
 val MFile.ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
 val MFile.absolutePathEnforced: String get() = ensureAbsolute.absolutePath
 
-fun String.makeFileSeparatorsCompatibleWith(os: OS) = when (os) {
-  is Windows -> replace("/", "\\")
-  is Unix    -> replace("\\", "/")
-}
-
+fun String.makeFileSeparatorsCompatibleWith(os: OS) = replace(os.wrongPathSep, os.pathSep)
 
 fun MFile.writeIfDifferent(s: String) {
   if (doesNotExist || readText() != s) {
