@@ -8,7 +8,7 @@ import matt.klib.commons.thisMachine
 import matt.klib.lang.NOT_IMPLEMENTED
 import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
-import matt.klib.sys.OPEN_MIND
+import matt.klib.sys.OpenMind
 import matt.klib.sys.Windows
 import java.net.URI
 
@@ -91,7 +91,7 @@ val KJG_NAV_KEY = "NAV"
 private val projectFolder by lazy {
   when (thisMachine) {
 	is NEW_MAC, is Windows -> IDE_FOLDER
-	is OPEN_MIND           -> mFile(OPEN_MIND.homeDir)
+	is OpenMind            -> mFile(thisMachine.homeDir)
 	else                   -> NOT_IMPLEMENTED
   }
 }
@@ -113,17 +113,18 @@ val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 
 val DNN_FOLDER by lazy {
   when (thisMachine) {
-	NEW_MAC               -> IDE_FOLDER + "dnn"
-	OLD_MAC               -> REGISTERED_FOLDER["todo/science/dnn"]
-	is Windows, OPEN_MIND -> null
+	NEW_MAC -> IDE_FOLDER + "dnn"
+	OLD_MAC -> REGISTERED_FOLDER["todo/science/dnn"]
+	else    -> null
   }
 }
 val HEP_FOLDER by lazy {
   when (thisMachine) {
-	NEW_MAC               -> IDE_FOLDER + "hep"
-	OLD_MAC               -> REGISTERED_FOLDER["todo/science/hep"]
-	is Windows, OPEN_MIND -> null
+	NEW_MAC -> IDE_FOLDER + "hep"
+	OLD_MAC -> REGISTERED_FOLDER["todo/science/hep"]
+	else    -> null
   }
 }
 
 const val GRADLEW_NAME = "gradlew"
+
