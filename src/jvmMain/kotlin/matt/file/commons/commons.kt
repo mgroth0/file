@@ -24,7 +24,7 @@ val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
 
 val APPLESCRIPT_FOLDER by lazy { (BIN_FOLDER + "applescript").apply { mkdirs() } }
-val IDE_FOLDER by lazy { REGISTERED_FOLDER["IDE"] }
+val IDE_FOLDER by lazy { REGISTERED_FOLDER["ide"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
 val APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
