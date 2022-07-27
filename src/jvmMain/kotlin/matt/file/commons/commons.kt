@@ -21,6 +21,7 @@ val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy { USER_HOME[thisMachine.registeredDir] }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
+val BIN_NATIVE_FOLDER by lazy { BIN_FOLDER + "native" }
 val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
 
 val APPLESCRIPT_FOLDER by lazy { (BIN_FOLDER + "applescript").apply { mkdirs() } }

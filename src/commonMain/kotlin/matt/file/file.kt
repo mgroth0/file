@@ -63,7 +63,6 @@ interface CommonFile: FileOrURL {
 }
 
 
-
 expect fun mFile(userPath: String): MFile
 
 expect sealed class MFile(userPath: String): CommonFile {
@@ -114,9 +113,18 @@ sealed class BaseZip(userPath: String): MFile(userPath), ArchiveFile
 @Extensions("zip") class ZipFile(userPath: String): BaseZip(userPath)
 
 val String.jar get() = JarFile("$this.jar")
+
 @Extensions("jar") class JarFile(userPath: String): BaseZip(userPath)
 
+sealed class ExecutableFile(userPath: String): MFile(userPath)
 
+val String.kexe get() = KExeFile("$this.kexe")
+@Extensions("kexe") class KExeFile(userPath: String): ExecutableFile(userPath)
+@Extensions("exe") class ExeFile(userPath: String): ExecutableFile(userPath)
+
+
+sealed class DiskImageFile(userPath: String): MFile(userPath)
+@Extensions("dmg") class DmgFile(userPath: String): DiskImageFile(userPath)
 
 
 sealed class DataFile(userPath: String, val binary: Boolean):
