@@ -132,4 +132,4 @@ const val GRADLEW_NAME = "gradlew"
 
 val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
 
-val VERSION_TXT_FILE_NAME = "version.txt"
+const val VERSION_TXT_FILE_NAME = "version.txt"

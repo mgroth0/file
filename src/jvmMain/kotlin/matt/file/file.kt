@@ -435,5 +435,7 @@ actual class MURL actual constructor(path: String): CommonURL {
 
   actual override fun toString() = cpath
 
+  actual fun loadText() = jURL.readText()
+
 }
 

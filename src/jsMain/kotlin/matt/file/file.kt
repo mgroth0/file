@@ -1,5 +1,7 @@
 package matt.file
 
+import matt.file.req.HTTPRequester
+import matt.file.req.HTTPType.GET
 import org.w3c.dom.url.URL
 
 
@@ -48,7 +50,7 @@ actual class MURL actual constructor(path: String): CommonURL {
 
   override val cpath = path
 
-  val jsURL = URL(path)
+  private val jsURL = URL(path)
 
   actual val protocol: String get() = jsURL.protocol
 
@@ -57,4 +59,8 @@ actual class MURL actual constructor(path: String): CommonURL {
   )
 
   actual override fun toString() = cpath
+
+  private val requester by lazy { HTTPRequester(type = GET, this) { responseText } }
+
+  actual fun loadText() = requester.send()
 }

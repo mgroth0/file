@@ -1,6 +1,9 @@
 package matt.file
 
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import matt.file.CommonURL.Companion
+import matt.klib.release.Release
 
 internal expect val SEP: String
 
@@ -44,6 +47,8 @@ expect class MURL(path: String): CommonURL {
   override fun resolve(other: String): MURL
 
   final override fun toString(): String
+
+  fun loadText(): String
 }
 
 
@@ -160,3 +165,11 @@ sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
 @Extensions("log") class LogFile(userPath: String): MFile(userPath)
 @Extensions("txt") class TxtFile(userPath: String): MFile(userPath)
 @Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
+
+
+object GitHub {
+  fun releasesOf(project: String): List<Release> {
+    val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").loadText()
+    return Json.decodeFromString(json)
+  }
+}
