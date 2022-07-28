@@ -1,6 +1,7 @@
 package matt.file.commons
 
 import matt.file.Folder
+import matt.file.GitHub
 import matt.file.mFile
 import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
 import matt.klib.commons.GITHUB_USERNAME
@@ -133,3 +134,15 @@ const val GRADLEW_NAME = "gradlew"
 val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
 
 const val VERSION_TXT_FILE_NAME = "version.txt"
+
+private val GitHub.baseKeyFolder by lazy {
+  REGISTERED_FOLDER + ".key" + ".github"
+}
+
+val GitHub.readPackagesForeverKeyFile by lazy {
+  GitHub.baseKeyFolder + ".ReadPackagesForever"
+}
+
+val GitHub.pushReleasesForeverKeyFile by lazy {
+  GitHub.baseKeyFolder + ".PushReleasesForever"
+}
