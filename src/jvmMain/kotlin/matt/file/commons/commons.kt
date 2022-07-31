@@ -24,6 +24,8 @@ val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_BIN by lazy { BIN_FOLDER + "bin" }
 val BIN_BIN_BIN by lazy { BIN_BIN + "bin" }
+val BIN_BIN_BIN_BIN by lazy { BIN_BIN_BIN + "bin" }
+val DIST_FOLDER by lazy { REGISTERED_FOLDER + "dist" }
 val BIN_NATIVE_FOLDER by lazy { BIN_FOLDER + "native" }
 val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
 
