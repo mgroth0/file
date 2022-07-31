@@ -388,7 +388,9 @@ internal fun MFile.backupWork(
 
   if (isDirectory) {
 	return {
-	  copyRecursively(backupFileWork())
+	  val target = backupFileWork()
+	  target.deleteIfExists()
+	  copyRecursively(target)
 	}
   }
 
