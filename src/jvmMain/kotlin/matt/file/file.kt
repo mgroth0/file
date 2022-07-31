@@ -6,12 +6,9 @@ package matt.file
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
 import matt.klib.dmap.withStoringDefault
-import matt.klib.lang.inlined
 import matt.klib.str.lower
 import matt.klib.stream.search
 import matt.klib.sys.OS
-import matt.klib.sys.Unix
-import matt.klib.sys.Windows
 import matt.klib.tfx.isInt
 import matt.stream.recurse.recurse
 import java.io.File
@@ -172,6 +169,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   val abspath: String
 	get() = absolutePath
+
+  infix fun withLastNameExtension(s: String) = mFile(abspath.removeSuffix(separator) + s)
 
 
   fun moveInto(newParent: MFile, overwrite: Boolean = false): MFile {
