@@ -203,7 +203,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 	return {
 	  if (nextSubIndexFold.name.toInt() > maxN) {
-		(firstSubIndexFold + filename).delete()
+		(firstSubIndexFold + filename).deleteRecursively()
 		(existingSubIndexFolds - firstSubIndexFold).forEach {
 		  (it + filename).moveInto(this + (it.parentFile!!.name.toInt() - 1).toString())
 		}
@@ -385,6 +385,12 @@ internal fun MFile.backupWork(
 
 
   val backupFileWork = backupFolder.getNextSubIndexedFileWork(name, 100)
+
+  if (isDirectory) {
+	return {
+	  copyRecursively(backupFileWork())
+	}
+  }
 
   val realText = text ?: readText()
 
