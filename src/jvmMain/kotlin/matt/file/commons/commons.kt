@@ -1,11 +1,14 @@
 package matt.file.commons
 
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import matt.file.Folder
 import matt.file.GitHub
 import matt.file.mFile
 import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
 import matt.klib.commons.GITHUB_USERNAME
 import matt.klib.commons.thisMachine
+import matt.klib.constants.ValJson
 import matt.klib.lang.NOT_IMPLEMENTED
 import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
@@ -42,6 +45,9 @@ val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
 val WINDOW_GEOMETRY_FOLDER by lazy { DATA_FOLDER["window"] }
 val SETTINGS_FOLDER by lazy { DATA_FOLDER["settings"] }
 val VAL_JSON_FILE by lazy { DATA_FOLDER.resolve("VAL.json") }
+
+fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
+
 val VAR_JSON_FILE by lazy { DATA_FOLDER["VAR.json"] }
 val SCREENSHOT_FOLDER by lazy { REGISTERED_FOLDER["screenshots"] }
 val CACHE_FOLDER by lazy { REGISTERED_FOLDER["cache"] }
