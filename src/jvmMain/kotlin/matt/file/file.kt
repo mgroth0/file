@@ -8,6 +8,7 @@ import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
+import matt.klib.prop.BasicProperty
 import matt.klib.str.lower
 import matt.klib.stream.search
 import matt.klib.tfx.isInt
@@ -16,6 +17,7 @@ import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
 import java.io.IOException
+import java.lang.Thread.sleep
 import java.net.URI
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -28,8 +30,7 @@ import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
 import java.nio.file.WatchService
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.TimeUnit.MILLISECONDS
-
-internal actual val SEP = MFile.pathSeparator
+import kotlin.concurrent.thread
 
 
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
@@ -37,6 +38,7 @@ internal actual val SEP = MFile.pathSeparator
 
 /*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
 actual sealed class MFile actual constructor(actual val userPath: String): File(userPath), CommonFile {
+
 
   actual override val cpath = path
   val userFile = File(this.cpath)
@@ -270,26 +272,29 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   }
 
 
-  fun onModifyRecursive(op: ()->Unit) {
-
-	val watchService: WatchService = toPath().fileSystem.newWatchService()
-
-	// register all subfolders
-	Files.walkFileTree(this.toPath(), object: SimpleFileVisitor<Path>() {
-	  @Throws(IOException::class) override fun preVisitDirectory(
-		dir: Path,
-		attrs: BasicFileAttributes
-	  ): FileVisitResult {
-		dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
-		return FileVisitResult.CONTINUE
-	  }
-	})
-
-	watchService.poll()
-	watchService.poll(100, MILLISECONDS)
-	watchService.take()
-
-  }
+  //  fun onModifyRecursive(op: ()->Unit) {
+  //
+  //	val watchService: WatchService = toPath().fileSystem.newWatchService()
+  //
+  //	// register all subfolders
+  //	Files.walkFileTree(this.toPath(), object: SimpleFileVisitor<Path>() {
+  //	  @Throws(IOException::class) override fun preVisitDirectory(
+  //		dir: Path,
+  //		attrs: BasicFileAttributes
+  //	  ): FileVisitResult {
+  //		dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+  //		return FileVisitResult.CONTINUE
+  //	  }
+  //	})
+  //
+  //	watchService.poll()
+  //	watchService.poll(100, MILLISECONDS)
+  //	val e = watchService.take()
+  //	e.pollEvents().forEach {
+  //	  it.context()
+  //	}
+  //
+  //  }
 
 
   fun size() = ByteSize(Files.size(this.toPath()))
@@ -309,6 +314,18 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	  greatest = listOf(greatest, it.lastModified()).maxOrNull()!!
 	}
 	return greatest
+  }
+
+  fun createRecursiveLastModifiedProp(checkFreqMillis: Long): BasicProperty<Long> {
+	val prop = BasicProperty(recursiveLastModified())
+	thread(isDaemon = true) {
+	  while (true) {
+		val m = recursiveLastModified()
+		if (m != prop.value) prop.value = m
+		sleep(checkFreqMillis)
+	  }
+	}
+	return prop
   }
 
 
@@ -413,3 +430,5 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 
 }
+
+internal actual val SEP = MFile.pathSeparator

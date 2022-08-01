@@ -7,7 +7,6 @@ import matt.file.url.MURL
 import matt.klib.release.Release
 
 
-
 /*file or url*/
 interface FileOrURL {
   val cpath: String
@@ -33,8 +32,6 @@ fun fileOrURL(s: String): FileOrURL {
 }
 
 
-
-
 interface CommonFile: FileOrURL {
 
 
@@ -56,8 +53,6 @@ interface CommonFile: FileOrURL {
 internal expect val SEP: String
 
 expect sealed class MFile(userPath: String): CommonFile {
-
-
 
   val userPath: String
   override val cpath: String
@@ -112,6 +107,7 @@ val String.jar get() = JarFile("$this.jar")
 sealed class ExecutableFile(userPath: String): MFile(userPath)
 
 val String.kexe get() = KExeFile("$this.kexe")
+
 @Extensions("kexe") class KExeFile(userPath: String): ExecutableFile(userPath)
 @Extensions("exe") class ExeFile(userPath: String): ExecutableFile(userPath)
 
@@ -157,10 +153,9 @@ sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
 
 object GitHub {
   fun releasesOf(project: String): List<Release> {
-    val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").loadText()
-    return Json.decodeFromString(json)
+	val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").loadText()
+	return Json.decodeFromString(json)
   }
-
 
 
 }

@@ -6,7 +6,7 @@ import matt.file.construct.mFile
 actual sealed class MFile actual constructor(userPath: String): CommonFile {
 
 
-  actual val userPath = userPath.removePrefix(SEP).removeSuffix(SEP)
+  actual val userPath = userPath.removeSurrounding(SEP)
   actual override val cpath: String = userPath
 
   val names by lazy { cpath.split(SEP) }
