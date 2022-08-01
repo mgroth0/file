@@ -3,29 +3,33 @@
 
 package matt.file
 
+import matt.file.construct.mFile
+import matt.file.construct.toMFile
+import matt.file.ok.JavaIoFileIsOk
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
-import matt.klib.dmap.withStoringDefault
 import matt.klib.str.lower
 import matt.klib.stream.search
-import matt.klib.sys.OS
 import matt.klib.tfx.isInt
 import matt.stream.recurse.recurse
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
+import java.io.IOException
 import java.net.URI
+import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
-import kotlin.annotation.AnnotationTarget.FILE
-import kotlin.reflect.KClass
+import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
+import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
+import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
+import java.nio.file.WatchService
+import java.nio.file.attribute.BasicFileAttributes
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
-@Target(FILE) annotation class JavaIoFileIsOk
-@Target(FILE) annotation class UnnamedPackageIsOk
-
-fun Path.toMFile() = toFile().toMFile()
-fun File.toMFile() = mFile(this)
+internal actual val SEP = MFile.pathSeparator
 
 
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
@@ -64,6 +68,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	  mFile(File.createTempFile(prefix, suffix, directory))
 
 	fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
+
   }
 
   actual override val fname: String = name
@@ -265,184 +270,146 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   }
 
 
-}
+  fun onModifyRecursive(op: ()->Unit) {
 
-fun mFile(file: MFile) = mFile(file.userPath)
-fun mFile(file: File) = mFile(file.path)
-fun mFile(parent: String, child: String) = mFile(File(parent, child))
-fun mFile(parent: MFile, child: String) = mFile(parent.cpath, child)
-fun mFile(uri: URI) = mFile(File(uri))
+	val watchService: WatchService = toPath().fileSystem.newWatchService()
 
-fun KotlinFile.fileAnnotationSimpleClassNames() =
-  useLines {    /*there must be a space after package or UnnamedPackageIsOk will not be detected*/
-	it.takeWhile { "package " !in it }.filter { KotlinFile.FILE_ANNO_LINE_MARKER in it }.map {
-	  it.substringAfter(KotlinFile.FILE_ANNO_LINE_MARKER).substringAfterLast(".").substringBefore("\n")
-		.substringBefore("(")
-		.trim()
-	}.toList()
+	// register all subfolders
+	Files.walkFileTree(this.toPath(), object: SimpleFileVisitor<Path>() {
+	  @Throws(IOException::class) override fun preVisitDirectory(
+		dir: Path,
+		attrs: BasicFileAttributes
+	  ): FileVisitResult {
+		dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+		return FileVisitResult.CONTINUE
+	  }
+	})
+
+	watchService.poll()
+	watchService.poll(100, MILLISECONDS)
+	watchService.take()
+
   }
 
-inline fun <reified A> KotlinFile.hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
 
-private val fileTypes by lazy {
-  mutableMapOf<String, KClass<out MFile>>().withStoringDefault { extension ->
-	MFile::class.sealedSubclasses.flatMap { it.recurse { it.sealedSubclasses } }.firstOrNull {
-	  val b = it.annotations.filterIsInstance<Extensions>().firstOrNull()?.exts?.let { extension in it } ?: false
-	  b
-	} ?: UnknownFile::class
-  }
-}
+  fun size() = ByteSize(Files.size(this.toPath()))
 
-actual fun mFile(userPath: String): MFile {
-  val f = File(userPath)
-  if (f.isDirectory) return Folder(userPath)
-  return fileTypes[f.extension].constructors.first().call(userPath)
-
-  //  val f = File(userPath)
-  //  MFile::class.sealedSubclasses.firstOrNull {
-  //	it.annotations.filterIsInstance<Extensions>().firstOrNull()?.exts?.let { f.extension in it } ?: false
-  //  }
-  //
-  //  when (File(userPath).extension) {
-  //	"json" -> JsonFile(userPath)
-  //	else   -> UnknownFile(userPath)
-  //  }
-}
-
-
-fun MFile.size() = ByteSize(Files.size(this.toPath()))
-
-fun MFile.clearIfTooBigThenAppendText(s: String) {
-  if (size().kb > 10) {
-	write("cleared because over 10KB") /*got an out of memory error when limit was set as 100KB*/
-  }
-  append(s)
-
-}
-
-
-fun MFile.recursiveLastModified(): Long {
-  var greatest = 0L
-  recurse { it.listFiles()?.toList() ?: listOf() }.forEach {
-	greatest = listOf(greatest, it.lastModified()).maxOrNull()!!
-  }
-  return greatest
-}
-
-
-fun MFile.next(): MFile {
-  var ii = 0
-  while (true) {
-	val f = mFile(absolutePath + ii.toString())
-	if (!f.exists()) {
-	  return f
+  fun clearIfTooBigThenAppendText(s: String) {
+	if (size().kb > 10) {
+	  write("cleared because over 10KB") /*got an out of memory error when limit was set as 100KB*/
 	}
-	ii += 1
-  }
-}
+	append(s)
 
-fun MFile.doubleBackupWrite(s: String, thread: Boolean = false) {
-
-  mkparents()
-  createNewFile()
-
-  /*this is important. Extra security is always good.*//*now I'm backing up version before AND after the change. *//*yes, there is redundancy. In some contexts redundancy is good. Safe.*//*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
-
-  val old = readText()
-  val work1 = backupWork(text = old)
-  val work2 = backupWork(text = old)
-
-  val work = {
-	work1()
-	writeText(s)
-	work2()
   }
 
-  if (thread) {
-	kotlin.concurrent.thread {
+
+  fun recursiveLastModified(): Long {
+	var greatest = 0L
+	recurse { it.listFiles()?.toList() ?: listOf() }.forEach {
+	  greatest = listOf(greatest, it.lastModified()).maxOrNull()!!
+	}
+	return greatest
+  }
+
+
+  fun next(): MFile {
+	var ii = 0
+	while (true) {
+	  val f = mFile(absolutePath + ii.toString())
+	  if (!f.exists()) {
+		return f
+	  }
+	  ii += 1
+	}
+  }
+
+  fun doubleBackupWrite(s: String, thread: Boolean = false) {
+
+	mkparents()
+	createNewFile()
+
+	/*this is important. Extra security is always good.*//*now I'm backing up version before AND after the change. *//*yes, there is redundancy. In some contexts redundancy is good. Safe.*//*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
+
+	val old = readText()
+	val work1 = backupWork(text = old)
+	val work2 = backupWork(text = old)
+
+	val work = {
+	  work1()
+	  writeText(s)
+	  work2()
+	}
+
+	if (thread) {
+	  kotlin.concurrent.thread {
+		work()
+	  }
+	} else {
 	  work()
 	}
-  } else {
-	work()
-  }
 
-}
-
-
-internal fun MFile.backupWork(
-  @Suppress("UNUSED_PARAMETER") thread: Boolean = false, text: String? = null
-): ()->Unit {
-
-  require(this.exists()) {
-	"cannot back up ${this}, which does not exist"
   }
 
 
-  val backupFolder = toMFile().parentFile!! + "backups"
-  backupFolder.mkdir()
-  require(backupFolder.isDirectory) { "backupFolder not a dir" }
+  internal fun backupWork(
+	@Suppress("UNUSED_PARAMETER") thread: Boolean = false, text: String? = null
+  ): ()->Unit {
 
-
-  val backupFileWork = backupFolder.getNextSubIndexedFileWork(name, 100)
-
-  if (isDirectory) {
-	return {
-	  val target = backupFileWork()
-	  target.deleteIfExists()
-	  copyRecursively(target)
+	require(this.exists()) {
+	  "cannot back up ${this}, which does not exist"
 	}
+
+
+	val backupFolder = toMFile().parentFile!! + "backups"
+	backupFolder.mkdir()
+	require(backupFolder.isDirectory) { "backupFolder not a dir" }
+
+
+	val backupFileWork = backupFolder.getNextSubIndexedFileWork(name, 100)
+
+	if (isDirectory) {
+	  return {
+		val target = backupFileWork()
+		target.deleteIfExists()
+		copyRecursively(target)
+	  }
+	}
+
+	val realText = text ?: readText()
+
+	return { backupFileWork().text = realText }
+
   }
 
-  val realText = text ?: readText()
+  fun backup(thread: Boolean = false, text: String? = null) {
 
-  return { backupFileWork().text = realText }
-
-}
-
-fun MFile.backup(thread: Boolean = false, text: String? = null) {
-
-  val work = backupWork(thread = thread, text = text)
-  if (thread) {
-	kotlin.concurrent.thread {
+	val work = backupWork(thread = thread, text = text)
+	if (thread) {
+	  kotlin.concurrent.thread {
+		work()
+	  }
+	} else {
 	  work()
 	}
-  } else {
-	work()
-  }
-}
-
-
-fun MFile.recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
-
-val MFile.ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
-val MFile.absolutePathEnforced: String get() = ensureAbsolute.absolutePath
-
-fun String.makeFileSeparatorsCompatibleWith(os: OS) = replace(os.wrongPathSep, os.pathSep)
-
-fun MFile.writeIfDifferent(s: String) {
-  if (doesNotExist || readText() != s) {
-	write(s)
-  }
-}
-
-internal actual val SEP = MFile.pathSeparator
-
-
-actual class MURL actual constructor(path: String): CommonURL {
-
-  override val cpath = path
-
-  val jURL = URI(path).toURL()
-
-  actual val protocol = jURL.protocol
-
-  actual override fun resolve(other: String): MURL {
-	return MURL(jURL.toURI().resolve(other).toString())
   }
 
-  actual override fun toString() = cpath
 
-  actual fun loadText() = jURL.readText()
+  fun recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
+
+  val ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
+  val absolutePathEnforced: String get() = ensureAbsolute.absolutePath
+
+  fun writeIfDifferent(s: String) {
+	if (doesNotExist || readText() != s) {
+	  write(s)
+	}
+  }
+
+
+  fun relativeToOrSelf(base: MFile): MFile = idFile.relativeToOrSelf(base.idFile).toMFile()
+  fun relativeToOrNull(base: MFile): MFile? = idFile.relativeToOrNull(base.idFile)?.toMFile()
+  fun copyTo(target: MFile, overwrite: Boolean = false, bufferSize: Int = DEFAULT_BUFFER_SIZE): MFile =
+	userFile.copyTo(target, overwrite, bufferSize).toMFile()
+
 
 }
-

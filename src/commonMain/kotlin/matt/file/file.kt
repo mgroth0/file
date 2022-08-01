@@ -2,9 +2,11 @@ package matt.file
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import matt.file.construct.mFile
+import matt.file.url.MURL
 import matt.klib.release.Release
 
-internal expect val SEP: String
+
 
 /*file or url*/
 interface FileOrURL {
@@ -31,24 +33,6 @@ fun fileOrURL(s: String): FileOrURL {
 }
 
 
-interface CommonURL: FileOrURL {
-
-  override val cpath: String
-
-  companion object {
-	const val URL_SEP = "/"
-  }
-}
-
-expect class MURL(path: String): CommonURL {
-  val protocol: String
-
-  override fun resolve(other: String): MURL
-
-  final override fun toString(): String
-
-  fun loadText(): String
-}
 
 
 interface CommonFile: FileOrURL {
@@ -67,9 +51,14 @@ interface CommonFile: FileOrURL {
 }
 
 
-expect fun mFile(userPath: String): MFile
+
+
+internal expect val SEP: String
 
 expect sealed class MFile(userPath: String): CommonFile {
+
+
+
   val userPath: String
   override val cpath: String
 
@@ -175,3 +164,5 @@ object GitHub {
 
 
 }
+
+

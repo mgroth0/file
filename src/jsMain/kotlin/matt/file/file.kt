@@ -1,19 +1,6 @@
 package matt.file
 
-import matt.file.req.HTTPRequester
-import matt.file.req.HTTPType.GET
-import org.w3c.dom.url.URL
-
-
-actual fun mFile(userPath: String): MFile {
-
-  /*val f = File(userPath)
-  if (f.isDirectory) return Folder(userPath)
-  return fileTypes[f.extension].constructors.first().call(userPath)*/
-
-  return UnknownFile(userPath)
-
-}
+import matt.file.construct.mFile
 
 
 actual sealed class MFile actual constructor(userPath: String): CommonFile {
@@ -45,22 +32,3 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
 }
 
 internal actual const val SEP = "/"
-
-actual class MURL actual constructor(path: String): CommonURL {
-
-  override val cpath = path
-
-  private val jsURL = URL(path)
-
-  actual val protocol: String get() = jsURL.protocol
-
-  actual override fun resolve(other: String) = MURL(
-	cpath.removeSuffix(CommonURL.URL_SEP) + CommonURL.URL_SEP + other.removePrefix(CommonURL.URL_SEP)
-  )
-
-  actual override fun toString() = cpath
-
-  private val requester by lazy { HTTPRequester(type = GET, this) { responseText } }
-
-  actual fun loadText() = requester.send()
-}

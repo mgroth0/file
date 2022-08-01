@@ -1,7 +1,7 @@
 package matt.file.ext
 
 import matt.file.MFile
-import matt.file.toMFile
+import matt.file.construct.toMFile
 import java.nio.file.FileSystems
 import java.nio.file.Path
 
@@ -15,10 +15,7 @@ import java.nio.file.Path
   kotlin.io.createTempFile(prefix, suffix, directory).toMFile()
 
 
-fun MFile.relativeToOrSelf(base: MFile): MFile = idFile.relativeToOrSelf(base.idFile).toMFile()
-fun MFile.relativeToOrNull(base: MFile): MFile? = idFile.relativeToOrNull(base.idFile)?.toMFile()
-fun MFile.copyTo(target: MFile, overwrite: Boolean = false, bufferSize: Int = DEFAULT_BUFFER_SIZE): MFile =
-  userFile.copyTo(target, overwrite, bufferSize).toMFile()
+
 
 /*fun MFile.copyRecursively(
   target: MFile,
