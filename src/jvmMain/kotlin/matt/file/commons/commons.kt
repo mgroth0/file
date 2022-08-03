@@ -43,7 +43,6 @@ val exceptionFolder = LOG_FOLDER["errorReports"]
 val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
 val WINDOW_GEOMETRY_FOLDER by lazy { DATA_FOLDER["window"] }
-val SETTINGS_FOLDER by lazy { DATA_FOLDER["settings"] }
 val VAL_JSON_FILE by lazy { DATA_FOLDER.resolve("VAL.json") }
 
 fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
