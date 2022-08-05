@@ -157,6 +157,7 @@ object GitHub {
 	return Json.decodeFromString(json)
   }
 
+  fun releasesPageOf(project: String) = MURL("https://github.com/mgroth0/${project.removeSurrounding("/")}/releases")
 
 }
 
