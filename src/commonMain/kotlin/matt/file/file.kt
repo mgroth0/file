@@ -48,8 +48,6 @@ interface CommonFile: FileOrURL {
 }
 
 
-
-
 internal expect val SEP: String
 
 expect sealed class MFile(userPath: String): CommonFile {
@@ -92,6 +90,11 @@ val String.kt get() = KotlinFile("$this.kt")
 interface ShellFile: CommonFile
 @Extensions("sh") class ShellFileImpl(userPath: String): CodeFile(userPath), ShellFile
 @Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
+
+val String.scpt get() = BinaryApplescriptFile("$this.scpt")
+@Extensions("scpt") class BinaryApplescriptFile(userPath: String): ExecutableFile(userPath)
+
+val String.applescript get() = ApplescriptFile("$this.applescript")
 @Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
 
 interface ArchiveFile: CommonFile
