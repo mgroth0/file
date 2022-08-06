@@ -2,36 +2,9 @@ package matt.file.log
 
 import matt.file.LogFile
 import matt.klib.lang.NOT_IMPLEMENTED
-import matt.klib.str.joinWithCommas
+import matt.klib.log.Logger
 import java.io.Flushable
 
-/*inline might matter here. might change the place in the stack where I should look*/
-inline fun <R> decorateGlobal(log: Logger, vararg params: Any?, op: ()->R): R {
-  val t = Thread.currentThread()
-  val stack = t.stackTrace
-  val maybeThisFarBack = stack[2]
-  val m = maybeThisFarBack.methodName
-  log += "starting $m(${params.joinWithCommas()})"
-  val r = op()
-  log += "finished running $m, result=$r"
-  return r
-}
-
-
-open class HasLogger(val log: Logger) {
-  inline fun <R> decorate(vararg params: Any?, op: ()->R): R = decorateGlobal(
-	log,
-	*params,
-	op = op
-  )
-}
-
-
-interface Logger {
-  fun printLog(s: String)
-  operator fun plusAssign(s: Any) = printLog(s.toString())
-  var startTime: Long?
-}
 
 open class AppendLogger internal constructor(
   private val logfile: Appendable? = null,
