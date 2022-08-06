@@ -95,6 +95,7 @@ val OPEN_NEAREST_GRADLE_BUILDSCRIPT = "OPEN_NEAREST_GRADLE_BUILDSCRIPT"
 val OPEN_NEAREST_BUILD_JSON = "OPEN_NEAREST_BUILD_JSON"
 val OPEN_NEARST_KOTLIN_DESCENDENT = "OPEN_NEARST_KOTLIN_DESCENDENT" //val OPEN_NEARST = "OPEN_NEARST"
 //}
+val GET_ACTIVE_FILE = "GET_ACTIVE_FILE"
 
 
 val KJG_NAV_KEY = "NAV"
@@ -116,7 +117,10 @@ enum class IdeProject {
   val subRootFolders by lazy { subRoots.map { folder + it } }
 
 
+
 }
+
+
 
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }

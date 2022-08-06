@@ -2,25 +2,48 @@ package matt.file.log
 
 import matt.file.MFile
 
-open class Logger(private val logfile: MFile? = null) {
+open class Logger(
+  private val logfile: Appendable? = null,
+) {
+
+  constructor(logfile: MFile): this(
+	logfile.also { it.parentFile!!.mkdirs() }.writer()
+  )
+
   init {
-	logfile?.parentFile?.mkdirs()
+	if (logfile is MFile) {
+	  logfile.parentFile?.mkdirs()
+	}
   }
 
   var startTime: Long? = null
-  fun printlog(s: String) {
+  fun printLog(s: String) {
 	val now = System.currentTimeMillis()
 	val dur = startTime?.let { now - it }
 	val line = "[$now][$dur] $s"
-	logfile?.appendText("\n" + line) ?: println(line)
-	if (logfile != null && logfile.readLines().size > 1000) {
-	  logfile.writeText(
+	logfile?.appendLine(line)
+	postLog()
+
+  }
+
+  open fun postLog() = Unit
+
+  operator fun plusAssign(s: Any) = printLog(s.toString())
+}
+
+val SystemOutLogger by lazy { Logger(System.out) }
+val NOPLogger by lazy { Logger(null) }
+
+class LogFileLogger(val file: MFile): Logger(file.writer()) {
+  init {
+	file.parentFile?.mkdirs()
+  }
+
+  override fun postLog() {
+	if (file.readLines().size > 1000) {
+	  file.writeText(
 		"overwriting log file since it has > 1000 lines. Did this because I'm experiencing hanging and thought it might be this huge file. Todo: backup before delete"
 	  )
 	}
   }
-
-  operator fun plusAssign(s: String) = printlog(s)
 }
-
-object DefaultLogger: Logger(logfile = null)

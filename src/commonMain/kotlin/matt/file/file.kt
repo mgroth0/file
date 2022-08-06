@@ -50,6 +50,11 @@ interface CommonFile: FileOrURL {
 
 internal expect val SEP: String
 
+@Serializable
+class SFile(private val path: String) {
+  fun toMFile() = mFile(path)
+}
+
 expect sealed class MFile(userPath: String): CommonFile {
 
   val userPath: String

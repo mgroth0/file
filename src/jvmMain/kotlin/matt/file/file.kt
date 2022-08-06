@@ -16,20 +16,10 @@ import matt.stream.recurse.recurse
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
-import java.io.IOException
 import java.lang.Thread.sleep
 import java.net.URI
-import java.nio.file.FileVisitResult
 import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
-import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
-import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
-import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
-import java.nio.file.WatchService
-import java.nio.file.attribute.BasicFileAttributes
-import java.util.concurrent.TimeUnit.MILLISECONDS
 import kotlin.concurrent.thread
 
 
