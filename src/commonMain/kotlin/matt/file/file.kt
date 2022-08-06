@@ -2,6 +2,7 @@ package matt.file
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.file.url.MURL
 import matt.klib.release.Release
