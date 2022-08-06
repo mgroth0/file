@@ -2,6 +2,7 @@ package matt.file.log
 
 import matt.file.MFile
 import matt.klib.lang.NOT_IMPLEMENTED
+import java.io.Flushable
 
 interface Logger {
   fun printLog(s: String)
@@ -9,13 +10,9 @@ interface Logger {
   var startTime: Long?
 }
 
-open class AppendLogger(
+open class AppendLogger internal constructor(
   private val logfile: Appendable? = null,
 ): Logger {
-
-  constructor(logfile: MFile): this(
-	logfile.also { it.parentFile!!.mkdirs() }.writer()
-  )
 
   init {
 	if (logfile is MFile) {
@@ -29,8 +26,8 @@ open class AppendLogger(
 	val dur = startTime?.let { now - it }
 	val line = "[$now][$dur] $s"
 	logfile?.appendLine(line)
+	(logfile as? Flushable)?.flush()
 	postLog()
-
   }
 
   open fun postLog() = Unit
@@ -41,7 +38,7 @@ open class AppendLogger(
 val SystemOutLogger by lazy { AppendLogger(System.out) }
 val NOPLogger by lazy { AppendLogger(null) }
 
-class LogFileLogger(val file: MFile): AppendLogger(file.writer()) {
+class LogFileLogger(val file: MFile): AppendLogger(file.bufferedWriter().apply {  }) {
   init {
 	file.parentFile?.mkdirs()
   }
