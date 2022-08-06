@@ -5,7 +5,8 @@ import matt.klib.lang.NOT_IMPLEMENTED
 import matt.klib.str.joinWithCommas
 import java.io.Flushable
 
-fun <R> decorateGlobal(log: Logger, vararg params: Any?, op: ()->R): R {
+/*inline might matter here. might change the place in the stack where I should look*/
+inline fun <R> decorateGlobal(log: Logger, vararg params: Any?, op: ()->R): R {
   val t = Thread.currentThread()
   val stack = t.stackTrace
   val maybeThisFarBack = stack[2]
@@ -17,8 +18,8 @@ fun <R> decorateGlobal(log: Logger, vararg params: Any?, op: ()->R): R {
 }
 
 
-open class HasLogger(private val log: Logger) {
-  fun <R> decorate(vararg params: Any?, op: ()->R): R = decorateGlobal<R>(
+open class HasLogger(val log: Logger) {
+  inline fun <R> decorate(vararg params: Any?, op: ()->R): R = decorateGlobal(
 	log,
 	*params,
 	op = op
