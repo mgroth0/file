@@ -1,10 +1,12 @@
 package matt.file.log
 
 import matt.file.MFile
+import matt.klib.lang.NOT_IMPLEMENTED
 
 interface Logger {
   fun printLog(s: String)
   operator fun plusAssign(s: Any) = printLog(s.toString())
+  var startTime: Long?
 }
 
 open class AppendLogger(
@@ -21,7 +23,7 @@ open class AppendLogger(
 	}
   }
 
-  var startTime: Long? = null
+  override var startTime: Long? = null
   override fun printLog(s: String) {
 	val now = System.currentTimeMillis()
 	val dur = startTime?.let { now - it }
@@ -54,6 +56,12 @@ class LogFileLogger(val file: MFile): AppendLogger(file.writer()) {
 }
 
 class MultiLogger(vararg val loggers: Logger): Logger {
+  override var startTime: Long?
+	get() = NOT_IMPLEMENTED
+	set(value) {
+	  loggers.forEach { it.startTime = value }
+	}
+
   override fun printLog(s: String) {
 	loggers.forEach { it.printLog(s) }
   }
