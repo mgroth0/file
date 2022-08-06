@@ -2,7 +2,29 @@ package matt.file.log
 
 import matt.file.LogFile
 import matt.klib.lang.NOT_IMPLEMENTED
+import matt.klib.str.joinWithCommas
 import java.io.Flushable
+
+fun <R> decorateGlobal(log: Logger, vararg params: Any?, op: ()->R): R {
+  val t = Thread.currentThread()
+  val stack = t.stackTrace
+  val maybeThisFarBack = stack[2]
+  val m = maybeThisFarBack.methodName
+  log += "starting $m(${params.joinWithCommas()})"
+  val r = op()
+  log += "finished running $m, result=$r"
+  return r
+}
+
+
+open class HasLogger(private val log: Logger) {
+  fun <R> decorate(vararg params: Any?, op: ()->R): R = decorateGlobal<R>(
+	log,
+	*params,
+	op = op
+  )
+}
+
 
 interface Logger {
   fun printLog(s: String)
@@ -32,7 +54,7 @@ open class AppendLogger internal constructor(
 val SystemOutLogger by lazy { AppendLogger(System.out) }
 val NOPLogger by lazy { AppendLogger(null) }
 
-class LogFileLogger(val file: LogFile): AppendLogger(file.bufferedWriter().apply {  }) {
+class LogFileLogger(val file: LogFile): AppendLogger(file.bufferedWriter().apply { }) {
   init {
 	file.parentFile?.mkdirs()
   }
@@ -46,7 +68,7 @@ class LogFileLogger(val file: LogFile): AppendLogger(file.bufferedWriter().apply
   }
 }
 
-class MultiLogger(vararg val loggers: Logger): Logger {
+class MultiLogger(private vararg val loggers: Logger): Logger {
   override var startTime: Long?
 	get() = NOT_IMPLEMENTED
 	set(value) {
