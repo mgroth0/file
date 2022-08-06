@@ -155,7 +155,9 @@ sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
 @Extensions("yaml", "yml") class YamlFile(userPath: String): DataFile(userPath, binary = false)
 @Extensions("toml") class TomlFile(userPath: String): DataFile(userPath, binary = false)
 
+val String.log get() = LogFile("$this.log")
 @Extensions("log") class LogFile(userPath: String): MFile(userPath)
+val String.txt get() = TxtFile("$this.txt")
 @Extensions("txt") class TxtFile(userPath: String): MFile(userPath)
 @Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
 
