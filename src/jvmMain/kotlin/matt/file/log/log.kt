@@ -1,32 +1,8 @@
 package matt.file.log
 
 import matt.file.LogFile
-import matt.klib.lang.NOT_IMPLEMENTED
-import matt.klib.log.Logger
-import java.io.Flushable
+import matt.klib.log.AppendLogger
 
-
-open class AppendLogger internal constructor(
-  private val logfile: Appendable? = null,
-): Logger {
-
-  override var startTime: Long? = null
-  override fun printLog(s: String) {
-	val now = System.currentTimeMillis()
-	val dur = startTime?.let { now - it }
-	val line = "[$now][$dur] $s"
-	logfile?.appendLine(line)
-	(logfile as? Flushable)?.flush()
-	postLog()
-  }
-
-  open fun postLog() = Unit
-
-
-}
-
-val SystemOutLogger by lazy { AppendLogger(System.out) }
-val NOPLogger by lazy { AppendLogger(null) }
 
 class LogFileLogger(val file: LogFile): AppendLogger(file.bufferedWriter().apply { }) {
   init {
@@ -42,14 +18,3 @@ class LogFileLogger(val file: LogFile): AppendLogger(file.bufferedWriter().apply
   }
 }
 
-class MultiLogger(private vararg val loggers: Logger): Logger {
-  override var startTime: Long?
-	get() = NOT_IMPLEMENTED
-	set(value) {
-	  loggers.forEach { it.startTime = value }
-	}
-
-  override fun printLog(s: String) {
-	loggers.forEach { it.printLog(s) }
-  }
-}
