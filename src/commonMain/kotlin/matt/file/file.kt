@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.file.url.MURL
 import matt.klib.release.Release
+import matt.stream.message.SFile
 
 
 /*file or url*/
@@ -51,10 +52,7 @@ interface CommonFile: FileOrURL {
 
 internal expect val SEP: String
 
-@Serializable
-class SFile(private val path: String) {
-  fun toMFile() = mFile(path)
-}
+fun SFile.toMFile() = mFile(path)
 
 expect sealed class MFile(userPath: String): CommonFile {
 
@@ -98,9 +96,11 @@ interface ShellFile: CommonFile
 @Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
 
 val String.scpt get() = BinaryApplescriptFile("$this.scpt")
+
 @Extensions("scpt") class BinaryApplescriptFile(userPath: String): ExecutableFile(userPath)
 
 val String.applescript get() = ApplescriptFile("$this.applescript")
+
 @Extensions("applescript") class ApplescriptFile(userPath: String): CodeFile(userPath)
 
 interface ArchiveFile: CommonFile
@@ -156,8 +156,11 @@ sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
 @Extensions("toml") class TomlFile(userPath: String): DataFile(userPath, binary = false)
 
 val String.log get() = LogFile("$this.log")
+
 @Extensions("log") class LogFile(userPath: String): MFile(userPath)
+
 val String.txt get() = TxtFile("$this.txt")
+
 @Extensions("txt") class TxtFile(userPath: String): MFile(userPath)
 @Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
 
