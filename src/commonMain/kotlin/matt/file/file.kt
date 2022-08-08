@@ -54,6 +54,8 @@ internal expect val SEP: String
 
 fun SFile.toMFile() = mFile(path)
 
+fun MFile.toSFile() = SFile(userPath)
+
 expect sealed class MFile(userPath: String): CommonFile {
 
   val userPath: String
