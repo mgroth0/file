@@ -2,6 +2,9 @@ package matt.file
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.file.url.MURL
@@ -167,10 +170,26 @@ val String.txt get() = TxtFile("$this.txt")
 @Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
 
 
+@Serializable
+class RateLimitMessage(
+  val message: String,
+  val documentation_url: String
+)
+
 object GitHub {
-  fun releasesOf(project: String): List<Release> {
-	val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").loadText()
-	return Json.decodeFromString(json)
+
+
+  fun releasesOf(project: String): List<Release>? {
+	val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").apply{
+      println("loading ${this}")
+    }.loadText()
+    val idk = Json.decodeFromString<JsonElement>(json)
+//    idk.keys.forEach {
+//      println("key=${it}")
+//    }
+    if (idk is JsonObject && "message" in idk.keys) {
+      return null
+    } else return Json.decodeFromJsonElement<List<Release>>(idk)
   }
 
   fun releasesPageOf(project: String) = MURL("https://github.com/mgroth0/${project.removeSurrounding("/")}/releases")

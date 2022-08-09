@@ -1,6 +1,9 @@
 package matt.file.url
 
 import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse.BodyHandlers
 
 
 actual class MURL actual constructor(path: String): CommonURL {
@@ -17,7 +20,16 @@ actual class MURL actual constructor(path: String): CommonURL {
 
   actual override fun toString() = cpath
 
-  actual fun loadText() = jURL.readText()
+  actual fun loadText(): String {
+
+    /*this doesnt give detailed failure objects with error codes and stuff, which are necessary!*/
+    /*jURL.readText()*/
+
+    val req = HttpRequest.newBuilder().GET().uri(jURL.toURI()).build()
+    val response = HttpClient.newHttpClient().send(req,BodyHandlers.ofString())
+    return response.body()
+
+  }
 
 }
 

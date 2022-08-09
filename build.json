@@ -19,6 +19,16 @@
             "key": "kotlinx-serialization-json"
         },
         {
+            "type": "matt.mstruct.BuildJsonLibDependency",
+            "cfg": "jvmMainImplementation",
+            "key": "kotlinx-serialization-json"
+        },
+        {
+            "type": "matt.mstruct.BuildJsonLibDependency",
+            "cfg": "jsMainImplementation",
+            "key": "kotlinx-serialization-json"
+        },
+        {
             "type": "matt.mstruct.BuildJsonProjectDependency",
             "cfg": "commonMainImplementation",
             "path": ":k:stream"
