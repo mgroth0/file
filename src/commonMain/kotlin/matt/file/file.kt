@@ -138,6 +138,8 @@ sealed class DataFile(userPath: String, val binary: Boolean):
 val String.json get() = JsonFile("$this.json")
 
 @Extensions("json") class JsonFile(userPath: String): DataFile(userPath, binary = false)
+
+val String.cbor get() = CborFile("$this.cbor")
 @Extensions("cbor") class CborFile(userPath: String): DataFile(userPath, binary = true)
 
 sealed interface MarkupLanguageFile: CommonFile
