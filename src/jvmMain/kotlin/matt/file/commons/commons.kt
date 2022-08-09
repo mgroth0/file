@@ -152,4 +152,4 @@ val GitHub.pushReleasesForeverKeyFile by lazy {
   GitHub.baseKeyFolder + ".PushReleasesForever"
 }
 
-val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + "FileAccessCheck.txt" }
+val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
