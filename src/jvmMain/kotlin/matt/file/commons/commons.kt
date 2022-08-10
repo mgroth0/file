@@ -22,7 +22,10 @@ import java.net.URI
 val USER_HOME by lazy { mFile(thisMachine.homeDir) }
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
-val REGISTERED_FOLDER by lazy { USER_HOME[thisMachine.registeredDir] }
+val REGISTERED_FOLDER by lazy {
+  thisMachine.registeredDir?.let { USER_HOME[it] }
+	?: matt.file.ext.createTempDir(prefix = "registered")
+}
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_BIN by lazy { BIN_FOLDER + "bin" }
@@ -89,7 +92,6 @@ object MavenLocalFolder: Folder((USER_HOME + ".m2").userPath) {
 }
 
 
-
 val KJG_NAV_KEY = "NAV"
 
 private val projectFolder by lazy {
@@ -109,10 +111,7 @@ enum class IdeProject {
   val subRootFolders by lazy { subRoots.map { folder + it } }
 
 
-
 }
-
-
 
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
