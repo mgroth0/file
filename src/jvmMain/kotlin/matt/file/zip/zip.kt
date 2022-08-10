@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package matt.file.zip
 
 import matt.file.MFile
