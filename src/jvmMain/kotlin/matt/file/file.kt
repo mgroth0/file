@@ -8,6 +8,7 @@ import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
 import matt.klib.byte.ByteSize
 import matt.klib.commons.thisMachine
+import matt.klib.commons.userHome
 import matt.klib.prop.BasicProperty
 import matt.klib.str.lower
 import matt.klib.stream.search
@@ -136,6 +137,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   fun mkparents() = parentFile!!.mkdirs()
 
+  fun tildeString() = toString().replace(userHome.removeSuffix(SEP), "~")
 
   var text
 	get() = readText()
