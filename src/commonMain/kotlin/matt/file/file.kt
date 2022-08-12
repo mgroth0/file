@@ -97,6 +97,7 @@ val String.kt get() = KotlinFile("$this.kt")
 @Extensions("java") class JavaFile(userPath: String): CodeFile(userPath)
 @Extensions("groovy") class GroovyFile(userPath: String): CodeFile(userPath)
 interface ShellFile: CommonFile
+val String.sh get() = ShellFileImpl("$this.sh")
 @Extensions("sh") class ShellFileImpl(userPath: String): CodeFile(userPath), ShellFile
 @Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
 
