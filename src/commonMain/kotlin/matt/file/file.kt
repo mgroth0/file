@@ -97,7 +97,9 @@ val String.kt get() = KotlinFile("$this.kt")
 @Extensions("java") class JavaFile(userPath: String): CodeFile(userPath)
 @Extensions("groovy") class GroovyFile(userPath: String): CodeFile(userPath)
 interface ShellFile: CommonFile
+
 val String.sh get() = ShellFileImpl("$this.sh")
+
 @Extensions("sh") class ShellFileImpl(userPath: String): CodeFile(userPath), ShellFile
 @Extensions("zshrc", "zsh") class ZshFile(userPath: String): CodeFile(userPath), ShellFile
 
@@ -141,6 +143,7 @@ val String.json get() = JsonFile("$this.json")
 @Extensions("json") class JsonFile(userPath: String): DataFile(userPath, binary = false)
 
 val String.cbor get() = CborFile("$this.cbor")
+
 @Extensions("cbor") class CborFile(userPath: String): DataFile(userPath, binary = true)
 
 sealed interface MarkupLanguageFile: CommonFile
@@ -183,19 +186,20 @@ object GitHub {
 
 
   fun releasesOf(project: String): List<Release>? {
-	val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").apply{
-      println("loading ${this}")
-    }.loadText()
-    val idk = Json.decodeFromString<JsonElement>(json)
-//    idk.keys.forEach {
-//      println("key=${it}")
-//    }
-    if (idk is JsonObject && "message" in idk.keys) {
-      return null
-    } else return Json.decodeFromJsonElement<List<Release>>(idk)
+	val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").apply {
+	  println("loading ${this}")
+	}.loadText()
+	val idk = Json.decodeFromString<JsonElement>(json)
+	//    idk.keys.forEach {
+	//      println("key=${it}")
+	//    }
+	if (idk is JsonObject && "message" in idk.keys) {
+	  return null
+	} else return Json.decodeFromJsonElement<List<Release>>(idk)
   }
 
-  fun releasesPageOf(project: String) = MURL("https://github.com/mgroth0/${project.removeSurrounding("/")}/releases")
+  fun mainPageOf(project: String) = MURL("https://github.com/mgroth0/${project.removeSurrounding("/")}")
+  fun releasesPageOf(project: String) = mainPageOf(project).resolve("releases")
 
 }
 
