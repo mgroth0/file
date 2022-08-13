@@ -31,7 +31,7 @@ import kotlin.concurrent.thread
 actual sealed class MFile actual constructor(actual val userPath: String): File(userPath), CommonFile {
 
 
-  actual override val cpath = path
+  actual override val cpath: String = path
   val userFile = File(this.cpath)
 
 
@@ -54,7 +54,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	val separatorChar by lazy { File.separatorChar }
 	val separator: String by lazy { File.separator }
 	val pathSeparatorChar by lazy { File.pathSeparatorChar }
-	val pathSeparator by lazy { File.pathSeparator }
+	val pathSeparator: String by lazy { File.pathSeparator }
 
 	fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
 	fun createTempFile(prefix: String, suffix: String?, directory: MFile?) =

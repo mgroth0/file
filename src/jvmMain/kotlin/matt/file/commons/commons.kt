@@ -15,6 +15,7 @@ import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OpenMind
 import matt.klib.sys.Windows
 import java.net.URI
+import java.net.URL
 
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
@@ -67,7 +68,7 @@ val LIBS_VERSIONS_ONLINE_URI by lazy {
 	"https://raw.githubusercontent.com/$GITHUB_USERNAME/${COMMON_PROJ_FOLDER.name}/$DEFAULT_GITHUB_BRANCH_NAME/$LIBS_VERSIONS_TOML"
   )
 }
-val LIBS_VERSIONS_ONLINE_URL by lazy { LIBS_VERSIONS_ONLINE_URI.toURL() }
+val LIBS_VERSIONS_ONLINE_URL: URL by lazy { LIBS_VERSIONS_ONLINE_URI.toURL() }
 
 
 //object CommonFileNames {

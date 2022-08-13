@@ -1,6 +1,7 @@
 package matt.file.url
 
 import java.net.URI
+import java.net.URL
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
@@ -10,9 +11,9 @@ actual class MURL actual constructor(path: String): CommonURL {
 
   override val cpath = path
 
-  val jURL = URI(path).toURL()
+  val jURL: URL = URI(path).toURL()
 
-  actual val protocol = jURL.protocol
+  actual val protocol: String = jURL.protocol
 
   actual override fun resolve(other: String): MURL {
 	return MURL(jURL.toURI().resolve(other).toString())
