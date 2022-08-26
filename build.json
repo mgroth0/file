@@ -1,38 +1,36 @@
 {
-    "modType": {
-        "type": "matt.klib.mod.NO_NATIVE"
-    },
-    "dependencies": [
-        {
-            "type": "matt.mstruct.bj.BuildJsonLibDependency",
-            "cfg": "commonMainImplementation",
-            "key": "kt-reflect"
-        },
-        {
-            "type": "matt.mstruct.bj.BuildJsonProjectDependency",
-            "cfg": "commonMainImplementation",
-            "path": ":k:klib"
-        },
-        {
-            "type": "matt.mstruct.bj.BuildJsonLibDependency",
-            "cfg": "commonMainImplementation",
-            "key": "kotlinx-serialization-json"
-        },
-        {
-            "type": "matt.mstruct.bj.BuildJsonLibDependency",
-            "cfg": "jvmMainImplementation",
-            "key": "kotlinx-serialization-json"
-        },
-        {
-            "type": "matt.mstruct.bj.BuildJsonLibDependency",
-            "cfg": "jsMainImplementation",
-            "key": "kotlinx-serialization-json"
-        },
-        {
-            "type": "matt.mstruct.bj.BuildJsonProjectDependency",
-            "cfg": "commonMainImplementation",
-            "path": ":k:stream"
-        }
-    ],
-    "note": null
+  "type" :         "matt.mstruct.bj.NO_NATIVEModule",
+  "dependencies" : [
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
+	  "cfg" :  "commonMainImplementation",
+	  "key" :  "kt-reflect"
+	},
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
+	  "cfg" :  "commonMainImplementation",
+	  "path" : ":k:klib"
+	},
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
+	  "cfg" :  "commonMainImplementation",
+	  "key" :  "kotlinx-serialization-json"
+	},
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
+	  "cfg" :  "jvmMainImplementation",
+	  "key" :  "kotlinx-serialization-json"
+	},
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
+	  "cfg" :  "jsMainImplementation",
+	  "key" :  "kotlinx-serialization-json"
+	},
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
+	  "cfg" :  "commonMainImplementation",
+	  "path" : ":k:stream"
+	}
+  ],
+  "note" :         null
 }
