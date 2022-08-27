@@ -153,3 +153,4 @@ val GitHub.pushReleasesForeverKeyFile by lazy {
 }
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
+fun hasFullFileAccess() = FILE_ACCESS_CHECK_FILE.exists()
