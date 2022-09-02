@@ -1,5 +1,5 @@
 @file:JavaIoFileIsOk
-@file:JvmName("FileJvm")
+@file:JvmName("FileJvmKt")
 
 package matt.file
 

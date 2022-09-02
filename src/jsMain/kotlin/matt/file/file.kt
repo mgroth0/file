@@ -28,6 +28,7 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
   }
 
   actual final override fun toString() = userPath
+  @Suppress("UNUSED_PARAMETER")
   actual var text: String
 	get() = TODO("Not yet implemented")
 	set(value) {
