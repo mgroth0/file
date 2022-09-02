@@ -34,6 +34,10 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
 	  TODO("Not yet implemented")
 	}
 
+  actual fun mkdirs(): Boolean {
+	TODO("Not yet implemented")
+  }
+
 }
 
 internal actual const val SEP = "/"
