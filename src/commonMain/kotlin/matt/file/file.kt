@@ -1,11 +1,11 @@
 package matt.file
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.file.url.MURL
 import matt.klib.release.Release
@@ -72,6 +72,10 @@ expect sealed class MFile(userPath: String): CommonFile {
   override fun resolve(other: String): MFile
 
   final override fun toString(): String
+
+  var text: String
+
+  fun mkdirs(): Boolean
 
 
 }

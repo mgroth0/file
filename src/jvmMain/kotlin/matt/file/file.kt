@@ -424,6 +424,10 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   fun copyTo(target: MFile, overwrite: Boolean = false, bufferSize: Int = DEFAULT_BUFFER_SIZE): MFile =
 	userFile.copyTo(target, overwrite, bufferSize).toMFile()
 
+  actual override fun mkdirs(): Boolean {
+	return super.mkdirs()
+  }
+
 
 }
 

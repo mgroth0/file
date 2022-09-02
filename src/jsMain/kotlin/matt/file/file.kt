@@ -28,6 +28,11 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
   }
 
   actual final override fun toString() = userPath
+  actual var text: String
+	get() = TODO("Not yet implemented")
+	set(value) {
+	  TODO("Not yet implemented")
+	}
 
 }
 
