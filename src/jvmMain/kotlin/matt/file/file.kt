@@ -139,7 +139,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   fun tildeString() = toString().replace(userHome.removeSuffix(SEP), "~")
 
-  var text
+  actual var text
 	get() = readText()
 	set(v) {
 	  mkparents()
