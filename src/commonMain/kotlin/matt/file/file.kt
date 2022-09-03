@@ -20,11 +20,6 @@ interface FileOrURL {
 }
 
 
-
-
-
-
-
 interface CommonFile: FileOrURL {
 
 
@@ -166,33 +161,5 @@ val String.txt get() = TxtFile("$this.txt")
 
 @Extensions("txt") class TxtFile(userPath: String): MFile(userPath)
 @Extensions("DS_Store") class DSStoreFile(userPath: String): DataFile(userPath, binary = false)
-
-
-@Serializable
-class RateLimitMessage(
-  val message: String,
-  val documentation_url: String
-)
-
-object GitHub {
-
-
-  fun releasesOf(project: String): List<Release>? {
-	val json = MURL("https://api.github.com/repos/mgroth0/${project.removeSurrounding("/")}/tags").apply {
-	  println("loading ${this}")
-	}.loadText()
-	val idk = Json.decodeFromString<JsonElement>(json)
-	//    idk.keys.forEach {
-	//      println("key=${it}")
-	//    }
-	if (idk is JsonObject && "message" in idk.keys) {
-	  return null
-	} else return Json.decodeFromJsonElement<List<Release>>(idk)
-  }
-
-  fun mainPageOf(project: String) = MURL("https://github.com/mgroth0/${project.removeSurrounding("/")}")
-  fun releasesPageOf(project: String) = mainPageOf(project).resolve("releases")
-
-}
 
 
