@@ -3,7 +3,6 @@ package matt.file.commons
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import matt.file.Folder
-import matt.file.GitHub
 import matt.file.construct.mFile
 import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
 import matt.klib.commons.GITHUB_USERNAME
@@ -140,17 +139,7 @@ val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Deskto
 
 const val VERSION_TXT_FILE_NAME = "version.txt"
 
-private val GitHub.baseKeyFolder by lazy {
-  REGISTERED_FOLDER + ".key" + ".github"
-}
 
-val GitHub.readPackagesForeverKeyFile by lazy {
-  GitHub.baseKeyFolder + ".ReadPackagesForever"
-}
-
-val GitHub.pushReleasesForeverKeyFile by lazy {
-  GitHub.baseKeyFolder + ".PushReleasesForever"
-}
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
 fun hasFullFileAccess() = FILE_ACCESS_CHECK_FILE.exists()
