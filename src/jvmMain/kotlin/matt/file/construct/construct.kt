@@ -6,7 +6,7 @@ import matt.file.Folder
 import matt.file.MFile
 import matt.file.UnknownFile
 import matt.file.ok.JavaIoFileIsOk
-import matt.klib.dmap.withStoringDefault
+import matt.collect.dmap.withStoringDefault
 import matt.stream.recurse.recurse
 import java.io.File
 import java.net.URI
