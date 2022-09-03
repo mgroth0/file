@@ -8,10 +8,10 @@ import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
 import matt.file.thismachine.thisMachine
 import matt.klib.stream.search
-import matt.klib.tfx.isInt
 import matt.lang.userHome
 import matt.model.byte.ByteSize
 import matt.obs.prop.BasicProperty
+import matt.prim.str.isInt
 import matt.prim.str.lower
 import matt.stream.recurse.recurse
 import java.io.File
