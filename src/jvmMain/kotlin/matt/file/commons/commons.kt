@@ -1,10 +1,10 @@
 package matt.file.commons
 
+
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import matt.file.Folder
 import matt.file.construct.mFile
-import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
 import matt.klib.commons.GITHUB_USERNAME
 import matt.klib.commons.thisMachine
 import matt.klib.constants.ValJson
@@ -16,6 +16,9 @@ import matt.lang.NOT_IMPLEMENTED
 import java.net.URI
 import java.net.URL
 
+
+const val DEFAULT_GITHUB_BRANCH_NAME = "master"
+const val GITHUB_USERNAME = "mgroth0"
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
@@ -138,7 +141,6 @@ const val GRADLEW_NAME = "gradlew"
 val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
 
 const val VERSION_TXT_FILE_NAME = "version.txt"
-
 
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
