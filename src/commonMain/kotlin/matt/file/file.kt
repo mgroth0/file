@@ -21,20 +21,9 @@ interface FileOrURL {
 }
 
 
-fun String.isValidHttpUrl(): Boolean {
-  val url = try {
-	MURL(this)
-  } catch (e: Exception) {
-	return false
-  }
-
-  return url.protocol === "http:" || url.protocol === "https:";
-}
 
 
-fun fileOrURL(s: String): FileOrURL {
-  return if (s.isValidHttpUrl()) MURL(s) else mFile(s)
-}
+
 
 
 interface CommonFile: FileOrURL {
