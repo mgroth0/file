@@ -7,7 +7,7 @@ import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
 import matt.file.thismachine.thisMachine
-import matt.klib.stream.search
+import matt.stream.search
 import matt.lang.userHome
 import matt.model.byte.ByteSize
 import matt.obs.prop.BasicProperty
