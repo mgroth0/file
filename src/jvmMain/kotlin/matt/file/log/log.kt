@@ -1,7 +1,7 @@
 package matt.file.log
 
 import matt.file.LogFile
-import matt.klib.log.AppendLogger
+import matt.log.AppendLogger
 
 
 class LogFileLogger(val file: LogFile): AppendLogger(file.bufferedWriter().apply { }) {
