@@ -6,7 +6,7 @@ package matt.file
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
-import matt.klib.byte.ByteSize
+import matt.model.byte.ByteSize
 import matt.klib.commons.thisMachine
 import matt.klib.commons.userHome
 import matt.klib.stream.search
