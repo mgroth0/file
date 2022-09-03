@@ -3,8 +3,8 @@
 package matt.file.zip
 
 import matt.file.MFile
-import matt.klib.lang.DoesNotAlwaysWork
-import matt.klib.lang.err
+import matt.lang.DoesNotAlwaysWork
+import matt.lang.err
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
