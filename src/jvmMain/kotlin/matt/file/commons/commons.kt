@@ -8,11 +8,11 @@ import matt.klib.commons.DEFAULT_GITHUB_BRANCH_NAME
 import matt.klib.commons.GITHUB_USERNAME
 import matt.klib.commons.thisMachine
 import matt.klib.constants.ValJson
-import matt.lang.NOT_IMPLEMENTED
 import matt.klib.sys.NEW_MAC
 import matt.klib.sys.OLD_MAC
 import matt.klib.sys.OpenMind
 import matt.klib.sys.Windows
+import matt.lang.NOT_IMPLEMENTED
 import java.net.URI
 import java.net.URL
 
