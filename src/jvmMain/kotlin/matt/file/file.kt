@@ -9,7 +9,7 @@ import matt.file.ok.JavaIoFileIsOk
 import matt.file.thismachine.thisMachine
 import matt.lang.userHome
 import matt.log.Logger
-import matt.log.SystemOutLogger
+import matt.log.NOPLogger
 import matt.model.byte.ByteSize
 import matt.obs.prop.BasicProperty
 import matt.prim.str.lower
@@ -184,7 +184,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	else Files.move(this.toPath(), (newParent + this.name).toPath())).toFile().toMFile()
   }
 
-  fun getNextSubIndexedFileWork(filename: String, maxN: Int, log: Logger = SystemOutLogger): ()->MFile {
+  fun getNextSubIndexedFileWork(filename: String, maxN: Int, log: Logger = NOPLogger): ()->MFile {
 	log += "getNextSubIndexedFileWork(filename=$filename,maxN=$maxN) "
 	require(maxN > 0)
 	val firstSubIndexFold = this + "1"
