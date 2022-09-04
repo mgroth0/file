@@ -7,13 +7,14 @@ import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
 import matt.file.thismachine.thisMachine
-import matt.stream.search
 import matt.lang.userHome
+import matt.log.Logger
+import matt.log.SystemOutLogger
 import matt.model.byte.ByteSize
 import matt.obs.prop.BasicProperty
-import matt.prim.str.isInt
 import matt.prim.str.lower
 import matt.stream.recurse.recurse
+import matt.stream.search
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
@@ -183,17 +184,20 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	else Files.move(this.toPath(), (newParent + this.name).toPath())).toFile().toMFile()
   }
 
-  fun getNextSubIndexedFileWork(filename: String, maxN: Int): ()->MFile {
+  fun getNextSubIndexedFileWork(filename: String, maxN: Int, log: Logger = SystemOutLogger): ()->MFile {
+	log += "getNextSubIndexedFileWork(filename=$filename,maxN=$maxN) "
 	require(maxN > 0)
 	val firstSubIndexFold = this + "1"
-	val existingSubIndexFolds = listFiles()!!.filter {
-	  it.name.isInt()
-	}.sorted()
+	log += "firstSubIndexFold=$firstSubIndexFold"
+	val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
+	  f.name.toIntOrNull()?.let { f to it }
+	}.sortedBy { it.second }.map { it.first }
+	log += "existingSubIndexFolds=$existingSubIndexFolds"
 	val nextSubIndexFold =
 	  if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
 		?: this.resolve((existingSubIndexFolds.last().name.toInt() + 1).toString())
 
-
+	log += "nextSubIndexFold=$nextSubIndexFold"
 	//	val myBackupI = (allPreviousSubIndexedFiles.keys.maxOrNull() ?: 0) + 1
 	//
 	//
@@ -210,7 +214,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 		  (it + filename).moveInto(this + (it.parentFile!!.name.toInt() - 1).toString())
 		}
 	  }
-	  nextSubIndexFold + filename
+	  val r = nextSubIndexFold + filename
+	  log += "r=$nextSubIndexFold"
+	  r
 	}
 
   }
@@ -354,7 +360,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	}
 
 	if (thread) {
-	  kotlin.concurrent.thread {
+	  thread {
 		work()
 	  }
 	} else {
@@ -398,7 +404,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 	val work = backupWork(thread = thread, text = text)
 	if (thread) {
-	  kotlin.concurrent.thread {
+	  thread {
 		work()
 	  }
 	} else {
