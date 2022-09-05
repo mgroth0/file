@@ -184,39 +184,38 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	else Files.move(this.toPath(), (newParent + this.name).toPath())).toFile().toMFile()
   }
 
-  fun getNextSubIndexedFileWork(filename: String, maxN: Int, log: Logger = NOPLogger): ()->MFile {
-	log += "getNextSubIndexedFileWork(filename=$filename,maxN=$maxN) "
+  private class IndexFolder(val f: MFile) {
+	val name = f.name
+	val index = name.toInt()
+	operator fun plus(other: MFile) = f + other
+	operator fun plus(other: String) = f + other
+	fun next() = IndexFolder(f.parentFile!! + (index + 1).toString())
+	fun previous() = IndexFolder(f.parentFile!! + (index - 1).toString())
+  }
+
+  fun getNextSubIndexedFileWork(
+	filename: String, maxN: Int, @Suppress("UNUSED_PARAMETER") log: Logger = NOPLogger
+  ): ()->MFile {
+
 	require(maxN > 0)
-	val firstSubIndexFold = this + "1"
-	log += "firstSubIndexFold=$firstSubIndexFold"
+	val firstSubIndexFold = IndexFolder(this + "1")
 	val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
-	  f.name.toIntOrNull()?.let { f to it }
-	}.sortedBy { it.second }.map { it.first }
-	log += "existingSubIndexFolds=$existingSubIndexFolds"
+	  f.name.toIntOrNull()?.let { IndexFolder(f) }
+	}.sortedBy { it.index }
+
 	val nextSubIndexFold =
 	  if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
-		?: this.resolve((existingSubIndexFolds.last().name.toInt() + 1).toString())
+		?: existingSubIndexFolds.last().next()
 
-	log += "nextSubIndexFold=$nextSubIndexFold"
-	//	val myBackupI = (allPreviousSubIndexedFiles.keys.maxOrNull() ?: 0) + 1
-	//
-	//
-	//	allPreviousSubIndexedFiles
-	//	  .filterKeys { it < (myBackupI - n) }
-	//	  .forEach { it.value.delete() }
-
-	//	return backupFolder + "${this.name}.${extraExt}${myBackupI}"
 
 	return {
-	  if (nextSubIndexFold.name.toInt() > maxN) {
+	  if (nextSubIndexFold.index > maxN) {
 		(firstSubIndexFold + filename).deleteRecursively()
 		(existingSubIndexFolds - firstSubIndexFold).forEach {
-		  (it + filename).moveInto(this + (it.parentFile!!.name.toInt() - 1).toString())
+		  (it + filename).moveInto(it.previous().f)
 		}
 	  }
-	  val r = nextSubIndexFold + filename
-	  log += "r=$nextSubIndexFold"
-	  r
+	  nextSubIndexFold + filename
 	}
 
   }
