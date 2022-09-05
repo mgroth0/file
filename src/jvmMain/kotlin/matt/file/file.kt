@@ -198,10 +198,10 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   ): ()->MFile {
 
 	require(maxN > 0)
-	val firstSubIndexFold = IndexFolder(this + "1")
 	val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
 	  f.name.toIntOrNull()?.let { IndexFolder(f) }
 	}.sortedBy { it.index }
+	val firstSubIndexFold = existingSubIndexFolds.first()
 
 	val nextSubIndexFold =
 	  if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
@@ -211,8 +211,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return {
 	  if (nextSubIndexFold.index > maxN) {
 		(firstSubIndexFold + filename).deleteRecursively()
-		(existingSubIndexFolds - firstSubIndexFold).forEach {
-		  (it + filename).moveInto(it.previous().f)
+		(existingSubIndexFolds - firstSubIndexFold).sortedBy { it.index }.forEach {
+		  (it + filename).takeIf { it.exists() }?.moveInto(it.previous().f)
 		}
 	  }
 	  nextSubIndexFold + filename
