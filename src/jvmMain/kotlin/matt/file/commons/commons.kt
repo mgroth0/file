@@ -4,9 +4,9 @@ package matt.file.commons
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import matt.file.Folder
+import matt.file.constants.ValJson
 import matt.file.construct.mFile
 import matt.file.thismachine.thisMachine
-import matt.file.constants.ValJson
 import matt.lang.NOT_IMPLEMENTED
 import matt.model.sys.NEW_MAC
 import matt.model.sys.OLD_MAC
@@ -139,7 +139,7 @@ const val GRADLEW_NAME = "gradlew"
 
 val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
 
-const val VERSION_TXT_FILE_NAME = "version.txt"
+val CHANGELIST_MD = "changelist.md"
 
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
