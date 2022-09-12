@@ -12,7 +12,7 @@ import matt.lang.userHome
 import matt.log.Logger
 import matt.log.NOPLogger
 import matt.model.byte.ByteSize
-import matt.obs.prop.BasicProperty
+import matt.obs.prop.BindableProperty
 import matt.prim.str.lower
 import matt.stream.recurse.recurse
 import java.io.File
@@ -317,8 +317,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return greatest
   }
 
-  fun createRecursiveLastModifiedProp(checkFreqMillis: Long): BasicProperty<Long> {
-	val prop = BasicProperty(recursiveLastModified())
+  fun createRecursiveLastModifiedProp(checkFreqMillis: Long): BindableProperty<Long> {
+	val prop = BindableProperty(recursiveLastModified())
 	thread(isDaemon = true) {
 	  while (true) {
 		val m = recursiveLastModified()
