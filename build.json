@@ -6,11 +6,7 @@
 	  "cfg" :  "commonMainImplementation",
 	  "key" :  "kt-reflect"
 	},
-	{
-	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
-	  "cfg" :  "commonMainImplementation",
-	  "path" : ":k:klib"
-	},
+
 	{
 	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
 	  "cfg" :  "commonMainImplementation",
