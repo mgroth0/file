@@ -3,6 +3,7 @@
 
 package matt.file
 
+import matt.collect.itr.search
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
@@ -14,7 +15,6 @@ import matt.model.byte.ByteSize
 import matt.obs.prop.BasicProperty
 import matt.prim.str.lower
 import matt.stream.recurse.recurse
-import matt.stream.search
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
