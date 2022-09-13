@@ -68,9 +68,15 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   actual override val fname: String = name
 
 
-  fun mkparentsAndCreateNewFile(): Boolean {
-	mkparents()
-	return createNewFile()
+  fun createIfNecessary(defaultText: String? = null): Boolean {
+	var r = false
+	if (mkparents()) r = true
+	if (createNewFile()) r = true
+	if (defaultText != null && text.isBlank()) {
+	  text = defaultText
+	  r = true
+	}
+	return r
   }
 
   actual override fun getParentFile(): MFile? {
