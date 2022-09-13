@@ -357,7 +357,13 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	mkparents()
 	createNewFile()
 
-	/*this is important. Extra security is always good.*//*now I'm backing up version before AND after the change. *//*yes, there is redundancy. In some contexts redundancy is good. Safe.*//*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
+	/*this is important. Extra security is always good.*/
+
+	/*now I'm backing up version before AND after the change. */
+
+	/*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
+
+	/*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
 
 	val old = readText()
 	val work1 = backupWork(text = old)
@@ -369,13 +375,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	  work2()
 	}
 
-	if (thread) {
-	  thread {
-		work()
-	  }
-	} else {
-	  work()
-	}
+	if (thread) thread { work() }
+	else work()
 
   }
 
@@ -417,9 +418,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	  thread {
 		work()
 	  }
-	} else {
-	  work()
-	}
+	} else work()
   }
 
 
