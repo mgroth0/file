@@ -139,7 +139,7 @@ const val GRADLEW_NAME = "gradlew"
 
 val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
 
-val CHANGELIST_MD = "changelist.md"
+const val CHANGELIST_MD = "changelist.md"
 
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
