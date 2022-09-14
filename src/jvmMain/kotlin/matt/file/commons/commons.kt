@@ -107,12 +107,10 @@ private val projectFolder by lazy {
 val subRoots = listOf(/*"KJ",*/"k")
 
 enum class IdeProject {
-  /*not adding more yet because I don't want to select from others in KJG*//*flow, */kcomp, all;
-
+  /*this should be automatically generated*/
+  kcomp, all, dnn, hep;
   val folder by lazy { projectFolder + name }
   val subRootFolders by lazy { subRoots.map { folder + it } }
-
-
 }
 
 
