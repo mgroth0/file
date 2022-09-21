@@ -310,6 +310,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 
   fun size() = ByteSize(Files.size(this.toPath()))
+  fun recursiveSize() = recurse { it.listFilesAsList() }.map { it.size() }.reduce { acc, byteSize -> acc + byteSize }
 
   fun clearIfTooBigThenAppendText(s: String) {
 	if (size().kb > 10) {
