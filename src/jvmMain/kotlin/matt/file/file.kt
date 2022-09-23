@@ -467,7 +467,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   /*will prevent accidental edits of generated code (both me and IntelliJ are making accidental edits)*/
   fun ifDifferentForceWriteThenMakeReadOnlyForEveryone(newText: String) {
-	if (text != newText) {
+	if (doesNotExist || text != newText) {
 	  writableForEveryone = true
 	  writeIfDifferent(text)
 	}
