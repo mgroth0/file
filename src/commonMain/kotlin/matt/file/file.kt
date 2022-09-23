@@ -73,6 +73,8 @@ val String.kt get() = KotlinFile("$this.kt")
   }
 }
 
+val String.py get() = PythonFile("$this.py")
+
 @Extensions("py") class PythonFile(userPath: String): CodeFile(userPath)
 @Extensions("java") class JavaFile(userPath: String): CodeFile(userPath)
 @Extensions("groovy") class GroovyFile(userPath: String): CodeFile(userPath)
