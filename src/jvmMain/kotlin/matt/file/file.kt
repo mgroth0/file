@@ -8,9 +8,11 @@ import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
 import matt.file.thismachine.thisMachine
+import matt.lang.NOT_IMPLEMENTED
 import matt.lang.userHome
 import matt.log.Logger
 import matt.log.NOPLogger
+import matt.log.warn
 import matt.model.byte.ByteSize
 import matt.obs.prop.BindableProperty
 import matt.prim.str.lower
@@ -442,6 +444,34 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   actual override fun mkdirs(): Boolean {
 	return super.mkdirs()
+  }
+
+  var writableForOwner: Boolean
+	get() = NOT_IMPLEMENTED
+	set(value) {
+	  val success = idFile.setWritable(value, true)
+	  if (!success) {
+		warn("failure setting $this writable=$value for owner")
+	  }
+	}
+
+  var writableForEveryone: Boolean
+	get() = NOT_IMPLEMENTED
+	set(value) {
+	  val success = idFile.setWritable(value, false)
+	  if (!success) {
+		warn("failure setting $this writable=$value for everyone")
+	  }
+	}
+
+
+  /*will prevent accidental edits of generated code (both me and IntelliJ are making accidental edits)*/
+  fun ifDifferentForceWriteThenMakeReadOnlyForEveryone(newText: String) {
+	if (text != newText) {
+	  writableForEveryone = true
+	  writeIfDifferent(text)
+	}
+	writableForEveryone = false
   }
 
 
