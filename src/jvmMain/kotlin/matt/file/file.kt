@@ -25,6 +25,7 @@ import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.concurrent.thread
+import kotlin.reflect.KClass
 
 
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
@@ -140,7 +141,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   fun endsWith(other: String): Boolean = idFile.endsWith(other.osFun())
 
 
-  actual fun resolve(other: MFile): MFile = userFile.resolve(other).toMFile()
+  actual fun resolve(other: MFile, cls: KClass<out MFile>?): MFile = userFile.resolve(other).toMFile(cls = cls)
   actual override fun resolve(other: String): MFile = userFile.resolve(other).toMFile()
 
 
@@ -281,8 +282,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return resolve(item.toString())
   }
 
-  operator fun <F: MFile> plus(item: F): F {
-	@Suppress("UNCHECKED_CAST") return resolve(item) as F
+  inline operator fun <reified F: MFile> plus(item: F): F {
+	return resolve(item, F::class) as F
   }
 
 

@@ -28,6 +28,7 @@ val REGISTERED_FOLDER by lazy {
   thisMachine.registeredDir?.let { USER_HOME[it] }
 	?: matt.file.ext.createTempDir(prefix = "registered")
 }
+val DOWNLOADS_FOLDER by lazy { USER_HOME + "Downloads" }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
 val BIN_BIN by lazy { BIN_FOLDER + "bin" }

@@ -2,6 +2,7 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.stream.message.SFile
+import kotlin.reflect.KClass
 
 
 /*file or url*/
@@ -44,7 +45,7 @@ expect sealed class MFile(userPath: String): CommonFile {
 
   override fun getParentFile(): MFile?
 
-  fun resolve(other: MFile): MFile
+  fun resolve(other: MFile,cls: KClass<out MFile>? = null): MFile
   override fun resolve(other: String): MFile
 
   final override fun toString(): String
