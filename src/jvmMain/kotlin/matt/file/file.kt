@@ -175,6 +175,11 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	appendText(s)
   }
 
+  fun createNewFile(child: String) = resolve(child).apply {
+	createNewFile()
+  }.toMFile()
+
+
   fun mkdir(child: String) = resolve(child).apply {
 	mkdir()
   }.toMFile() as Folder
