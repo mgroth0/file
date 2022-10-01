@@ -28,6 +28,9 @@ val REGISTERED_FOLDER by lazy {
   thisMachine.registeredDir?.let { USER_HOME[it] }
 	?: matt.file.ext.createTempDir(prefix = "registered")
 }
+val GBUILD_FOLDER by lazy { REGISTERED_FOLDER + "gbuild" }
+val GBUILD_JAR_FOLDER by lazy { GBUILD_FOLDER + "jar" }
+val GBUILD_DIST_FOLDER by lazy { GBUILD_FOLDER + "dist" }
 val DOWNLOADS_FOLDER by lazy { USER_HOME + "Downloads" }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
@@ -51,7 +54,6 @@ val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
 val WINDOW_GEOMETRY_FOLDER by lazy { DATA_FOLDER["window"] }
 val VAL_JSON_FILE by lazy { DATA_FOLDER.resolve("VAL.json") }
-
 
 
 fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
@@ -113,6 +115,7 @@ val subRoots = listOf(/*"KJ",*/"k")
 enum class IdeProject {
   /*this should be automatically generated*/
   kcomp, all, dnn, hep;
+
   val folder by lazy { projectFolder + name }
   val subRootFolders by lazy { subRoots.map { folder + it } }
 }
