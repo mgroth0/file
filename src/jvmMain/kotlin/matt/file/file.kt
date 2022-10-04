@@ -3,6 +3,7 @@
 
 package matt.file
 
+import matt.collect.itr.filterNotNull
 import matt.collect.itr.search
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
@@ -222,17 +223,17 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
 	  f.name.toIntOrNull()?.let { IndexFolder(f) }
 	}.sortedBy { it.index }
-	val firstSubIndexFold = existingSubIndexFolds.first()
+	val firstSubIndexFold = existingSubIndexFolds.firstOrNull()
 
 	val nextSubIndexFold =
-	  if (existingSubIndexFolds.isEmpty()) firstSubIndexFold else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
+	  if (existingSubIndexFolds.isEmpty()) IndexFolder(resolve("1")) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
 		?: existingSubIndexFolds.last().next()
 
 
 	return {
 	  if (nextSubIndexFold.index > maxN) {
-		(firstSubIndexFold + filename).deleteRecursively()
-		(existingSubIndexFolds - firstSubIndexFold).sortedBy { it.index }.forEach {
+		firstSubIndexFold?.plus(filename)?.deleteRecursively()
+		(existingSubIndexFolds - firstSubIndexFold).filterNotNull().sortedBy { it.index }.forEach {
 		  (it + filename).takeIf { it.exists() }?.moveInto(it.previous().f)
 		}
 	  }
