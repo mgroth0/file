@@ -1,6 +1,7 @@
 package matt.file
 
 import matt.file.construct.mFile
+import matt.model.file.FilePath
 import matt.model.message.SFile
 import matt.model.text.WritableText
 import kotlin.reflect.KClass
@@ -15,7 +16,7 @@ interface FileOrURL {
 }
 
 
-interface CommonFile: FileOrURL {
+interface CommonFile: FileOrURL, FilePath {
 
 
   fun getParentFile(): MFile?
