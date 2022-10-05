@@ -56,7 +56,7 @@ val WINDOW_GEOMETRY_FOLDER by lazy { DATA_FOLDER["window"] }
 val VAL_JSON_FILE by lazy { DATA_FOLDER.resolve("VAL.json") }
 
 
-fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
+//fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
 
 val VAR_JSON_FILE by lazy { DATA_FOLDER["VAR.json"] }
 val SCREENSHOT_FOLDER by lazy { REGISTERED_FOLDER["screenshots"] }
