@@ -16,6 +16,7 @@ import matt.log.NOPLogger
 import matt.log.warn
 import matt.model.byte.ByteSize
 import matt.model.file.IDFile
+import matt.model.file.IDFolder
 import matt.model.ok.JavaIoFileIsOk
 import matt.model.stream.Streamable
 import matt.model.text.WritableText
@@ -491,3 +492,16 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 }
 
 internal actual val SEP = MFile.pathSeparator
+
+
+fun Folder.idFolder() = object: IDFolder {
+  override val idFile: File
+	get() = this@idFolder.idFile
+  override val filePath: String
+	get() = this@idFolder.filePath
+  override val partSep: String
+	get() = this@idFolder.partSep
+
+  override fun isDir() = this@idFolder.isDir()
+
+}
