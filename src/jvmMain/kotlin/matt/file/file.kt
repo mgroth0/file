@@ -15,13 +15,11 @@ import matt.log.Logger
 import matt.log.NOPLogger
 import matt.log.warn
 import matt.model.byte.ByteSize
-import matt.obs.prop.BindableProperty
 import matt.prim.str.lower
 import matt.stream.recurse.recurse
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
-import java.lang.Thread.sleep
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -226,7 +224,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	val firstSubIndexFold = existingSubIndexFolds.firstOrNull()
 
 	val nextSubIndexFold =
-	  if (existingSubIndexFolds.isEmpty()) IndexFolder(resolve("1")) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
+	  if (existingSubIndexFolds.isEmpty()) IndexFolder(
+		resolve("1")
+	  ) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
 		?: existingSubIndexFolds.last().next()
 
 
@@ -260,8 +260,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   infix fun withExtension(ext: String): MFile {
 	return when (this.extension) {
-	  ext  -> this
-	  ""   -> mFile(this.cpath + "." + ext)
+	  ext -> this
+	  "" -> mFile(this.cpath + "." + ext)
 	  else -> mFile(this.cpath.replace("." + this.extension, ".$ext"))
 	}
   }
@@ -340,17 +340,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return greatest
   }
 
-  fun createRecursiveLastModifiedProp(checkFreqMillis: Long): BindableProperty<Long> {
-	val prop = BindableProperty(recursiveLastModified())
-	thread(isDaemon = true) {
-	  while (true) {
-		val m = recursiveLastModified()
-		if (m != prop.value) prop.value = m
-		sleep(checkFreqMillis)
-	  }
-	}
-	return prop
-  }
+
+
+
 
 
   fun next(): MFile {
