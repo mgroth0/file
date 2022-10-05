@@ -42,6 +42,7 @@ fun MFile.toSFile() = SFile(userPath)
 expect sealed class MFile(userPath: String): CommonFile, WritableText {
 
 
+  actual final override val partSep: String
   override val filePath: String
   val userPath: String
   override val cpath: String
@@ -68,10 +69,7 @@ internal annotation class Extensions(vararg val exts: String)
 
 class UnknownFile(userPath: String): MFile(userPath)
 
-open class Folder(userPath: String): MFile(userPath), FolderPath {
-  override val folderPath: String
-	get() = filePath
-}
+open class Folder(userPath: String): MFile(userPath), FolderPath
 
 sealed class CodeFile(userPath: String): MFile(userPath)
 

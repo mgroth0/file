@@ -484,6 +484,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   }
 
 
+  actual override val partSep = SEP
 }
 
 internal actual val SEP = MFile.pathSeparator
