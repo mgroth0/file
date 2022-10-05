@@ -41,7 +41,7 @@ fun MFile.toSFile() = SFile(userPath)
 expect sealed class MFile(userPath: String): CommonFile, WritableText {
 
 
-
+  override val path: String
   val userPath: String
   override val cpath: String
 
