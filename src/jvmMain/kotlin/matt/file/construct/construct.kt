@@ -2,8 +2,6 @@
 
 package matt.file.construct
 
-import matt.collect.dmap.withStoringDefault
-import matt.collect.itr.recurse.recurse
 import matt.file.Extensions
 import matt.file.Folder
 import matt.file.MFile
@@ -52,6 +50,7 @@ actual fun mFile(userPath: String, cls: KClass<out MFile>?): MFile {
 
 
 private val fileTypes by lazy {
+
   mutableMapOf<String, KClass<out MFile>>().withStoringDefault { extension ->
 	MFile::class.sealedSubclasses.flatMap { it.recurse { it.sealedSubclasses } }.firstOrNull {
 	  val b = it.annotations.filterIsInstance<Extensions>().firstOrNull()?.exts?.let { extension in it } ?: false

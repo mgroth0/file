@@ -3,9 +3,6 @@
 
 package matt.file
 
-import matt.collect.itr.filterNotNull
-import matt.collect.itr.recurse.recurse
-import matt.collect.itr.search
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ok.JavaIoFileIsOk
