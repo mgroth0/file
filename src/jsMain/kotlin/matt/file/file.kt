@@ -45,6 +45,8 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile, Writ
 	TODO("Not yet implemented")
   }
 
+  actual override val filePath get() = cpath
+
 }
 
 internal actual const val SEP = "/"
