@@ -2,10 +2,11 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.lang.NOT_IMPLEMENTED
+import matt.model.text.WritableText
 import kotlin.reflect.KClass
 
 
-actual sealed class MFile actual constructor(userPath: String): CommonFile {
+actual sealed class MFile actual constructor(userPath: String): CommonFile, WritableText {
 
 
   actual val userPath = userPath.removeSurrounding(SEP)
@@ -34,7 +35,7 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile {
   actual final override fun toString() = userPath
 
   @Suppress("UNUSED_PARAMETER")
-  actual var text: String
+  actual override var text: String
 	get() = TODO("Not yet implemented")
 	set(value) {
 	  TODO("Not yet implemented")
