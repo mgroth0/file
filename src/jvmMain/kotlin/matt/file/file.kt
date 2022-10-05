@@ -16,6 +16,8 @@ import matt.log.Logger
 import matt.log.NOPLogger
 import matt.log.warn
 import matt.model.byte.ByteSize
+import matt.model.stream.Streamable
+import matt.model.text.WritableText
 import matt.prim.str.lower
 import java.io.File
 import java.io.FileFilter
@@ -31,7 +33,9 @@ import kotlin.reflect.KClass
   I'm actually shocked it took me so long to figure this out*/
 
 /*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
-actual sealed class MFile actual constructor(actual val userPath: String): File(userPath), CommonFile {
+actual sealed class MFile actual constructor(actual val userPath: String): File(userPath),
+																		   CommonFile,
+																		   Streamable {
 
 
   actual override val cpath: String = path
@@ -260,8 +264,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   infix fun withExtension(ext: String): MFile {
 	return when (this.extension) {
-	  ext -> this
-	  "" -> mFile(this.cpath + "." + ext)
+	  ext  -> this
+	  ""   -> mFile(this.cpath + "." + ext)
 	  else -> mFile(this.cpath.replace("." + this.extension, ".$ext"))
 	}
   }
@@ -339,10 +343,6 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	}
 	return greatest
   }
-
-
-
-
 
 
   fun next(): MFile {

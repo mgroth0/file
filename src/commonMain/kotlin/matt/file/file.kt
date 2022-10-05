@@ -2,6 +2,7 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.model.message.SFile
+import matt.model.text.WritableText
 import kotlin.reflect.KClass
 
 
@@ -36,7 +37,7 @@ fun SFile.toMFile() = mFile(path)
 
 fun MFile.toSFile() = SFile(userPath)
 
-expect sealed class MFile(userPath: String): CommonFile {
+expect sealed class MFile(userPath: String): CommonFile, WritableText {
 
   val userPath: String
   override val cpath: String
@@ -50,7 +51,7 @@ expect sealed class MFile(userPath: String): CommonFile {
 
   final override fun toString(): String
 
-  var text: String
+  override var text: String
 
   fun mkdirs(): Boolean
 
