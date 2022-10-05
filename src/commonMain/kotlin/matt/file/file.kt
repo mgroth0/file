@@ -2,6 +2,7 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.model.file.FilePath
+import matt.model.file.FolderPath
 import matt.model.message.SFile
 import matt.model.text.WritableText
 import kotlin.reflect.KClass
@@ -67,7 +68,10 @@ internal annotation class Extensions(vararg val exts: String)
 
 class UnknownFile(userPath: String): MFile(userPath)
 
-open class Folder(userPath: String): MFile(userPath)
+open class Folder(userPath: String): MFile(userPath), FolderPath {
+  override val folderPath: String
+	get() = filePath
+}
 
 sealed class CodeFile(userPath: String): MFile(userPath)
 
