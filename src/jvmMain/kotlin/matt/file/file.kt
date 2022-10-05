@@ -70,7 +70,10 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 	val separatorChar by lazy { File.separatorChar }
 	val separator: String by lazy { File.separator }
+
+	/*these are colons meant to delimit lists of files*/
 	val pathSeparatorChar by lazy { File.pathSeparatorChar }
+	/*these are colons meant to delimit lists of files*/
 	val pathSeparator: String by lazy { File.pathSeparator }
 
 	fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
@@ -491,7 +494,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   actual override val partSep = SEP
 }
 
-internal actual val SEP = MFile.pathSeparator
+internal actual val SEP = MFile.separator
 
 
 fun Folder.idFolder() = object: IDFolder {
