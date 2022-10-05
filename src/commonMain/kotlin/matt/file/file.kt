@@ -1,7 +1,7 @@
 package matt.file
 
 import matt.file.construct.mFile
-import matt.stream.message.SFile
+import matt.model.message.SFile
 import kotlin.reflect.KClass
 
 
