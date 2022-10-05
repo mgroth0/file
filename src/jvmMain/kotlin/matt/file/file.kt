@@ -10,12 +10,13 @@ import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
-import matt.lang.ok.JavaIoFileIsOk
+import matt.model.ok.JavaIoFileIsOk
 import matt.lang.userHome
 import matt.log.Logger
 import matt.log.NOPLogger
 import matt.log.warn
 import matt.model.byte.ByteSize
+import matt.model.file.IDFile
 import matt.model.stream.Streamable
 import matt.model.text.WritableText
 import matt.prim.str.lower
@@ -36,7 +37,8 @@ import kotlin.reflect.KClass
 actual sealed class MFile actual constructor(actual val userPath: String): File(userPath),
 																		   CommonFile,
 																		   Streamable,
-																		   WritableText {
+																		   WritableText,
+																		   IDFile {
 
 
   actual override val filePath: String get() = super.getPath()
