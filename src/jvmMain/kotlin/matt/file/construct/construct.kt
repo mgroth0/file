@@ -3,12 +3,12 @@
 package matt.file.construct
 
 import matt.collect.dmap.withStoringDefault
+import matt.collect.itr.recurse.recurse
 import matt.file.Extensions
 import matt.file.Folder
 import matt.file.MFile
 import matt.file.UnknownFile
 import matt.file.ok.JavaIoFileIsOk
-import matt.stream.recurse.recurse
 import java.io.File
 import java.net.URI
 import java.nio.file.Path
