@@ -39,14 +39,15 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 																		   WritableText {
 
 
-
   actual override val filePath: String get() = super.getPath()
   actual override val cpath: String = path
   val userFile = File(this.cpath)
 
   override fun inputStream() = userFile.inputStream()
 
-
+  actual override fun isDir(): Boolean {
+	return super.isDirectory()
+  }
 
   actual final override fun toString() =
 	super.toString() /*at least one java standard lib class expects File.toString() to just print the path... (Runtime.exec or something like that)*/
