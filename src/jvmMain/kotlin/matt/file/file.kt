@@ -8,9 +8,9 @@ import matt.collect.itr.recurse.recurse
 import matt.collect.itr.search
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
-import matt.file.ok.JavaIoFileIsOk
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
+import matt.lang.ok.JavaIoFileIsOk
 import matt.lang.userHome
 import matt.log.Logger
 import matt.log.NOPLogger
