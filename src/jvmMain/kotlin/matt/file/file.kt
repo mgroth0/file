@@ -118,7 +118,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   fun listFilesAsList() = listFiles()?.toList()
 
   /*must remain lower since in ext.kt i look here for matching with a astring*/
-  internal val idFile = File(osFun(userPath))
+  override val idFile = File(osFun(userPath))
 
 
   override operator fun compareTo(other: File?): Int = idFile.compareTo((other as MFile).idFile)
