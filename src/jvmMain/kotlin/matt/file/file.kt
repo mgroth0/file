@@ -35,7 +35,8 @@ import kotlin.reflect.KClass
 /*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
 actual sealed class MFile actual constructor(actual val userPath: String): File(userPath),
 																		   CommonFile,
-																		   Streamable {
+																		   Streamable,
+																		   WritableText {
 
 
   actual override val cpath: String = path
@@ -157,7 +158,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   fun tildeString() = toString().replace(userHome.removeSuffix(SEP), "~")
 
-  actual var text
+  actual override var text
 	get() = readText()
 	set(v) {
 	  mkparents()
