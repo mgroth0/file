@@ -4,6 +4,7 @@
 package matt.file
 
 import matt.collect.itr.filterNotNull
+import matt.collect.itr.recurse.recurse
 import matt.collect.itr.search
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
@@ -16,7 +17,6 @@ import matt.log.NOPLogger
 import matt.log.warn
 import matt.model.byte.ByteSize
 import matt.prim.str.lower
-import matt.stream.recurse.recurse
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
