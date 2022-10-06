@@ -500,6 +500,8 @@ internal actual val SEP = MFile.separator
 fun Folder.idFolder() = object: IDFolder {
   override val idFile: File
 	get() = this@idFolder.idFile
+  override val fName: String
+	get() = this@idFolder.fName
   override val filePath: String
 	get() = this@idFolder.filePath
   override val partSep: String
