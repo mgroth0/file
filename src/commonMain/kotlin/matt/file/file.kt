@@ -22,7 +22,7 @@ interface CommonFile: FileOrURL, FilePath {
 
   fun getParentFile(): MFile?
   val parent get() = getParentFile()
-  val fname: String
+//  val fName: String
 
 
   //  fun resolve(other: MFile): MFile
@@ -41,13 +41,14 @@ fun MFile.toSFile() = SFile(userPath)
 
 expect sealed class MFile(userPath: String): CommonFile, WritableText {
 
+
   override fun isDir(): Boolean
   override val partSep: String
   override val filePath: String
   val userPath: String
   override val cpath: String
 
-  override val fname: String
+  override val fName: String
 
   override fun getParentFile(): MFile?
 

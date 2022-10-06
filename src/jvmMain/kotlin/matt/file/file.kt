@@ -84,7 +84,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   }
 
-  actual override val fname: String = name
+  actual override val fName: String = name
 
 
   fun createIfNecessary(defaultText: String? = null): Boolean {

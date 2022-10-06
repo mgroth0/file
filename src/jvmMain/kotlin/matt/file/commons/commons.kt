@@ -75,17 +75,7 @@ val LIBS_VERSIONS_ONLINE_URI by lazy {
 val LIBS_VERSIONS_ONLINE_URL: URL by lazy { LIBS_VERSIONS_ONLINE_URI.toURL() }
 
 
-//object CommonFileNames {
-const val DS_STORE = ".DS_Store"
-const val MODULE_INFO_JAVA_NAME = "module-info.java"
-const val BUILDSRC_FILE_NAME = "buildSrc"
-const val BUILD_GRADLE_GROOVY_NAME = "build.gradle"
-const val SETTINGS_GRADLE_GROOVY_NAME = "settings.gradle"
-const val BUILD_GRADLE_KTS_NAME = "build.gradle.kts"
-const val SETTINGS_GRADLE_KTS_NAME = "settings.gradle.kts"
-const val BUILD_JSON_NAME = "build.json" //}
-
-
+/*move to mstruct:file somehow?*/
 object MavenLocalFolder: Folder((USER_HOME + ".m2").userPath) {
   object RepoFolder: Folder(resolve("repository").userPath) {
 	object MattRepo: Folder(resolve("matt").userPath) {

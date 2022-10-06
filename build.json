@@ -18,6 +18,11 @@
 	},
 	{
 	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
+	  "cfg" :  "jvmMainApi",
+	  "path" : ":k:mstruct:file"
+	},
+	{
+	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
 	  "cfg" :  "commonMainApi",
 	  "path" : ":k:log"
 	},

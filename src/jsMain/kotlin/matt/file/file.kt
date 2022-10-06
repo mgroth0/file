@@ -14,7 +14,7 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile, Writ
 
   val names by lazy { cpath.split(SEP) }
 
-  actual override val fname by lazy { names.first() }
+  actual override val fName by lazy { names.first() }
 
   actual fun resolve(other: MFile, cls: KClass<out MFile>?) =
 	if (cls != null) NOT_IMPLEMENTED else mFile(cpath + SEP + other.cpath)
