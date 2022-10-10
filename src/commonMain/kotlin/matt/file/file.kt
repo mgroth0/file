@@ -70,6 +70,12 @@ internal annotation class Extensions(vararg val exts: String)
 
 class UnknownFile(userPath: String): MFile(userPath)
 
+fun MFile.requireIsFolder(): Folder {
+  if (this !is Folder) {
+    error("$this is not a folder. Does it exist?")
+  }
+  return this
+}
 open class Folder(userPath: String): MFile(userPath), FolderPath
 
 sealed class CodeFile(userPath: String): MFile(userPath)
