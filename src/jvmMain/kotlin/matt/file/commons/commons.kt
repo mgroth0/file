@@ -5,6 +5,7 @@ import matt.file.Folder
 import matt.file.construct.mFile
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
+import matt.model.idea.ProjectIdea
 import matt.model.sys.NEW_MAC
 import matt.model.sys.OLD_MAC
 import matt.model.sys.OpenMind
@@ -113,7 +114,7 @@ private val projectFolder by lazy {
 
 val subRoots = listOf(/*"KJ",*/"k")
 
-enum class IdeProject {
+enum class IdeProject: ProjectIdea {
   /*this should be automatically generated*/
   kcomp, all, dnn, hep;
 
