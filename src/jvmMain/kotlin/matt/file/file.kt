@@ -509,4 +509,8 @@ fun Folder.idFolder() = object: IDFolder {
 
   override fun isDir() = this@idFolder.isDir()
 
+  override fun toString(): String {
+	return "[(IDFolder) ${this@idFolder}]"
+  }
+
 }

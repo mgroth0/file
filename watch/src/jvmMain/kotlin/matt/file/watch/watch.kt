@@ -16,7 +16,6 @@ fun MFile.createRecursiveFileSizeProp(checkInterval: Duration) = watchProp(check
   takeIf { exists() }?.recursiveSize()
 }
 
-
 fun MFile.createFileExistsProp(checkInterval: Duration) = watchProp(checkInterval) {
   exists()
 }
