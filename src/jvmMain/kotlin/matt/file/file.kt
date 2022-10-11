@@ -11,9 +11,8 @@ import matt.file.construct.toMFile
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.userHome
-import matt.log.Logger
 import matt.log.NOPLogger
-import matt.log.warn
+import matt.log.reporter.Reporter
 import matt.model.byte.ByteSize
 import matt.model.file.IDFile
 import matt.model.file.IDFolder
@@ -231,7 +230,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   }
 
   fun getNextSubIndexedFileWork(
-	filename: String, maxN: Int, @Suppress("UNUSED_PARAMETER") log: Logger = NOPLogger
+	filename: String,
+	maxN: Int,
+	@Suppress("UNUSED_PARAMETER") log: Reporter = NOPLogger
   ): ()->MFile {
 
 	require(maxN > 0)

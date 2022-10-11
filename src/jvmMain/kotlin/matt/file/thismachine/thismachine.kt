@@ -5,7 +5,7 @@ import matt.lang.hostname
 import matt.lang.os
 import matt.lang.userHome
 import matt.lang.userName
-import matt.log.warn
+import matt.log.warn.warn
 import matt.model.sys.GAMING_WINDOWS
 import matt.model.sys.Machine
 import matt.model.sys.NEW_MAC
@@ -27,9 +27,6 @@ const val OLD_MAC_USERNAME = "matt"
 const val SLURM_NODE_HOSTNAME_PREFIX = "node"
 
 val thisMachine: Machine by lazy {
-
-  //  println("getting matt.kjlib.shell.thismachine.getThisMachine")
-
   when {
 
 
