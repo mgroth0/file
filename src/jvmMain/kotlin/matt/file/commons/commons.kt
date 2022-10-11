@@ -129,14 +129,14 @@ val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 val DNN_FOLDER by lazy {
   when (thisMachine) {
 	NEW_MAC -> IDE_FOLDER + "dnn"
-	OLD_MAC -> REGISTERED_FOLDER["todo/science/dnn"]
+	OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/dnn"]
 	else    -> null
   }
 }
 val HEP_FOLDER by lazy {
   when (thisMachine) {
 	NEW_MAC -> IDE_FOLDER + "hep"
-	OLD_MAC -> REGISTERED_FOLDER["todo/science/hep"]
+	OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/hep"]
 	else    -> null
   }
 }
