@@ -22,7 +22,7 @@ interface CommonFile: FileOrURL, FilePath {
 
   fun getParentFile(): MFile?
   val parent get() = getParentFile()
-//  val fName: String
+  //  val fName: String
 
 
   //  fun resolve(other: MFile): MFile
@@ -72,10 +72,11 @@ class UnknownFile(userPath: String): MFile(userPath)
 
 fun MFile.requireIsFolder(): Folder {
   if (this !is Folder) {
-    error("$this is not a folder. Does it exist?")
+	error("$this is not a folder. Does it exist?")
   }
   return this
 }
+
 open class Folder(userPath: String): MFile(userPath), FolderPath
 
 sealed class CodeFile(userPath: String): MFile(userPath)
@@ -143,6 +144,7 @@ val String.cbor get() = CborFile("$this.cbor")
 
 @Extensions("cbor") class CborFile(userPath: String): DataFile(userPath, binary = true)
 
+
 sealed interface MarkupLanguageFile: CommonFile
 @Extensions("xml") class XMLFile(userPath: String): DataFile(userPath, binary = false), MarkupLanguageFile
 @Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
@@ -155,6 +157,12 @@ sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
 @Extensions("tif", "tiff") class TiffFile(userPath: String): ImageFile(userPath, raster = true)
 @Extensions("svg") class SvgFile(userPath: String): ImageFile(userPath, raster = false)
 
+
+@Extensions("mp3") class MP3File(userPath: String): MFile(userPath)
+
+val String.mp4 get() = MP4File("$this.mp4")
+
+@Extensions("mp4") class MP4File(userPath: String): MFile(userPath)
 
 @Extensions("pdf") class PdfFile(userPath: String): MFile(userPath)
 
