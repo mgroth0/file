@@ -1,6 +1,7 @@
 package matt.file
 
 import matt.file.construct.mFile
+import matt.lang.not
 import matt.model.file.FilePath
 import matt.model.file.FolderPath
 import matt.model.message.SFile
@@ -38,6 +39,26 @@ internal expect val SEP: String
 fun SFile.toMFile() = mFile(path)
 
 fun MFile.toSFile() = SFile(userPath)
+
+class FileExtension(input: String) {
+  init {
+	require(not(input.endsWith(".")))
+  }
+
+  val id = input.removePrefix(".")
+
+  override fun equals(other: Any?): Boolean {
+	return other is FileExtension && other.id == id
+  }
+
+  override fun hashCode(): Int {
+	return id.hashCode()
+  }
+
+  val afterDot = id
+  val withPrefixDot = ".$id"
+
+}
 
 expect sealed class MFile(userPath: String): CommonFile, WritableText {
 
