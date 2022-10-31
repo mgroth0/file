@@ -32,7 +32,6 @@ import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 
 
-
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
   I'm actually shocked it took me so long to figure this out*/
 
@@ -74,9 +73,11 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	val separator: String by lazy { File.separator }
 
 	/*these are colons meant to delimit lists of files*/
+	@Deprecated("I can't think of any use case of this other than to cause bugs")
 	val pathSeparatorChar by lazy { File.pathSeparatorChar }
 
 	/*these are colons meant to delimit lists of files*/
+	@Deprecated("I can't think of any use case of this other than to cause bugs")
 	val pathSeparator: String by lazy { File.pathSeparator }
 
 	fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
@@ -281,6 +282,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   val doesNotExist get() = !exists()
 
+
+  val mExtension = FileExtension(name.substringAfter("."))
 
   infix fun withExtension(ext: String): MFile {
 	return when (this.extension) {
