@@ -42,7 +42,6 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 																		   WritableText,
 																		   IDFile {
 
-
   actual override val filePath: String get() = super.getPath()
   actual override val cpath: String = path
   val userFile = File(this.cpath)
