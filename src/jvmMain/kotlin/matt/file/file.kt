@@ -12,12 +12,12 @@ import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.userHome
 import matt.log.NOPLogger
-import matt.log.reporter.Reporter
 import matt.log.warn.warn
 import matt.model.byte.ByteSize
 import matt.model.file.IDFile
 import matt.model.file.IDFolder
 import matt.model.ok.JavaIoFileIsOk
+import matt.model.report.Reporter
 import matt.model.stream.Streamable
 import matt.model.text.WritableText
 import matt.prim.str.lower
