@@ -45,6 +45,7 @@ val IDE_FOLDER by lazy { REGISTERED_FOLDER["ide"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
 val APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
+val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
 val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 val exceptionFolder = LOG_FOLDER["errorReports"]
@@ -112,7 +113,7 @@ private val projectFolder by lazy {
   }
 }
 
-enum class SubRoots{
+enum class SubRoots {
   k
 }
 
