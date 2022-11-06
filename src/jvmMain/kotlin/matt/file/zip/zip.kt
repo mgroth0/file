@@ -3,7 +3,7 @@
 package matt.file.zip
 
 import matt.file.MFile
-import matt.lang.DoesNotAlwaysWork
+import matt.lang.anno.DoesNotAlwaysWork
 import matt.lang.err
 import java.io.FileInputStream
 import java.io.FileOutputStream
