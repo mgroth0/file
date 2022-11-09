@@ -133,7 +133,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   override operator fun compareTo(other: File?): Int = idFile.compareTo((other as MFile).idFile)
   override fun equals(other: Any?): Boolean {
 	return if (other is File) {
-	  require(other is MFile)
+	  require(other is MFile) {
+		"$other is a File yes, but its not an MFile"
+	  }
 	  idFile == other.idFile
 	} else false
   }
@@ -241,7 +243,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	@Suppress("UNUSED_PARAMETER") log: Reporter = NOPLogger
   ): ()->MFile {
 
-	require(maxN > 0)
+	require(maxN > 0) {
+	  "maxN should be greater than 0 but it is ${maxN}"
+	}
 	val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
 	  f.name.toIntOrNull()?.let { IndexFolder(f) }
 	}.sortedBy { it.index }
@@ -299,7 +303,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   val unixNlink get() = Files.getAttribute(this.toPath(), "unix:nlink").toString().toInt()
   val hardLinkCount get() = unixNlink
 
-
+  operator fun get(item: MFile): MFile {
+	return resolve(item)
+  }
   operator fun get(item: String): MFile {
 	return resolve(item)
   }

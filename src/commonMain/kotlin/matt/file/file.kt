@@ -42,7 +42,9 @@ fun MFile.toSFile() = SFile(userPath)
 
 class FileExtension(input: String) {
   init {
-	require(not(input.endsWith(".")))
+	require(not(input.endsWith("."))) {
+	  "file extension \"${input}\" should not end with a dot"
+	}
   }
 
   val id = input.removePrefix(".")
