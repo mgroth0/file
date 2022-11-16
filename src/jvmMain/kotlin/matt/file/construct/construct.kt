@@ -4,6 +4,7 @@ package matt.file.construct
 
 import matt.collect.dmap.withStoringDefault
 import matt.collect.itr.recurse.recurse
+import matt.collect.map.lazyMap
 import matt.file.Extensions
 import matt.file.Folder
 import matt.file.MFile
@@ -13,6 +14,7 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 fun Path.toMFile() = toFile().toMFile()
 fun File.toMFile(cls: KClass<out MFile>? = null) = mFile(this, cls = cls)
@@ -26,18 +28,21 @@ fun mFile(uri: URI) = mFile(File(uri))
 
 
 actual fun mFile(userPath: String, cls: KClass<out MFile>?): MFile {
+
+
   if (cls != null && cls != MFile::class) {
 
-	val constructor = cls.constructors.first()
-//	val oldA = constructor.isAccessible
-//	constructor.isAccessible = true
+	val constructor = constructorsByCls[cls]
+	//	val oldA = constructor.isAccessible
+	//	constructor.isAccessible = true
 	val r = constructor.call(userPath)
-//	constructor.isAccessible = oldA
+	//	constructor.isAccessible = oldA
 	return r
   }
+
   val f = File(userPath)
   if (f.isDirectory) return Folder(userPath)
-  return fileTypes[f.extension].constructors.first().call(userPath)
+  return constructors[f.extension].call(userPath)
 
   //  val f = File(userPath)
   //  MFile::class.sealedSubclasses.firstOrNull {
@@ -58,4 +63,12 @@ private val fileTypes by lazy {
 	  b
 	} ?: UnknownFile::class
   }
+}
+private val constructors = lazyMap<String, KFunction<MFile>> {
+  /*surprisingly getting constructors is expensive so this could have a huge performance benefit and even solve some bugs maybe*/
+  constructorsByCls[fileTypes[it]]
+}
+private val constructorsByCls = lazyMap<KClass<out MFile>, KFunction<MFile>> {
+  /*surprisingly getting constructors is expensive so this could have a huge performance benefit and even solve some bugs maybe*/
+  it.constructors.first()
 }

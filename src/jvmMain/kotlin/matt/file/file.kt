@@ -24,6 +24,7 @@ import matt.prim.str.lower
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
+import java.io.RandomAccessFile
 import java.net.URI
 import java.nio.channels.FileChannel
 import java.nio.file.Files
@@ -87,7 +88,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   }
 
-  fun channel() = FileChannel.open(this.toPath())
+  fun readChannel() = FileChannel.open(this.toPath())
+  fun writeChannel() = RandomAccessFile(this, "rw").channel
 
   actual override val fName: String = name
 
@@ -306,6 +308,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   operator fun get(item: MFile): MFile {
 	return resolve(item)
   }
+
   operator fun get(item: String): MFile {
 	return resolve(item)
   }

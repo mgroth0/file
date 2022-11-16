@@ -1,11 +1,14 @@
 package matt.file.commons
 
 
+import matt.file.FileExtension
 import matt.file.Folder
 import matt.file.construct.mFile
+import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
 import matt.model.idea.ProjectIdea
+import matt.model.sys.Mac
 import matt.model.sys.NEW_MAC
 import matt.model.sys.OLD_MAC
 import matt.model.sys.OpenMind
@@ -43,7 +46,7 @@ val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
 val APPLESCRIPT_FOLDER by lazy { (BIN_FOLDER + "applescript").apply { mkdirs() } }
 val IDE_FOLDER by lazy { REGISTERED_FOLDER["ide"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
-val APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
+val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
 val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
@@ -156,3 +159,28 @@ const val CHANGELIST_MD = "changelist.md"
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
 fun hasFullFileAccess() = FILE_ACCESS_CHECK_FILE.exists()
+
+
+val TEST_DATA_FOLDER = DATA_FOLDER["test"]
+val DEEPHYS_TEST_DATA_FOLDER = TEST_DATA_FOLDER["deephys"]
+val DEEPHYS_TEST_RESULT_JSON = DEEPHYS_TEST_DATA_FOLDER["results.json"]
+val DEEPHYS_RAM_SAMPLES_FOLDER = DEEPHYS_TEST_DATA_FOLDER["ram"]
+val RAM_NUMBERED_FILES by lazy {
+  NumberedFiles(
+	folder = DEEPHYS_RAM_SAMPLES_FOLDER,
+	prefix = "",
+	extension = FileExtension("json")
+  )
+}
+
+val USER_LIB_FOLDER by lazy {
+  require(thisMachine is Mac)
+  USER_HOME["Library"]
+}
+
+val APP_SUPPORT_FOLDER by lazy {
+  require(thisMachine is Mac)
+  USER_LIB_FOLDER["Application Support"]
+}
+
+val THREE_D_PRINT_FOLDER = REGISTERED_FOLDER["3dprint"]
