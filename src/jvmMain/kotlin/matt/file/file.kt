@@ -313,6 +313,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return resolve(item)
   }
 
+//  fun toJavaIOFile() = java.io.File(user)
+
   operator fun get(item: Char): MFile {
 	return resolve(item.toString())
   }
