@@ -7,12 +7,12 @@ import matt.file.construct.mFile
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
-import matt.model.idea.ProjectIdea
-import matt.model.sys.Mac
-import matt.model.sys.NEW_MAC
-import matt.model.sys.OLD_MAC
-import matt.model.sys.OpenMind
-import matt.model.sys.Windows
+import matt.model.code.idea.ProjectIdea
+import matt.model.code.sys.Mac
+import matt.model.code.sys.NEW_MAC
+import matt.model.code.sys.OLD_MAC
+import matt.model.code.sys.OpenMind
+import matt.model.code.sys.Windows
 import java.net.URI
 import java.net.URL
 

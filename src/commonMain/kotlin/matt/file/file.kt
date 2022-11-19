@@ -2,10 +2,10 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.lang.not
-import matt.model.file.FilePath
-import matt.model.file.FolderPath
-import matt.model.message.SFile
-import matt.model.text.WritableText
+import matt.model.data.file.FilePath
+import matt.model.data.file.FolderPath
+import matt.model.data.message.SFile
+import matt.model.obj.text.WritableText
 import kotlin.reflect.KClass
 
 

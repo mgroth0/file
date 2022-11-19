@@ -9,7 +9,7 @@ import matt.file.Extensions
 import matt.file.Folder
 import matt.file.MFile
 import matt.file.UnknownFile
-import matt.model.ok.JavaIoFileIsOk
+import matt.model.code.ok.JavaIoFileIsOk
 import java.io.File
 import java.net.URI
 import java.nio.file.Path

@@ -6,21 +6,21 @@ import matt.lang.os
 import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
-import matt.model.sys.GAMING_WINDOWS
-import matt.model.sys.Machine
-import matt.model.sys.NEW_MAC
-import matt.model.sys.OLD_MAC
-import matt.model.sys.OpenMind
-import matt.model.sys.OpenMindDTN
-import matt.model.sys.OpenMindMainHeadNode
-import matt.model.sys.OpenMindSlurmNode
-import matt.model.sys.Polestar
-import matt.model.sys.UnknownIntelMacMachine
-import matt.model.sys.UnknownLinuxMachine
-import matt.model.sys.UnknownSiliconMacMachine
-import matt.model.sys.UnknownWindowsMachine
-import matt.model.sys.VagrantLinuxMachine
-import matt.model.sys.WINDOWS_11_PAR_WORK
+import matt.model.code.sys.GAMING_WINDOWS
+import matt.model.code.sys.Machine
+import matt.model.code.sys.NEW_MAC
+import matt.model.code.sys.OLD_MAC
+import matt.model.code.sys.OpenMind
+import matt.model.code.sys.OpenMindDTN
+import matt.model.code.sys.OpenMindMainHeadNode
+import matt.model.code.sys.OpenMindSlurmNode
+import matt.model.code.sys.Polestar
+import matt.model.code.sys.UnknownIntelMacMachine
+import matt.model.code.sys.UnknownLinuxMachine
+import matt.model.code.sys.UnknownSiliconMacMachine
+import matt.model.code.sys.UnknownWindowsMachine
+import matt.model.code.sys.VagrantLinuxMachine
+import matt.model.code.sys.WINDOWS_11_PAR_WORK
 
 const val NEW_MAC_USERNAME = "matthewgroth"
 const val OLD_MAC_USERNAME = "matt"

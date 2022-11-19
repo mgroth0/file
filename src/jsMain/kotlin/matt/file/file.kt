@@ -2,7 +2,7 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.lang.NOT_IMPLEMENTED
-import matt.model.text.WritableText
+import matt.model.obj.text.WritableText
 import kotlin.reflect.KClass
 
 
