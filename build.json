@@ -7,11 +7,6 @@
 	  "key" :  "kt-reflect"
 	},
 	{
-	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
-	  "cfg" :  "commonMainImplementation",
-	  "key" :  "kotlinx-serialization-json"
-	},
-	{
 	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
 	  "cfg" :  "commonMainApi",
 	  "path" : ":k:collect"
@@ -20,11 +15,6 @@
 	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
 	  "cfg" :  "commonMainApi",
 	  "path" : ":k:log"
-	},
-	{
-	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
-	  "cfg" :  "commonMainApi",
-	  "path" : ":k:model"
 	}
   ]
 }
