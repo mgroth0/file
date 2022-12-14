@@ -19,8 +19,8 @@ import matt.model.data.byte.ByteSize
 import matt.model.data.file.IDFile
 import matt.model.data.file.IDFolder
 import matt.model.obj.stream.Streamable
+import matt.model.obj.text.MightExistAndWritableText
 import matt.model.obj.text.WritableBytes
-import matt.model.obj.text.WritableText
 import matt.prim.str.lower
 import java.io.File
 import java.io.FileFilter
@@ -41,7 +41,7 @@ import kotlin.reflect.KClass
 actual sealed class MFile actual constructor(actual val userPath: String): File(userPath),
 																		   CommonFile,
 																		   Streamable,
-																		   WritableText,
+																		   MightExistAndWritableText,
 																		   WritableBytes,
 																		   IDFile {
 
