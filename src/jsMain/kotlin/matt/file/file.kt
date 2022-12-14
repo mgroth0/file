@@ -2,11 +2,12 @@ package matt.file
 
 import matt.file.construct.mFile
 import matt.lang.NOT_IMPLEMENTED
+import matt.model.obj.text.WritableBytes
 import matt.model.obj.text.WritableText
 import kotlin.reflect.KClass
 
 
-actual sealed class MFile actual constructor(userPath: String): CommonFile, WritableText {
+actual sealed class MFile actual constructor(userPath: String): CommonFile, WritableText, WritableBytes {
 
 
   actual val userPath = userPath.removeSurrounding(SEP)
@@ -50,6 +51,12 @@ actual sealed class MFile actual constructor(userPath: String): CommonFile, Writ
   actual override fun isDir(): Boolean {
 	TODO("Not yet implemented")
   }
+
+  actual override var bytes: ByteArray
+	get() = TODO("Not yet implemented")
+	set(value) {
+	  TODO("Not yet implemented")
+	}
 }
 
 internal actual const val SEP = "/"

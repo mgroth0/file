@@ -19,6 +19,7 @@ import matt.model.data.byte.ByteSize
 import matt.model.data.file.IDFile
 import matt.model.data.file.IDFolder
 import matt.model.obj.stream.Streamable
+import matt.model.obj.text.WritableBytes
 import matt.model.obj.text.WritableText
 import matt.prim.str.lower
 import java.io.File
@@ -41,6 +42,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 																		   CommonFile,
 																		   Streamable,
 																		   WritableText,
+																		   WritableBytes,
 																		   IDFile {
 
   actual override val filePath: String get() = super.getPath()
@@ -185,6 +187,12 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	  mkparents()
 	  writeText(v)
 	}
+
+  actual override var bytes: ByteArray
+	get() = readBytes()
+	  set(value) {
+		writeBytes(value)
+	  }
 
 
   fun isBlank() = bufferedReader().run {
@@ -514,6 +522,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 
   actual override val partSep = SEP
+
+
 }
 
 internal actual val SEP = MFile.separator

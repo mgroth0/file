@@ -5,6 +5,7 @@ import matt.lang.not
 import matt.model.data.file.FilePath
 import matt.model.data.file.FolderPath
 import matt.model.data.message.SFile
+import matt.model.obj.text.WritableBytes
 import matt.model.obj.text.WritableText
 import kotlin.reflect.KClass
 
@@ -62,7 +63,7 @@ class FileExtension(input: String) {
 
 }
 
-expect sealed class MFile(userPath: String): CommonFile, WritableText {
+expect sealed class MFile(userPath: String): CommonFile, WritableText, WritableBytes {
 
 
   override fun isDir(): Boolean
@@ -81,6 +82,7 @@ expect sealed class MFile(userPath: String): CommonFile, WritableText {
   final override fun toString(): String
 
   override var text: String
+  override var bytes: ByteArray
 
   fun mkdirs(): Boolean
 
