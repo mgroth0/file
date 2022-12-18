@@ -19,6 +19,7 @@ import java.net.URL
 
 const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 const val GITHUB_USERNAME = "mgroth0"
+const val GITHUB_ORG_NAME = "mjgroth"
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
