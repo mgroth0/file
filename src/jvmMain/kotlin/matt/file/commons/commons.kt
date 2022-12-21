@@ -13,13 +13,10 @@ import matt.model.code.sys.NEW_MAC
 import matt.model.code.sys.OLD_MAC
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.Windows
-import java.net.URI
-import java.net.URL
 
 
 const val DEFAULT_GITHUB_BRANCH_NAME = "master"
-const val GITHUB_USERNAME = "mgroth0"
-const val GITHUB_ORG_NAME = "mjgroth"
+
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
@@ -76,12 +73,7 @@ val LIBS_VERSIONS_TOML by lazy { "libs.versions.toml" }
 val COMMON_LIBS_VERSIONS_FILE by lazy { COMMON_PROJ_FOLDER + LIBS_VERSIONS_TOML }
 val GRADLE_PROPERTIES_FILE_NAME by lazy { "gradle.properties" }
 
-val LIBS_VERSIONS_ONLINE_URI by lazy {
-  URI(
-	"https://raw.githubusercontent.com/$GITHUB_USERNAME/${COMMON_PROJ_FOLDER.name}/$DEFAULT_GITHUB_BRANCH_NAME/$LIBS_VERSIONS_TOML"
-  )
-}
-val LIBS_VERSIONS_ONLINE_URL: URL by lazy { LIBS_VERSIONS_ONLINE_URI.toURL() }
+
 
 
 //object CommonFileNames {

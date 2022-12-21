@@ -45,6 +45,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 																		   WritableBytes,
 																		   IDFile {
 
+  val url get() = toURI().toURL()
+
   actual override val filePath: String get() = super.getPath()
   actual override val cpath: String = path
   val userFile = File(this.cpath)
@@ -114,6 +116,8 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   override fun getAbsoluteFile(): MFile {
 	return super.getAbsoluteFile().toMFile()
   }
+
+  fun listNonDSStoreFiles() = listFiles()?.filter { it !is DSStoreFile }
 
   override fun listFiles(): Array<MFile>? {
 	return super.listFiles()?.map { it.toMFile() }?.toTypedArray()
@@ -215,9 +219,11 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   fun createNewFile(child: String, text: String) = createNewFile(child).also { it.text = text }
 
 
+
   fun mkdir(child: String) = resolve(child).apply {
 	mkdir()
   }.toMFile().requireIsFolder()
+  fun mkdir(int: Int) = mkdir(int.toString())
 
   fun write(s: String, mkparents: Boolean = true) {
 	if (mkparents) mkparents()

@@ -176,6 +176,8 @@ val String.cbor get() = CborFile("$this.cbor")
 sealed interface MarkupLanguageFile: CommonFile
 @Extensions("xml") class XMLFile(userPath: String): DataFile(userPath, binary = false), MarkupLanguageFile
 @Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
+
+val String.md get() = MarkDownFile("$this.md")
 @Extensions("md") class MarkDownFile(userPath: String): MFile(userPath), MarkupLanguageFile
 
 

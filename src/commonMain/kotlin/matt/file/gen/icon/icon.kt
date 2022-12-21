@@ -1,4 +1,4 @@
- 
+
 package matt.file.gen.icon
 
 enum class Icon() {
@@ -17,5 +17,5 @@ enum class Icon() {
     clock_b(),
     loop(),
     slide(),
-    folder();
+    folder(),
 }
