@@ -23,8 +23,7 @@ interface CommonFile: FileOrURL, FilePath {
 
 
   fun getParentFile(): MFile?
-  val parent get() = getParentFile()
-  //  val fName: String
+  val parent get() = getParentFile() //  val fName: String
 
 
   //  fun resolve(other: MFile): MFile
@@ -100,6 +99,7 @@ class UnknownFile(userPath: String): MFile(userPath)
 
 fun MFile.requireIsFolder(): Folder {
   if (this !is Folder) {
+	if (this.isDir()) return Folder(userPath)
 	error("$this is not a folder. Does it exist?")
   }
   return this
@@ -159,9 +159,10 @@ sealed class DiskImageFile(userPath: String): MFile(userPath)
 @Extensions("dmg") class DmgFile(userPath: String): DiskImageFile(userPath)
 
 
-sealed class DataFile(userPath: String, val binary: Boolean):
-  MFile(userPath) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath)
-//sealed class BinaryDataFile(userPath: String): DataFile(userPath)
+sealed class DataFile(
+  userPath: String,
+  val binary: Boolean
+): MFile(userPath) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath) //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
 
 
 val String.json get() = JsonFile("$this.json")
@@ -178,6 +179,7 @@ sealed interface MarkupLanguageFile: CommonFile
 @Extensions("html") class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
 
 val String.md get() = MarkDownFile("$this.md")
+
 @Extensions("md") class MarkDownFile(userPath: String): MFile(userPath), MarkupLanguageFile
 
 
