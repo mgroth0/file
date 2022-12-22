@@ -25,7 +25,7 @@ const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
   thisMachine.registeredDir?.let { USER_HOME[it] }
-	?: matt.file.ext.createTempDir(prefix = "registered")
+  ?: matt.file.ext.createTempDir(prefix = "registered")
 }
 val GBUILD_FOLDER by lazy { REGISTERED_FOLDER + "gbuild" }
 val GBUILD_JAR_FOLDER by lazy { GBUILD_FOLDER + "jar" }
@@ -66,14 +66,8 @@ val SCREENSHOT_FOLDER by lazy { REGISTERED_FOLDER["screenshots"] }
 val CACHE_FOLDER by lazy { REGISTERED_FOLDER["cache"] }
 val KJG_DATA_FOLDER by lazy { DATA_FOLDER.resolve("kjg") } //}
 
-//val REL_ROOT_FILES by lazy { mFile("RootFiles") }
-val LIBS_VERSIONS_TOML by lazy { "libs.versions.toml" }
-//val REL_LIBS_VERSIONS_TOML by lazy { REL_ROOT_FILES + LIBS_VERSIONS_TOML }
 
-val COMMON_LIBS_VERSIONS_FILE by lazy { COMMON_PROJ_FOLDER + LIBS_VERSIONS_TOML }
 val GRADLE_PROPERTIES_FILE_NAME by lazy { "gradle.properties" }
-
-
 
 
 //object CommonFileNames {
