@@ -27,6 +27,7 @@ import java.io.FileFilter
 import java.io.FilenameFilter
 import java.io.RandomAccessFile
 import java.net.URI
+import java.net.URL
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -551,4 +552,9 @@ fun Folder.idFolder() = object: IDFolder {
 	return "[(IDFolder) ${this@idFolder}]"
   }
 
+}
+
+interface URLLike {
+  fun toJavaURL(): URL
+  fun toJavaURI(): URI
 }
