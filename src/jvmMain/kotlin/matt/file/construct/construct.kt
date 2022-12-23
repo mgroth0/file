@@ -28,31 +28,16 @@ fun mFile(uri: URI) = mFile(File(uri))
 
 
 actual fun mFile(userPath: String, cls: KClass<out MFile>?): MFile {
-
-
   if (cls != null && cls != MFile::class) {
-
 	val constructor = constructorsByCls[cls]
-	//	val oldA = constructor.isAccessible
-	//	constructor.isAccessible = true
-	val r = constructor.call(userPath)
-	//	constructor.isAccessible = oldA
-	return r
+	return constructor.call(userPath)
   }
-
   val f = File(userPath)
-  if (f.isDirectory) return Folder(userPath)
   return constructors[f.extension].call(userPath)
+}
 
-  //  val f = File(userPath)
-  //  MFile::class.sealedSubclasses.firstOrNull {
-  //	it.annotations.filterIsInstance<Extensions>().firstOrNull()?.exts?.let { f.extension in it } ?: false
-  //  }
-  //
-  //  when (File(userPath).extension) {
-  //	"json" -> JsonFile(userPath)
-  //	else   -> UnknownFile(userPath)
-  //  }
+fun mFolder(userPath: String): Folder {
+  return Folder(userPath)
 }
 
 
