@@ -184,10 +184,17 @@ val String.md get() = MarkDownFile("$this.md")
 
 
 sealed class ImageFile(userPath: String, val raster: Boolean): MFile(userPath)
+
+val String.png get() = PngFile("$this.png")
 @Extensions("png") class PngFile(userPath: String): ImageFile(userPath, raster = true)
 @Extensions("jpg,jpeg") class JpgFile(userPath: String): ImageFile(userPath, raster = true)
 @Extensions("tif", "tiff") class TiffFile(userPath: String): ImageFile(userPath, raster = true)
+
+val String.svg get() = SvgFile("$this.svg")
 @Extensions("svg") class SvgFile(userPath: String): ImageFile(userPath, raster = false)
+
+val String.icns get() = ICNSFile("$this.icns")
+@Extensions("icns") class ICNSFile(userPath: String): ImageFile(userPath, raster = true)
 
 
 @Extensions("mp3") class MP3File(userPath: String): MFile(userPath)

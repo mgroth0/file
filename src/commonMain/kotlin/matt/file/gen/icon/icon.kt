@@ -7,6 +7,7 @@ enum class Icon() {
     icon(),
     code(),
     mail(),
+    BRAINSTORMicon(),
     intellij(),
     lit(),
     chunk(),
