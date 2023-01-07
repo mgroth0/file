@@ -178,3 +178,5 @@ val THREE_D_PRINT_FOLDER = REGISTERED_FOLDER["3dprint"]
 val DEFAULT_GIT_FILE_NAME = ".git"
 val GIT_IGNORE_FILE_NAME = ".gitignore"
 val GIT_MODULES_FILE_NAME = ".gitmodules"
+
+val LICENSE_FILE_NAME = "LICENSE.md"
