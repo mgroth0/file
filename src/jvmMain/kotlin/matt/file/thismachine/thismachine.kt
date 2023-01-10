@@ -46,7 +46,11 @@ val thisMachine: Machine by lazy {
 		OpenMind(
 		  node = it, sImgLoc = System.getenv("SINGULARITY_CONTAINER"), slurmJobID = System.getenv("SLURM_JOBID")
 		)
-	  } ?: UnknownLinuxMachine(hostname = hostname, homeDir = userHome)
+	  } ?: UnknownLinuxMachine(hostname = hostname, homeDir = userHome, isAarch64 = lazy {
+		ProcessBuilder("dpkg", "--print-architecture").start().inputStream.readAllBytes()
+		  .decodeToString()
+		  .trim() in listOf("arm64", "aarch64")
+	  })
 	}
 
 
