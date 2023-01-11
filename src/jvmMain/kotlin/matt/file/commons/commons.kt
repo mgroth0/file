@@ -7,7 +7,9 @@ import matt.file.construct.mFile
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
+import matt.lang.anno.SeeURL
 import matt.model.code.idea.ProjectIdea
+import matt.model.code.sys.Linux
 import matt.model.code.sys.Mac
 import matt.model.code.sys.NEW_MAC
 import matt.model.code.sys.OLD_MAC
@@ -171,6 +173,19 @@ val USER_LIB_FOLDER by lazy {
 val APP_SUPPORT_FOLDER by lazy {
   require(thisMachine is Mac)
   USER_LIB_FOLDER["Application Support"]
+}
+
+
+val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
+  when (thisMachine) {
+	is Mac   -> APP_SUPPORT_FOLDER
+	is Linux -> {
+	  @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
+	  USER_HOME[".matt"].also { it.mkdir() }
+	}
+
+	else     -> TODO()
+  }
 }
 
 val THREE_D_PRINT_FOLDER = REGISTERED_FOLDER["3dprint"]
