@@ -8,6 +8,7 @@ import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.SeeURL
+import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
 import matt.model.code.sys.Linux
 import matt.model.code.sys.Mac
@@ -178,13 +179,15 @@ val APP_SUPPORT_FOLDER by lazy {
 
 val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
   when (thisMachine) {
-	is Mac   -> APP_SUPPORT_FOLDER
-	is Linux -> {
+	is Mac     -> APP_SUPPORT_FOLDER
+	is Linux   -> {
 	  @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
 	  USER_HOME[".matt"].also { it.mkdir() }
 	}
 
-	else     -> TODO()
+	is Windows -> {
+	  mFile("C:\\Users\\${userName}\\AppData\\Roaming")
+	}
   }
 }
 
