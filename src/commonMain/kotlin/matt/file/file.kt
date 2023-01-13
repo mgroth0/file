@@ -196,6 +196,9 @@ val String.svg get() = SvgFile("$this.svg")
 val String.icns get() = ICNSFile("$this.icns")
 @Extensions("icns") class ICNSFile(userPath: String): ImageFile(userPath, raster = true)
 
+val String.ico get() = ICOFile("$this.ico")
+@Extensions("ico") class ICOFile(userPath: String): ImageFile(userPath, raster = true)
+
 
 @Extensions("mp3") class MP3File(userPath: String): MFile(userPath)
 
