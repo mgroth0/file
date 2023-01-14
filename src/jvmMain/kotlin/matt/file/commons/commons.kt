@@ -198,3 +198,5 @@ val GIT_IGNORE_FILE_NAME = ".gitignore"
 val GIT_MODULES_FILE_NAME = ".gitmodules"
 
 val LICENSE_FILE_NAME = "LICENSE.md"
+
+const val CERTIFICATES_FOLDER_NAME = "cer"
