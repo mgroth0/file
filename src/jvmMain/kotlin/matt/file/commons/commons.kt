@@ -61,7 +61,7 @@ private val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 
 class LogContext(parentFolder: MFile) {
   val logFolder by lazy {
-	parentFolder["log"].apply { mkdir() }
+	parentFolder["log"].apply { mkdirs() }
   }
   val exceptionFolder by lazy {
 	logFolder["errorReports"]
@@ -200,7 +200,6 @@ val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
 	  @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
 	  USER_HOME[".matt"].also { it.mkdir() }
 	}
-
 	is Windows -> {
 	  mFile("C:\\Users\\${userName}\\AppData\\Roaming")
 	}
