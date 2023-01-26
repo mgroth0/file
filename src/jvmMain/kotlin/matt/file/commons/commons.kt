@@ -3,6 +3,7 @@ package matt.file.commons
 
 import matt.file.FileExtension
 import matt.file.Folder
+import matt.file.MFile
 import matt.file.construct.mFile
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
@@ -54,8 +55,23 @@ val YOUR_KIT_APP_FOLDER by lazy {
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
 val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
-val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
-val exceptionFolder = LOG_FOLDER["errorReports"]
+
+
+private val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
+
+class LogContext(parentFolder: MFile) {
+  val logFolder by lazy {
+	parentFolder["log"].apply { mkdir() }
+  }
+  val exceptionFolder by lazy {
+	logFolder["errorReports"]
+  }
+}
+
+val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
+
+
+private val exceptionFolder = LOG_FOLDER["errorReports"]
 val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
 val WINDOW_GEOMETRY_FOLDER by lazy { DATA_FOLDER["window"] }
