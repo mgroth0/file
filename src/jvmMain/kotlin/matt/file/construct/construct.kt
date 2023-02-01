@@ -2,7 +2,7 @@
 
 package matt.file.construct
 
-import matt.collect.dmap.withStoringDefault
+import matt.collect.map.dmap.withStoringDefault
 import matt.collect.itr.recurse.recurse
 import matt.collect.map.lazyMap
 import matt.file.Extensions
