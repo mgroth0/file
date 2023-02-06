@@ -71,10 +71,8 @@ class LogContext(parentFolder: MFile) {
 val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
 
 
-private val exceptionFolder = LOG_FOLDER["errorReports"]
 val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
-val VAL_JSON_FILE by lazy { DATA_FOLDER.resolve("VAL.json") }
 
 
 //fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
