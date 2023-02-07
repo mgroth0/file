@@ -4,12 +4,12 @@
   "js" :           "LIB",
   "dependencies" : [
 	{
-	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
+	  "type" : "Project",
 	  "cfg" :  "commonMainApi",
 	  "path" : ":k:collect"
 	},
 	{
-	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
+	  "type" : "Project",
 	  "cfg" :  "commonMainApi",
 	  "path" : ":k:log"
 	}
