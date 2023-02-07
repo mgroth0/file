@@ -6,7 +6,6 @@ enum class Icon() {
     finder(),
     icon(),
     code(),
-    icon(),
     mail(),
     BRAINSTORMicon(),
     icon2(),
