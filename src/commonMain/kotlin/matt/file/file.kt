@@ -212,7 +212,7 @@ class CborFile(userPath: String): DataFile(userPath, binary = true)
 
 sealed interface MarkupLanguageFile: CommonFile
 class XMLFile(userPath: String): DataFile(userPath, binary = false), MarkupLanguageFile
-=class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
+class HTMLFile(userPath: String): MFile(userPath), MarkupLanguageFile
 
 val String.md get() = MarkDownFile("$this.md")
 
