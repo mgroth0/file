@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 actual sealed class MFile actual constructor(userPath: String): CommonFile, MightExistAndWritableText, WritableBytes {
 
 
-  actual val userPath = userPath.removeSurrounding(SEP)
+  actual val userPath = userPath.removeSuffix(SEP)
   actual override val cpath: String = userPath
 
   val names by lazy { cpath.split(SEP) }
