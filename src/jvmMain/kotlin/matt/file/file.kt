@@ -482,6 +482,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   val absolutePathEnforced: String get() = ensureAbsolute.absolutePath
 
   fun writeIfDifferent(s: String) {
+	mkparents()
 	if (doesNotExist || readText() != s) {
 	  write(s)
 	}
