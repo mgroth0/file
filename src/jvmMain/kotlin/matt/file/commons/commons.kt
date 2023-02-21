@@ -25,6 +25,9 @@ const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
 val USER_HOME by lazy { mFile(thisMachine.homeDir) }
+
+
+
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
