@@ -8,7 +8,6 @@ import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
 import matt.log.warn.warnOnce
-import matt.model.code.sys.GAMING_WINDOWS
 import matt.model.code.sys.Machine
 import matt.model.code.sys.NEW_MAC
 import matt.model.code.sys.OLD_MAC
@@ -22,7 +21,6 @@ import matt.model.code.sys.UnknownLinuxMachine
 import matt.model.code.sys.UnknownSiliconMacMachine
 import matt.model.code.sys.UnknownWindowsMachine
 import matt.model.code.sys.VagrantLinuxMachine
-import matt.model.code.sys.WINDOWS_11_PAR_WORK
 
 const val NEW_MAC_USERNAME = "matthewgroth"
 const val OLD_MAC_USERNAME = "matt"
@@ -85,8 +83,9 @@ val thisMachine: Machine by lazy {
 	}
 
 	else                 -> when (userName) {
-	  "mgrot"        -> GAMING_WINDOWS
-	  "matthewgroth" -> WINDOWS_11_PAR_WORK
+	  /*THESE MADE ME TESTING ON WINDOWS MACHINES LESS RELIABLE*/
+	  /*"mgrot"        -> GAMING_WINDOWS*/
+	  /*"matthewgroth" -> WINDOWS_11_PAR_WORK*/
 	  else           -> UnknownWindowsMachine()
 	}
   }
