@@ -215,3 +215,6 @@ val GIT_MODULES_FILE_NAME = ".gitmodules"
 val LICENSE_FILE_NAME = "LICENSE.md"
 
 const val CERTIFICATES_FOLDER_NAME = "cer"
+
+const val DEFAULT_FAV_ICO_NAME = "default.ico"
+const val FAV_ICO_NAME = "favicon.ico"
