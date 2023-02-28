@@ -44,7 +44,22 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 																		   Streamable,
 																		   MightExistAndWritableText,
 																		   WritableBytes,
-																		   IDFile {
+																		   IDFile,
+																		   Appendable {
+
+  override fun append(c: Char): java.lang.Appendable {
+	this.appendText(c.toString())
+	return this
+  }
+
+  override fun append(csq: CharSequence): java.lang.Appendable {
+	this.appendText(csq.toString())
+	return this
+  }
+
+  override fun append(csq: CharSequence, start: Int, end: Int): java.lang.Appendable {
+	return append(csq.subSequence(start, end))
+  }
 
   val url get() = toURI().toURL()
 
@@ -154,10 +169,10 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   operator fun contains(other: MFile): Boolean {
 	return other != this && other.search({
-	  takeIf {
-		it == this@MFile
-	  }
-	}, { parentFile?.toMFile() }) != null
+										   takeIf {
+											 it == this@MFile
+										   }
+										 }, { parentFile?.toMFile() }) != null
   }
 
 
@@ -195,9 +210,9 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   actual override var bytes: ByteArray
 	get() = readBytes()
-	  set(value) {
-		writeBytes(value)
-	  }
+	set(value) {
+	  writeBytes(value)
+	}
 
 
   fun isBlank() = bufferedReader().run {
@@ -220,18 +235,16 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
   fun createNewFile(child: String, text: String) = createNewFile(child).also { it.text = text }
 
 
-
   fun mkdir(child: String) = resolve(child).apply {
 	mkdir()
   }.toMFile().requireIsFolder()
+
   fun mkdir(int: Int) = mkdir(int.toString())
 
   fun write(s: String, mkparents: Boolean = true) {
 	if (mkparents) mkparents()
 	writeText(s)
   }
-
-
 
 
   val abspath: String
@@ -274,7 +287,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	  if (existingSubIndexFolds.isEmpty()) IndexFolder(
 		resolve("1")
 	  ) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
-		?: existingSubIndexFolds.last().next()
+			 ?: existingSubIndexFolds.last().next()
 
 
 	return {
@@ -330,7 +343,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 	return resolve(item)
   }
 
-//  fun toJavaIOFile() = java.io.File(user)
+  //  fun toJavaIOFile() = java.io.File(user)
 
   operator fun get(item: Char): MFile {
 	return resolve(item.toString())

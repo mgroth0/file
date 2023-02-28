@@ -27,7 +27,6 @@ const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 val USER_HOME by lazy { mFile(thisMachine.homeDir) }
 
 
-
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
@@ -200,6 +199,7 @@ val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
 	  @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
 	  USER_HOME[".matt"].also { it.mkdir() }
 	}
+
 	is Windows -> {
 	  mFile("C:\\Users\\${userName}\\AppData\\Roaming")
 	}
