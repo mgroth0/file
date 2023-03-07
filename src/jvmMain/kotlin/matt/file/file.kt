@@ -91,6 +91,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
 	val separatorChar by lazy { File.separatorChar }
 	val separator: String by lazy { File.separator }
+	val unixSeperator: String = "/"
 
 	/*these are colons meant to delimit lists of files*/
 	@Deprecated("I can't think of any use case of this other than to cause bugs")
