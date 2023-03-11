@@ -21,6 +21,7 @@ import matt.model.data.file.IDFolder
 import matt.model.obj.stream.Streamable
 import matt.model.obj.text.MightExistAndWritableText
 import matt.model.obj.text.WritableBytes
+import matt.prim.str.ensureSuffix
 import matt.prim.str.lower
 import java.io.File
 import java.io.FileFilter
@@ -179,6 +180,7 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 
   /*MUST KEEP THESE METHODS HERE AND NOT AS EXTENSIONS IN ORDER TO ROBUSTLY OVERRIDE KOTLIN.STDLIB'S DEFAULT FILE EXTENSIONS. OTHERWISE, I'D HAVE TO MICROMANAGE MY IMPORTS TO MAKE SURE I'M IMPORTING THE CORRECT EXTENSIONS*/
 
+  fun wildcardChildrenPath() = path.ensureSuffix(MFile.separator) + "*"
 
   fun relativeTo(base: MFile): MFile = idFile.relativeTo(base.idFile).toMFile()
 
