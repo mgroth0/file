@@ -68,3 +68,4 @@ private val constructorsByCls = lazyMap<KClass<out MFile>, Constructor<*>> {
   it.java.constructors.first()
   /*it.constructors.first()*/
 }
+
