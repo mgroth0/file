@@ -218,3 +218,4 @@ const val CERTIFICATES_FOLDER_NAME = "cer"
 
 const val DEFAULT_FAV_ICO_NAME = "default.ico"
 const val FAV_ICO_NAME = "favicon.ico"
+const val DOCS_FOLDER_NAME = "docs"
