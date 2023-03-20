@@ -7,6 +7,7 @@ enum class Icon() {
     icon(),
     code(),
     mail(),
+    gmail(),
     BRAINSTORMicon(),
     icon2(),
     intellij(),
