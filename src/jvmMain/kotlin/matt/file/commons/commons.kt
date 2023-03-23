@@ -93,6 +93,7 @@ val GRADLE_PROPERTIES_FILE_NAME by lazy { "gradle.properties" }
 
 const val DS_STORE = ".DS_Store"
 const val MODULE_INFO_JAVA_NAME = "module-info.java"
+const val ANDROID_MANIFEST_NAME = "AndroidManifest.xml"
 const val BUILDSRC_FILE_NAME = "buildSrc"
 const val BUILD_GRADLE_GROOVY_NAME = "build.gradle"
 const val SETTINGS_GRADLE_GROOVY_NAME = "settings.gradle"
