@@ -88,6 +88,10 @@ expect sealed class MFile(userPath: String): CommonFile, MightExistAndWritableTe
 
   override fun exists(): Boolean
 
+  fun listFilesAsList(): List<MFile>?
+
+  fun deleteIfExists()
+
 
 }
 

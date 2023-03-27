@@ -40,512 +40,513 @@ import kotlin.reflect.KClass
   I'm actually shocked it took me so long to figure this out*/
 
 /*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
-actual sealed class MFile actual constructor(actual val userPath: String): File(userPath),
-																		   CommonFile,
-																		   Streamable,
-																		   MightExistAndWritableText,
-																		   WritableBytes,
-																		   IDFile,
-																		   Appendable {
+actual sealed class MFile actual constructor(actual val userPath: String) : File(userPath),
+    CommonFile,
+    Streamable,
+    MightExistAndWritableText,
+    WritableBytes,
+    IDFile,
+    Appendable {
 
-  override fun append(c: Char): java.lang.Appendable {
-	this.appendText(c.toString())
-	return this
-  }
+    override fun append(c: Char): java.lang.Appendable {
+        this.appendText(c.toString())
+        return this
+    }
 
-  override fun append(csq: CharSequence): java.lang.Appendable {
-	this.appendText(csq.toString())
-	return this
-  }
+    override fun append(csq: CharSequence): java.lang.Appendable {
+        this.appendText(csq.toString())
+        return this
+    }
 
-  override fun append(csq: CharSequence, start: Int, end: Int): java.lang.Appendable {
-	return append(csq.subSequence(start, end))
-  }
+    override fun append(csq: CharSequence, start: Int, end: Int): java.lang.Appendable {
+        return append(csq.subSequence(start, end))
+    }
 
-  val url get() = toURI().toURL()
+    val url get() = toURI().toURL()
 
-  actual override val filePath: String get() = super.getPath()
-  actual override val cpath: String = path
-  val userFile = File(this.cpath)
+    actual override val filePath: String get() = super.getPath()
+    actual override val cpath: String = path
+    val userFile = File(this.cpath)
 
-  override fun inputStream() = userFile.inputStream()
+    override fun inputStream() = userFile.inputStream()
 
-  actual override fun isDir(): Boolean {
-	return super.isDirectory()
-  }
+    actual override fun isDir(): Boolean {
+        return super.isDirectory()
+    }
 
-  actual final override fun toString() =
-	super.toString() /*at least one java standard lib class expects File.toString() to just print the path... (Runtime.exec or something like that)*/
+    actual final override fun toString() =
+        super.toString() /*at least one java standard lib class expects File.toString() to just print the path... (Runtime.exec or something like that)*/
 
 
-  constructor(file: MFile): this(file.userPath)
-  constructor(file: File): this(file.path)
-  constructor(parent: String, child: String): this(File(parent, child))
-  constructor(parent: MFile, child: String): this(parent.cpath, child)
-  constructor(uri: URI): this(File(uri))
+    constructor(file: MFile) : this(file.userPath)
+    constructor(file: File) : this(file.path)
+    constructor(parent: String, child: String) : this(File(parent, child))
+    constructor(parent: MFile, child: String) : this(parent.cpath, child)
+    constructor(uri: URI) : this(File(uri))
 
-  companion object {
+    companion object {
 
-	val osFun by lazy { if (thisMachine.caseSensitive) { s: String -> s } else { s: String -> s.lower() } }
+        val osFun by lazy { if (thisMachine.caseSensitive) { s: String -> s } else { s: String -> s.lower() } }
 
-	fun String.osFun() = osFun(this)
+        fun String.osFun() = osFun(this)
 
-	val separatorChar by lazy { File.separatorChar }
-	val separator: String by lazy { File.separator }
-	val unixSeperator: String = "/"
+        val separatorChar by lazy { File.separatorChar }
+        val separator: String by lazy { File.separator }
+        val unixSeperator: String = "/"
 
-	/*these are colons meant to delimit lists of files*/
-	@Deprecated("I can't think of any use case of this other than to cause bugs")
-	val pathSeparatorChar by lazy { File.pathSeparatorChar }
+        /*these are colons meant to delimit lists of files*/
+        @Deprecated("I can't think of any use case of this other than to cause bugs")
+        val pathSeparatorChar by lazy { File.pathSeparatorChar }
 
-	/*these are colons meant to delimit lists of files*/
-	@Deprecated("I can't think of any use case of this other than to cause bugs")
-	val pathSeparator: String by lazy { File.pathSeparator }
+        /*these are colons meant to delimit lists of files*/
+        @Deprecated("I can't think of any use case of this other than to cause bugs")
+        val pathSeparator: String by lazy { File.pathSeparator }
 
-	fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
-	fun createTempFile(prefix: String, suffix: String?, directory: MFile?) =
-	  mFile(File.createTempFile(prefix, suffix, directory))
+        fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
+        fun createTempFile(prefix: String, suffix: String?, directory: MFile?) =
+            mFile(File.createTempFile(prefix, suffix, directory))
 
-	fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
+        fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
 
-  }
+    }
 
-  fun readChannel() = FileChannel.open(this.toPath())
-  fun writeChannel() = RandomAccessFile(this, "rw").channel
+    fun readChannel() = FileChannel.open(this.toPath())
+    fun writeChannel() = RandomAccessFile(this, "rw").channel
 
-  actual override val fName: String = name
+    actual override val fName: String = name
 
 
-  fun createIfNecessary(defaultText: String? = null): Boolean {
-	var r = false
-	if (mkparents()) r = true
-	if (createNewFile()) r = true
-	if (defaultText != null && text.isBlank()) {
-	  text = defaultText
-	  r = true
-	}
-	return r
-  }
+    fun createIfNecessary(defaultText: String? = null): Boolean {
+        var r = false
+        if (mkparents()) r = true
+        if (createNewFile()) r = true
+        if (defaultText != null && text.isBlank()) {
+            text = defaultText
+            r = true
+        }
+        return r
+    }
 
-  actual override fun getParentFile(): MFile? {
-	return super.getParentFile()?.toMFile()
-  }
+    actual override fun getParentFile(): MFile? {
+        return super.getParentFile()?.toMFile()
+    }
 
-  override fun getAbsoluteFile(): MFile {
-	return super.getAbsoluteFile().toMFile()
-  }
+    override fun getAbsoluteFile(): MFile {
+        return super.getAbsoluteFile().toMFile()
+    }
 
-  fun listNonDSStoreFiles() = listFiles()?.filter { it !is DSStoreFile }
+    fun listNonDSStoreFiles() = listFiles()?.filter { it !is DSStoreFile }
 
-  override fun listFiles(): Array<MFile>? {
-	return super.listFiles()?.map { it.toMFile() }?.toTypedArray()
-  }
+    override fun listFiles(): Array<MFile>? {
+        return super.listFiles()?.map { it.toMFile() }?.toTypedArray()
+    }
 
-  override fun listFiles(fiilenameFilter: FilenameFilter?): Array<MFile>? {
-	return super.listFiles(fiilenameFilter)?.map { it.toMFile() }?.toTypedArray()
-  }
+    override fun listFiles(fiilenameFilter: FilenameFilter?): Array<MFile>? {
+        return super.listFiles(fiilenameFilter)?.map { it.toMFile() }?.toTypedArray()
+    }
 
-  override fun listFiles(fileFilter: FileFilter?): Array<MFile>? {
-	return super.listFiles(fileFilter)?.map { it.toMFile() }?.toTypedArray()
-  }
+    override fun listFiles(fileFilter: FileFilter?): Array<MFile>? {
+        return super.listFiles(fileFilter)?.map { it.toMFile() }?.toTypedArray()
+    }
 
-  fun listFilesOrEmpty() = listFiles() ?: arrayOf()
-  fun listFilesAsList() = listFiles()?.toList()
+    fun listFilesOrEmpty() = listFiles() ?: arrayOf()
+    actual fun listFilesAsList() = listFiles()?.toList()
 
-  /*must remain lower since in ext.kt i look here for matching with a astring*/
-  override val idFile = File(osFun(userPath))
+    /*must remain lower since in ext.kt i look here for matching with a astring*/
+    /*MUST REMAIN LAZY because for android osFun contains a "network" op that blocks the main thread and throws an error*/
+    override val idFile by lazy { File(osFun(userPath)) }
 
 
-  override operator fun compareTo(other: File?): Int = idFile.compareTo((other as MFile).idFile)
-  override fun equals(other: Any?): Boolean {
-	return if (other is File) {
-	  require(other is MFile) {
-		"$other is a File yes, but its not an MFile"
-	  }
-	  idFile == other.idFile
-	} else false
-  }
+    override operator fun compareTo(other: File?): Int = idFile.compareTo((other as MFile).idFile)
+    override fun equals(other: Any?): Boolean {
+        return if (other is File) {
+            require(other is MFile) {
+                "$other is a File yes, but its not an MFile"
+            }
+            idFile == other.idFile
+        } else false
+    }
 
-  override fun hashCode() = idFile.hashCode()
+    override fun hashCode() = idFile.hashCode()
 
 
-  operator fun contains(other: MFile): Boolean {
-	return other != this && other.search({
-										   takeIf {
-											 it == this@MFile
-										   }
-										 }, { parentFile?.toMFile() }) != null
-  }
+    operator fun contains(other: MFile): Boolean {
+        return other != this && other.search({
+            takeIf {
+                it == this@MFile
+            }
+        }, { parentFile?.toMFile() }) != null
+    }
 
 
-  /*MUST KEEP THESE METHODS HERE AND NOT AS EXTENSIONS IN ORDER TO ROBUSTLY OVERRIDE KOTLIN.STDLIB'S DEFAULT FILE EXTENSIONS. OTHERWISE, I'D HAVE TO MICROMANAGE MY IMPORTS TO MAKE SURE I'M IMPORTING THE CORRECT EXTENSIONS*/
+    /*MUST KEEP THESE METHODS HERE AND NOT AS EXTENSIONS IN ORDER TO ROBUSTLY OVERRIDE KOTLIN.STDLIB'S DEFAULT FILE EXTENSIONS. OTHERWISE, I'D HAVE TO MICROMANAGE MY IMPORTS TO MAKE SURE I'M IMPORTING THE CORRECT EXTENSIONS*/
 
-  fun wildcardChildrenPath() = path.ensureSuffix(MFile.separator) + "*"
+    fun wildcardChildrenPath() = path.ensureSuffix(MFile.separator) + "*"
 
-  fun relativeTo(base: MFile): MFile = idFile.relativeTo(base.idFile).toMFile()
+    fun relativeTo(base: MFile): MFile = idFile.relativeTo(base.idFile).toMFile()
 
 
-  fun startsWith(other: MFile): Boolean = idFile.startsWith(other.idFile)
-  fun startsWith(other: String): Boolean = idFile.startsWith(osFun(other))
-  fun endsWith(other: MFile) = idFile.endsWith(other.idFile)
-  fun endsWith(other: String): Boolean = idFile.endsWith(other.osFun())
+    fun startsWith(other: MFile): Boolean = idFile.startsWith(other.idFile)
+    fun startsWith(other: String): Boolean = idFile.startsWith(osFun(other))
+    fun endsWith(other: MFile) = idFile.endsWith(other.idFile)
+    fun endsWith(other: String): Boolean = idFile.endsWith(other.osFun())
 
 
-  actual fun resolve(other: MFile, cls: KClass<out MFile>?): MFile = userFile.resolve(other).toMFile(cls = cls)
-  actual override fun resolve(other: String): MFile = userFile.resolve(other).toMFile()
+    actual fun resolve(other: MFile, cls: KClass<out MFile>?): MFile = userFile.resolve(other).toMFile(cls = cls)
+    actual override fun resolve(other: String): MFile = userFile.resolve(other).toMFile()
 
 
-  fun resolveSibling(relative: MFile) = userFile.resolveSibling(relative).toMFile()
+    fun resolveSibling(relative: MFile) = userFile.resolveSibling(relative).toMFile()
 
 
-  fun resolveSibling(relative: String): MFile = userFile.resolveSibling(relative).toMFile()
+    fun resolveSibling(relative: String): MFile = userFile.resolveSibling(relative).toMFile()
 
-  fun mkparents() = parentFile!!.mkdirs()
+    fun mkparents() = parentFile!!.mkdirs()
 
-  fun tildeString() = toString().replace(userHome.removeSuffix(SEP), "~")
+    fun tildeString() = toString().replace(userHome.removeSuffix(SEP), "~")
 
-  actual override var text
-	get() = readText()
-	set(v) {
-	  mkparents()
-	  writeText(v)
-	}
+    actual override var text
+        get() = readText()
+        set(v) {
+            mkparents()
+            writeText(v)
+        }
 
-  actual override var bytes: ByteArray
-	get() = readBytes()
-	set(value) {
-	  writeBytes(value)
-	}
+    actual override var bytes: ByteArray
+        get() = readBytes()
+        set(value) {
+            writeBytes(value)
+        }
 
 
-  fun isBlank() = bufferedReader().run {
-	val r = read() == -1
-	close()
-	r
-  }
+    fun isBlank() = bufferedReader().run {
+        val r = read() == -1
+        close()
+        r
+    }
 
-  fun isImage() = extension in listOf("png", "jpg", "jpeg")
+    fun isImage() = extension in listOf("png", "jpg", "jpeg")
 
-  fun append(s: String, mkdirs: Boolean = true) {
-	if (mkdirs) mkparents()
-	appendText(s)
-  }
+    fun append(s: String, mkdirs: Boolean = true) {
+        if (mkdirs) mkparents()
+        appendText(s)
+    }
 
-  fun createNewFile(child: String) = resolve(child).apply {
-	createNewFile()
-  }.toMFile()
+    fun createNewFile(child: String) = resolve(child).apply {
+        createNewFile()
+    }.toMFile()
 
-  fun createNewFile(child: String, text: String) = createNewFile(child).also { it.text = text }
+    fun createNewFile(child: String, text: String) = createNewFile(child).also { it.text = text }
 
 
-  fun mkdir(child: String) = resolve(child).apply {
-	mkdir()
-  }.toMFile().requireIsFolder()
+    fun mkdir(child: String) = resolve(child).apply {
+        mkdir()
+    }.toMFile().requireIsFolder()
 
-  fun mkdir(int: Int) = mkdir(int.toString())
+    fun mkdir(int: Int) = mkdir(int.toString())
 
-  fun write(s: String, mkparents: Boolean = true) {
-	if (mkparents) mkparents()
-	writeText(s)
-  }
+    fun write(s: String, mkparents: Boolean = true) {
+        if (mkparents) mkparents()
+        writeText(s)
+    }
 
 
-  val abspath: String
-	get() = absolutePath
+    val abspath: String
+        get() = absolutePath
 
-  infix fun withLastNameExtension(s: String) = mFile(abspath.removeSuffix(separator) + s)
+    infix fun withLastNameExtension(s: String) = mFile(abspath.removeSuffix(separator) + s)
 
 
-  fun moveInto(newParent: MFile, overwrite: Boolean = false): MFile {
-	return (if (overwrite) Files.move(
-	  this.toPath(), (newParent + this.name).toPath(), StandardCopyOption.REPLACE_EXISTING
-	)
-	else Files.move(this.toPath(), (newParent + this.name).toPath())).toFile().toMFile()
-  }
+    fun moveInto(newParent: MFile, overwrite: Boolean = false): MFile {
+        return (if (overwrite) Files.move(
+            this.toPath(), (newParent + this.name).toPath(), StandardCopyOption.REPLACE_EXISTING
+        )
+        else Files.move(this.toPath(), (newParent + this.name).toPath())).toFile().toMFile()
+    }
 
-  private class IndexFolder(val f: MFile) {
-	val name = f.name
-	val index = name.toInt()
-	operator fun plus(other: MFile) = f + other
-	operator fun plus(other: String) = f + other
-	fun next() = IndexFolder(f.parentFile!! + (index + 1).toString())
-	fun previous() = IndexFolder(f.parentFile!! + (index - 1).toString())
-  }
+    private class IndexFolder(val f: MFile) {
+        val name = f.name
+        val index = name.toInt()
+        operator fun plus(other: MFile) = f + other
+        operator fun plus(other: String) = f + other
+        fun next() = IndexFolder(f.parentFile!! + (index + 1).toString())
+        fun previous() = IndexFolder(f.parentFile!! + (index - 1).toString())
+    }
 
-  fun getNextSubIndexedFileWork(
-	filename: String,
-	maxN: Int,
-	@Suppress("UNUSED_PARAMETER") log: Reporter = NOPLogger
-  ): ()->MFile {
+    fun getNextSubIndexedFileWork(
+        filename: String,
+        maxN: Int,
+        @Suppress("UNUSED_PARAMETER") log: Reporter = NOPLogger
+    ): () -> MFile {
 
-	require(maxN > 0) {
-	  "maxN should be greater than 0 but it is ${maxN}"
-	}
-	val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
-	  f.name.toIntOrNull()?.let { IndexFolder(f) }
-	}.sortedBy { it.index }
-	val firstSubIndexFold = existingSubIndexFolds.firstOrNull()
+        require(maxN > 0) {
+            "maxN should be greater than 0 but it is ${maxN}"
+        }
+        val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
+            f.name.toIntOrNull()?.let { IndexFolder(f) }
+        }.sortedBy { it.index }
+        val firstSubIndexFold = existingSubIndexFolds.firstOrNull()
 
-	val nextSubIndexFold =
-	  if (existingSubIndexFolds.isEmpty()) IndexFolder(
-		resolve("1")
-	  ) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
-			 ?: existingSubIndexFolds.last().next()
+        val nextSubIndexFold =
+            if (existingSubIndexFolds.isEmpty()) IndexFolder(
+                resolve("1")
+            ) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
+                ?: existingSubIndexFolds.last().next()
 
 
-	return {
-	  if (nextSubIndexFold.index > maxN) {
-		firstSubIndexFold?.plus(filename)?.deleteRecursively()
-		(existingSubIndexFolds - firstSubIndexFold).filterNotNull().sortedBy { it.index }.forEach {
-		  (it + filename).takeIf { it.exists() }?.moveInto(it.previous().f)
-		}
-	  }
-	  nextSubIndexFold + filename
-	}
+        return {
+            if (nextSubIndexFold.index > maxN) {
+                firstSubIndexFold?.plus(filename)?.deleteRecursively()
+                (existingSubIndexFolds - firstSubIndexFold).filterNotNull().sortedBy { it.index }.forEach {
+                    (it + filename).takeIf { it.exists() }?.moveInto(it.previous().f)
+                }
+            }
+            nextSubIndexFold + filename
+        }
 
-  }
+    }
 
-  fun resRepExt(newExt: String) = mFile(parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt)
+    fun resRepExt(newExt: String) = mFile(parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt)
 
-  fun deleteIfExists() {
-	if (exists()) {
-	  if (isDirectory) {
-		deleteRecursively()
-	  } else {
-		delete()
-	  }
-	}
-  }
+    actual fun deleteIfExists() {
+        if (exists()) {
+            if (isDirectory) {
+                deleteRecursively()
+            } else {
+                delete()
+            }
+        }
+    }
 
 
-  val doesNotExist get() = !exists()
+    val doesNotExist get() = !exists()
 
 
-  val mExtension = FileExtension(name.substringAfter("."))
+    val mExtension = FileExtension(name.substringAfter("."))
 
-  infix fun withExtension(ext: String): MFile {
-	return when (this.extension) {
-	  ext  -> this
-	  ""   -> mFile(this.cpath + "." + ext)
-	  else -> mFile(this.cpath.replace("." + this.extension, ".$ext"))
-	}
-  }
+    infix fun withExtension(ext: String): MFile {
+        return when (this.extension) {
+            ext -> this
+            "" -> mFile(this.cpath + "." + ext)
+            else -> mFile(this.cpath.replace("." + this.extension, ".$ext"))
+        }
+    }
 
-  fun appendln(line: String) {
-	append(line + "\n")
-  }
+    fun appendln(line: String) {
+        append(line + "\n")
+    }
 
-  val unixNlink get() = Files.getAttribute(this.toPath(), "unix:nlink").toString().toInt()
-  val hardLinkCount get() = unixNlink
+    val unixNlink get() = Files.getAttribute(this.toPath(), "unix:nlink").toString().toInt()
+    val hardLinkCount get() = unixNlink
 
-  operator fun get(item: MFile): MFile {
-	return resolve(item)
-  }
+    operator fun get(item: MFile): MFile {
+        return resolve(item)
+    }
 
-  operator fun get(item: String): MFile {
-	return resolve(item)
-  }
+    operator fun get(item: String): MFile {
+        return resolve(item)
+    }
 
-  //  fun toJavaIOFile() = java.io.File(user)
+    //  fun toJavaIOFile() = java.io.File(user)
 
-  operator fun get(item: Char): MFile {
-	return resolve(item.toString())
-  }
+    operator fun get(item: Char): MFile {
+        return resolve(item.toString())
+    }
 
-  override operator fun plus(other: String): MFile {
-	return resolve(other)
-  }
+    override operator fun plus(other: String): MFile {
+        return resolve(other)
+    }
 
-  operator fun plus(item: Char): MFile {
-	return resolve(item.toString())
-  }
+    operator fun plus(item: Char): MFile {
+        return resolve(item.toString())
+    }
 
-  inline operator fun <reified F: MFile> plus(item: F): F {
-	return resolve(item, F::class) as F
-  }
+    inline operator fun <reified F : MFile> plus(item: F): F {
+        return resolve(item, F::class) as F
+    }
 
 
-  //  fun onModifyRecursive(op: ()->Unit) {
-  //
-  //	val watchService: WatchService = toPath().fileSystem.newWatchService()
-  //
-  //	// register all subfolders
-  //	Files.walkFileTree(this.toPath(), object: SimpleFileVisitor<Path>() {
-  //	  @Throws(IOException::class) override fun preVisitDirectory(
-  //		dir: Path,
-  //		attrs: BasicFileAttributes
-  //	  ): FileVisitResult {
-  //		dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
-  //		return FileVisitResult.CONTINUE
-  //	  }
-  //	})
-  //
-  //	watchService.poll()
-  //	watchService.poll(100, MILLISECONDS)
-  //	val e = watchService.take()
-  //	e.pollEvents().forEach {
-  //	  it.context()
-  //	}
-  //
-  //  }
+    //  fun onModifyRecursive(op: ()->Unit) {
+    //
+    //	val watchService: WatchService = toPath().fileSystem.newWatchService()
+    //
+    //	// register all subfolders
+    //	Files.walkFileTree(this.toPath(), object: SimpleFileVisitor<Path>() {
+    //	  @Throws(IOException::class) override fun preVisitDirectory(
+    //		dir: Path,
+    //		attrs: BasicFileAttributes
+    //	  ): FileVisitResult {
+    //		dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+    //		return FileVisitResult.CONTINUE
+    //	  }
+    //	})
+    //
+    //	watchService.poll()
+    //	watchService.poll(100, MILLISECONDS)
+    //	val e = watchService.take()
+    //	e.pollEvents().forEach {
+    //	  it.context()
+    //	}
+    //
+    //  }
 
 
-  fun size() = ByteSize(Files.size(this.toPath()))
-  fun recursiveSize() = recurse { it.listFilesAsList() }.map { it.size() }.reduce { acc, byteSize -> acc + byteSize }
+    fun size() = ByteSize(Files.size(this.toPath()))
+    fun recursiveSize() = recurse { it.listFilesAsList() }.map { it.size() }.reduce { acc, byteSize -> acc + byteSize }
 
-  fun clearIfTooBigThenAppendText(s: String) {
-	if (size().kb > 10) {
-	  write("cleared because over 10KB") /*got an out of memory error when limit was set as 100KB*/
-	}
-	append(s)
+    fun clearIfTooBigThenAppendText(s: String) {
+        if (size().kb > 10) {
+            write("cleared because over 10KB") /*got an out of memory error when limit was set as 100KB*/
+        }
+        append(s)
 
-  }
+    }
 
 
-  fun recursiveLastModified(): Long {
-	var greatest = 0L
-	recurse { it.listFiles()?.toList() ?: listOf() }.forEach {
-	  greatest = listOf(greatest, it.lastModified()).maxOrNull()!!
-	}
-	return greatest
-  }
+    fun recursiveLastModified(): Long {
+        var greatest = 0L
+        recurse { it.listFiles()?.toList() ?: listOf() }.forEach {
+            greatest = listOf(greatest, it.lastModified()).maxOrNull()!!
+        }
+        return greatest
+    }
 
 
-  fun next(): MFile {
-	var ii = 0
-	while (true) {
-	  val f = mFile(absolutePath + ii.toString())
-	  if (!f.exists()) {
-		return f
-	  }
-	  ii += 1
-	}
-  }
+    fun next(): MFile {
+        var ii = 0
+        while (true) {
+            val f = mFile(absolutePath + ii.toString())
+            if (!f.exists()) {
+                return f
+            }
+            ii += 1
+        }
+    }
 
-  fun doubleBackupWrite(s: String, thread: Boolean = false) {
+    fun doubleBackupWrite(s: String, thread: Boolean = false) {
 
-	mkparents()
-	createNewFile()
+        mkparents()
+        createNewFile()
 
-	/*this is important. Extra security is always good.*/
+        /*this is important. Extra security is always good.*/
 
-	/*now I'm backing up version before AND after the change. */
+        /*now I'm backing up version before AND after the change. */
 
-	/*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
+        /*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
 
-	/*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
+        /*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
 
-	val old = readText()
-	val work1 = backupWork(text = old)
-	val work2 = backupWork(text = old)
+        val old = readText()
+        val work1 = backupWork(text = old)
+        val work2 = backupWork(text = old)
 
-	val work = {
-	  work1()
-	  writeText(s)
-	  work2()
-	}
+        val work = {
+            work1()
+            writeText(s)
+            work2()
+        }
 
-	if (thread) thread { work() }
-	else work()
+        if (thread) thread { work() }
+        else work()
 
-  }
+    }
 
 
-  internal fun backupWork(
-	@Suppress("UNUSED_PARAMETER") thread: Boolean = false, text: String? = null
-  ): ()->Unit {
+    internal fun backupWork(
+        @Suppress("UNUSED_PARAMETER") thread: Boolean = false, text: String? = null
+    ): () -> Unit {
 
-	require(this.exists()) {
-	  "cannot back up ${this}, which does not exist"
-	}
+        require(this.exists()) {
+            "cannot back up ${this}, which does not exist"
+        }
 
 
-	val backupFolder = toMFile().parentFile!! + "backups"
-	backupFolder.mkdir()
-	require(backupFolder.isDirectory) { "backupFolder not a dir" }
+        val backupFolder = toMFile().parentFile!! + "backups"
+        backupFolder.mkdir()
+        require(backupFolder.isDirectory) { "backupFolder not a dir" }
 
 
-	val backupFileWork = backupFolder.getNextSubIndexedFileWork(name, 100)
+        val backupFileWork = backupFolder.getNextSubIndexedFileWork(name, 100)
 
-	if (isDirectory) {
-	  return {
-		val target = backupFileWork()
-		target.deleteIfExists()
-		copyRecursively(target)
-	  }
-	}
+        if (isDirectory) {
+            return {
+                val target = backupFileWork()
+                target.deleteIfExists()
+                copyRecursively(target)
+            }
+        }
 
-	val realText = text ?: readText()
+        val realText = text ?: readText()
 
-	return { backupFileWork().text = realText }
+        return { backupFileWork().text = realText }
 
-  }
+    }
 
-  fun backup(thread: Boolean = false, text: String? = null) {
+    fun backup(thread: Boolean = false, text: String? = null) {
 
-	val work = backupWork(thread = thread, text = text)
-	if (thread) {
-	  thread {
-		work()
-	  }
-	} else work()
-  }
+        val work = backupWork(thread = thread, text = text)
+        if (thread) {
+            thread {
+                work()
+            }
+        } else work()
+    }
 
 
-  fun recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
+    fun recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
 
-  val ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
-  val absolutePathEnforced: String get() = ensureAbsolute.absolutePath
+    val ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
+    val absolutePathEnforced: String get() = ensureAbsolute.absolutePath
 
-  fun writeIfDifferent(s: String) {
-	mkparents()
-	if (doesNotExist || readText() != s) {
-	  write(s)
-	}
-  }
+    fun writeIfDifferent(s: String) {
+        mkparents()
+        if (doesNotExist || readText() != s) {
+            write(s)
+        }
+    }
 
 
-  fun relativeToOrSelf(base: MFile): MFile = idFile.relativeToOrSelf(base.idFile).toMFile()
-  fun relativeToOrNull(base: MFile): MFile? = idFile.relativeToOrNull(base.idFile)?.toMFile()
-  fun copyTo(target: MFile, overwrite: Boolean = false, bufferSize: Int = DEFAULT_BUFFER_SIZE): MFile =
-	userFile.copyTo(target, overwrite, bufferSize).toMFile()
+    fun relativeToOrSelf(base: MFile): MFile = idFile.relativeToOrSelf(base.idFile).toMFile()
+    fun relativeToOrNull(base: MFile): MFile? = idFile.relativeToOrNull(base.idFile)?.toMFile()
+    fun copyTo(target: MFile, overwrite: Boolean = false, bufferSize: Int = DEFAULT_BUFFER_SIZE): MFile =
+        userFile.copyTo(target, overwrite, bufferSize).toMFile()
 
-  actual override fun mkdirs(): Boolean {
-	return super.mkdirs()
-  }
+    actual override fun mkdirs(): Boolean {
+        return super.mkdirs()
+    }
 
-  var writableForOwner: Boolean
-	get() = NOT_IMPLEMENTED
-	set(value) {
-	  val success = idFile.setWritable(value, true)
-	  if (!success) {
-		warn("failure setting $this writable=$value for owner")
-	  }
-	}
+    var writableForOwner: Boolean
+        get() = NOT_IMPLEMENTED
+        set(value) {
+            val success = idFile.setWritable(value, true)
+            if (!success) {
+                warn("failure setting $this writable=$value for owner")
+            }
+        }
 
-  var writableForEveryone: Boolean
-	get() = NOT_IMPLEMENTED
-	set(value) {
-	  val success = idFile.setWritable(value, false)
-	  if (!success) {
-		warn("failure setting $this writable=$value for everyone")
-	  }
-	}
+    var writableForEveryone: Boolean
+        get() = NOT_IMPLEMENTED
+        set(value) {
+            val success = idFile.setWritable(value, false)
+            if (!success) {
+                warn("failure setting $this writable=$value for everyone")
+            }
+        }
 
 
-  /*will prevent accidental edits of generated code (both me and IntelliJ are making accidental edits)*/
-  fun ifDifferentForceWriteThenMakeReadOnlyForEveryone(newText: String) {
-	val exist = exists()
-	if (!exist || text != newText) {
-	  if (exist) writableForEveryone = true
-	  mkparents()
-	  text = newText
-	}
-	writableForEveryone = false
-  }
+    /*will prevent accidental edits of generated code (both me and IntelliJ are making accidental edits)*/
+    fun ifDifferentForceWriteThenMakeReadOnlyForEveryone(newText: String) {
+        val exist = exists()
+        if (!exist || text != newText) {
+            if (exist) writableForEveryone = true
+            mkparents()
+            text = newText
+        }
+        writableForEveryone = false
+    }
 
 
-  actual override val partSep = SEP
+    actual override val partSep = SEP
 
 
 }
@@ -553,25 +554,25 @@ actual sealed class MFile actual constructor(actual val userPath: String): File(
 internal actual val SEP = MFile.separator
 
 
-fun Folder.idFolder() = object: IDFolder {
-  override val idFile: File
-	get() = this@idFolder.idFile
-  override val fName: String
-	get() = this@idFolder.fName
-  override val filePath: String
-	get() = this@idFolder.filePath
-  override val partSep: String
-	get() = this@idFolder.partSep
+fun Folder.idFolder() = object : IDFolder {
+    override val idFile: File
+        get() = this@idFolder.idFile
+    override val fName: String
+        get() = this@idFolder.fName
+    override val filePath: String
+        get() = this@idFolder.filePath
+    override val partSep: String
+        get() = this@idFolder.partSep
 
-  override fun isDir() = this@idFolder.isDir()
+    override fun isDir() = this@idFolder.isDir()
 
-  override fun toString(): String {
-	return "[(IDFolder) ${this@idFolder}]"
-  }
+    override fun toString(): String {
+        return "[(IDFolder) ${this@idFolder}]"
+    }
 
 }
 
 interface URLLike {
-  fun toJavaURL(): URL
-  fun toJavaURI(): URI
+    fun toJavaURL(): URL
+    fun toJavaURI(): URI
 }
