@@ -36,15 +36,19 @@ infix fun MFile.hasIdenticalDataTo(other: MFile): Boolean {
 fun Folder.isRecursivelyIdenticalTo(
     other: Folder,
     ignoreDSStore: Boolean = true
-): Boolean = firstRecursiveDiff(other,ignoreDSStore) != null
+): Boolean = firstRecursiveDiff(
+    other,
+    ignoreDSStore
+) != null
 
 fun Folder.firstRecursiveDiff(
     other: Folder,
-    ignoreDSStore: Boolean = true
+    ignoreDSStore: Boolean = true,
+    ignoreFileNames: List<String> = listOf()
 ): String? {
 //    if (name != other.name) return "name $name is different from ${other.name}"
 
-    fun predicate(file: MFile) = !ignoreDSStore || file.name != DS_STORE
+    fun predicate(file: MFile) = (!ignoreDSStore || file.name != DS_STORE) && file.name !in ignoreFileNames
 
     val files = this.listFiles()!!.filter(::predicate)
     val otherFiles = other.listFiles()!!.filter(::predicate)
@@ -53,14 +57,16 @@ fun Folder.firstRecursiveDiff(
 
 
     files.forEach { file ->
-        val otherFile = otherFiles.firstOrNull { it.name == file.name } ?: return "${this.path}: otherFiles has no ${file.name}"
+        val otherFile =
+            otherFiles.firstOrNull { it.name == file.name } ?: return "${this.path}: otherFiles has no ${file.name}"
         if (file.isDir()) {
             if (!otherFile.isDir()) return "${this.path}: $otherFile is not a dir"
             val rResult = Folder(file.absolutePath).firstRecursiveDiff(
                 Folder(otherFile.absolutePath),
-                ignoreDSStore = ignoreDSStore
+                ignoreDSStore = ignoreDSStore,
+                ignoreFileNames = ignoreFileNames
             )
-            if (rResult!=null) {
+            if (rResult != null) {
                 return rResult
             }
         } else {
