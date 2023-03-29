@@ -42,7 +42,7 @@ fun Folder.firstRecursiveDiff(
     other: Folder,
     ignoreDSStore: Boolean = true
 ): String? {
-    if (name != other.name) return "name $name is different from ${other.name}"
+//    if (name != other.name) return "name $name is different from ${other.name}"
 
     fun predicate(file: MFile) = !ignoreDSStore || file.name != DS_STORE
 
