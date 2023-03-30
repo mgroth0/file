@@ -26,7 +26,7 @@ fun MFile.recursiveMD5(
                 && (!ignoreDSStore || it.name != DS_STORE)
                 && it.name !in ignoreFileNames
     }.forEach {
-        md.update(it.absolutePath)
+        md.update(it.relativeTo(this@recursiveMD5).path)
         md.update(it.readBytes())
     }
     return md.digest()
