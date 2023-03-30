@@ -229,6 +229,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     actual override var bytes: ByteArray
         get() = readBytes()
         set(value) {
+            mkparents()
             writeBytes(value)
         }
 
