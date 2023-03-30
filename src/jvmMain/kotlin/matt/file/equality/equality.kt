@@ -3,11 +3,12 @@ package matt.file.equality
 import matt.file.Folder
 import matt.file.MFile
 import matt.file.commons.DS_STORE
+import matt.file.hash.md5
+import matt.file.hash.recursiveMD5
 import matt.lang.anno.SeeURL
 
-@SeeURL("https://stackoverflow.com/questions/22818590/java-how-to-check-that-2-binary-files-are-same")
-infix fun MFile.hasIdenticalDataToUsingHash(@Suppress("UNUSED_PARAMETER") other: MFile): Boolean {
-    throw NotImplementedError("I could compute a hash and use that check file equality, but I don't think it is necessary for my purposes yet")
+infix fun MFile.hasIdenticalDataToUsingHash(other: MFile): Boolean {
+    return md5() == other.md5()
 }
 
 @SeeURL("https://stackoverflow.com/a/22819255/6596010")
@@ -33,9 +34,19 @@ infix fun MFile.hasIdenticalDataTo(other: MFile): Boolean {
 
 }
 
+fun MFile.isRecursivelyIdenticalToUsingHash(
+    other: MFile,
+    ignoreDSStore: Boolean = true,
+    ignoreFileNames: List<String> = listOf()
+): Boolean {
+    return recursiveMD5(ignoreDSStore=ignoreDSStore,ignoreFileNames=ignoreFileNames) == other.recursiveMD5(ignoreDSStore=ignoreDSStore,ignoreFileNames=ignoreFileNames)
+}
+
+private const val DEFAULT_IGNORE_DS_STORE = true
+
 fun Folder.isRecursivelyIdenticalTo(
     other: Folder,
-    ignoreDSStore: Boolean = true
+    ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE
 ): Boolean = firstRecursiveDiff(
     other,
     ignoreDSStore
@@ -43,7 +54,7 @@ fun Folder.isRecursivelyIdenticalTo(
 
 fun Folder.firstRecursiveDiff(
     other: Folder,
-    ignoreDSStore: Boolean = true,
+    ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
     ignoreFileNames: List<String> = listOf()
 ): String? {
 //    if (name != other.name) return "name $name is different from ${other.name}"
