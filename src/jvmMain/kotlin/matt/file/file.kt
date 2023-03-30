@@ -77,6 +77,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     }
 
     val url get() = toURI().toURL()
+    val betterURLIGuess get() = "file://${absolutePath}" /*the url above does not include the double slash? so IntelliJ console doesn't recognize it as a url?*/
 
     actual override val filePath: String get() = super.getPath()
     actual override val cpath: String = path
