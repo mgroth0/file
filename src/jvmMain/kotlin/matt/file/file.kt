@@ -18,6 +18,7 @@ import matt.model.code.report.Reporter
 import matt.model.data.byte.ByteSize
 import matt.model.data.file.IDFile
 import matt.model.data.file.IDFolder
+import matt.model.obj.path.PathLike
 import matt.model.obj.stream.Streamable
 import matt.model.obj.text.MightExistAndWritableText
 import matt.model.obj.text.WritableBytes
@@ -46,7 +47,20 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     MightExistAndWritableText,
     WritableBytes,
     IDFile,
-    Appendable {
+    Appendable,
+    PathLike<MFile> {
+
+    override fun resolveNames(names: List<String>): MFile {
+        var f = this
+        names.forEach {
+            f = f[it]
+        }
+        return f
+    }
+
+    override fun relativeNamesFrom(other: MFile): List<String> {
+        return this.relativeTo(other).path.split(SEP).filter { it.isNotBlank() }
+    }
 
     override fun append(c: Char): java.lang.Appendable {
         this.appendText(c.toString())

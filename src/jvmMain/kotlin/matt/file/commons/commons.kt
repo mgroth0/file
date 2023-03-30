@@ -100,6 +100,7 @@ const val SETTINGS_GRADLE_GROOVY_NAME = "settings.gradle"
 const val BUILD_GRADLE_KTS_NAME = "build.gradle.kts"
 const val SETTINGS_GRADLE_KTS_NAME = "settings.gradle.kts"
 const val BUILD_JSON_NAME = "build.json"
+const val CACHE_INVALIDATOR_TXT = "cache-invalidator.txt"
 
 //}
 
