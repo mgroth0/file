@@ -12,7 +12,6 @@ enum class Icon() {
     icon2(),
     intellij(),
     lit(),
-    chunk(),
     web(),
     comp(),
     clock(),
