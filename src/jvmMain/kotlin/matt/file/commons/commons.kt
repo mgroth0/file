@@ -11,12 +11,7 @@ import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.SeeURL
 import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
-import matt.model.code.sys.Linux
-import matt.model.code.sys.Mac
-import matt.model.code.sys.NEW_MAC
-import matt.model.code.sys.OLD_MAC
-import matt.model.code.sys.OpenMind
-import matt.model.code.sys.Windows
+import matt.model.code.sys.*
 
 
 const val DEFAULT_GITHUB_BRANCH_NAME = "master"
@@ -30,8 +25,8 @@ val USER_HOME by lazy { mFile(thisMachine.homeDir) }
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
-  thisMachine.registeredDir?.let { USER_HOME[it] }
-  ?: matt.file.ext.createTempDir(prefix = "registered")
+    thisMachine.registeredDir?.let { USER_HOME[it] }
+        ?: matt.file.ext.createTempDir(prefix = "registered")
 }
 val GBUILD_FOLDER by lazy { REGISTERED_FOLDER + "gbuild" }
 val GBUILD_JAR_FOLDER by lazy { GBUILD_FOLDER + "jar" }
@@ -52,7 +47,7 @@ val IDE_FOLDER by lazy { REGISTERED_FOLDER["ide"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
 val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val YOUR_KIT_APP_FOLDER by lazy {
-  SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]
+    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]
 }
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
 val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
@@ -62,12 +57,12 @@ val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
 private val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 
 class LogContext(parentFolder: MFile) {
-  val logFolder by lazy {
-	parentFolder["log"].apply { mkdirs() }
-  }
-  val exceptionFolder by lazy {
-	logFolder["errorReports"]
-  }
+    val logFolder by lazy {
+        parentFolder["log"].apply { mkdirs() }
+    }
+    val exceptionFolder by lazy {
+        logFolder["errorReports"]
+    }
 }
 
 val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
@@ -105,39 +100,39 @@ const val CACHE_INVALIDATOR_TXT = "cache-invalidator.txt"
 //}
 
 
-object MavenLocalFolder: Folder((USER_HOME + ".m2").userPath) {
-  object RepoFolder: Folder(resolve("repository").userPath) {
-	object MattRepo: Folder(resolve("matt").userPath) {
-	  object FlowRepo: Folder(resolve("flow").userPath) {
+object MavenLocalFolder : Folder((USER_HOME + ".m2").userPath) {
+    object RepoFolder : Folder(resolve("repository").userPath) {
+        object MattRepo : Folder(resolve("matt").userPath) {
+            object FlowRepo : Folder(resolve("flow").userPath) {
 
-	  }
-	}
-  }
+            }
+        }
+    }
 }
 
 
 val KJG_NAV_KEY = "NAV"
 
 private val projectFolder by lazy {
-  when (thisMachine) {
-	is NEW_MAC, is Windows -> IDE_FOLDER
-	is OpenMind            -> mFile(thisMachine.homeDir)
-	else                   -> NOT_IMPLEMENTED
-  }
+    when (thisMachine) {
+        is NEW_MAC, is Windows -> IDE_FOLDER
+        is OpenMind -> mFile(thisMachine.homeDir)
+        else -> NOT_IMPLEMENTED
+    }
 }
 
 enum class SubRoots {
-  k
+    k
 }
 
 //val subRoots = listOf(/*"KJ",*/"k")
 
-enum class IdeProject: ProjectIdea {
-  /*this should be automatically generated*/
-  kcomp, all, dnn, hep;
+enum class IdeProject : ProjectIdea {
+    /*this should be automatically generated*/
+    kcomp, all, dnn, hep;
 
-  val folder by lazy { projectFolder + name }
-  val subRootFolders by lazy { SubRoots.values().map { folder + it.name } }
+    val folder by lazy { projectFolder + name }
+    val subRootFolders by lazy { SubRoots.values().map { folder + it.name } }
 }
 
 
@@ -145,18 +140,18 @@ val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
 val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 
 val DNN_FOLDER by lazy {
-  when (thisMachine) {
-	NEW_MAC -> IDE_FOLDER + "dnn"
-	OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/dnn"]
-	else    -> null
-  }
+    when (thisMachine) {
+        NEW_MAC -> IDE_FOLDER + "dnn"
+        OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/dnn"]
+        else -> null
+    }
 }
 val HEP_FOLDER by lazy {
-  when (thisMachine) {
-	NEW_MAC -> IDE_FOLDER + "hep"
-	OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/hep"]
-	else    -> null
-  }
+    when (thisMachine) {
+        NEW_MAC -> IDE_FOLDER + "hep"
+        OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/hep"]
+        else -> null
+    }
 }
 
 const val GRADLEW_NAME = "gradlew"
@@ -176,36 +171,36 @@ val DEEPHYS_TEST_DATA_FOLDER = TEST_DATA_FOLDER["deephys"]
 val DEEPHYS_TEST_RESULT_JSON = DEEPHYS_TEST_DATA_FOLDER["results.json"]
 val DEEPHYS_RAM_SAMPLES_FOLDER = DEEPHYS_TEST_DATA_FOLDER["ram"]
 val RAM_NUMBERED_FILES by lazy {
-  NumberedFiles(
-	folder = DEEPHYS_RAM_SAMPLES_FOLDER,
-	prefix = "",
-	extension = FileExtension("json")
-  )
+    NumberedFiles(
+        folder = DEEPHYS_RAM_SAMPLES_FOLDER,
+        prefix = "",
+        extension = FileExtension("json")
+    )
 }
 
 val USER_LIB_FOLDER by lazy {
-  require(thisMachine is Mac)
-  USER_HOME["Library"]
+    require(thisMachine is Mac)
+    USER_HOME["Library"]
 }
 
 val APP_SUPPORT_FOLDER by lazy {
-  require(thisMachine is Mac)
-  USER_LIB_FOLDER["Application Support"]
+    require(thisMachine is Mac)
+    USER_LIB_FOLDER["Application Support"]
 }
 
 
 val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
-  when (thisMachine) {
-	is Mac     -> APP_SUPPORT_FOLDER
-	is Linux   -> {
-	  @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
-	  USER_HOME[".matt"].also { it.mkdir() }
-	}
+    when (thisMachine) {
+        is Mac -> APP_SUPPORT_FOLDER
+        is Linux -> {
+            @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
+            USER_HOME[".matt"].also { it.mkdir() }
+        }
 
-	is Windows -> {
-	  mFile("C:\\Users\\${userName}\\AppData\\Roaming")
-	}
-  }
+        is Windows -> {
+            mFile("C:\\Users\\${userName}\\AppData\\Roaming")
+        }
+    }
 }
 
 val THREE_D_PRINT_FOLDER = REGISTERED_FOLDER["3dprint"]
@@ -217,6 +212,11 @@ val GIT_MODULES_FILE_NAME = ".gitmodules"
 val LICENSE_FILE_NAME = "LICENSE.md"
 
 const val CERTIFICATES_FOLDER_NAME = "cer"
+const val APPLE_CERTIFICATES_FOLDER_NAME = "APPLE"
+val APPLE_CERTS_FOLDER by lazy {
+    REGISTERED_FOLDER[CERTIFICATES_FOLDER_NAME][APPLE_CERTIFICATES_FOLDER_NAME]
+}
+
 
 const val DEFAULT_FAV_ICO_NAME = "default.ico"
 const val FAV_ICO_NAME = "favicon.ico"
