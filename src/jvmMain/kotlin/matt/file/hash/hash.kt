@@ -23,13 +23,15 @@ fun MFile.md5(): String {
 
 fun MFile.recursiveMD5(
     ignoreDSStore: Boolean = true,
-    ignoreFileNames: List<String> = listOf()
+    ignoreFileNames: List<String> = listOf(),
+    ignoreAllWithPathParts: List<String> = listOf()
 ): String {
     val md = MyMd5Digest()
     walk().sortedBy { it.absolutePath }.map { it.toMFile() }.filter {
         it != this
                 && (!ignoreDSStore || it.name != DS_STORE)
                 && it.name !in ignoreFileNames
+                && it.path.split(MFile.separator).none { it in ignoreAllWithPathParts }
     }.forEach {
         md.update(it.relativeTo(this@recursiveMD5).path)
         md.update(it.readBytes())

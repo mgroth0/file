@@ -39,7 +39,10 @@ fun MFile.isRecursivelyIdenticalToUsingHash(
     ignoreDSStore: Boolean = true,
     ignoreFileNames: List<String> = listOf()
 ): Boolean {
-    return recursiveMD5(ignoreDSStore=ignoreDSStore,ignoreFileNames=ignoreFileNames) == other.recursiveMD5(ignoreDSStore=ignoreDSStore,ignoreFileNames=ignoreFileNames)
+    return recursiveMD5(ignoreDSStore = ignoreDSStore, ignoreFileNames = ignoreFileNames) == other.recursiveMD5(
+        ignoreDSStore = ignoreDSStore,
+        ignoreFileNames = ignoreFileNames
+    )
 }
 
 private const val DEFAULT_IGNORE_DS_STORE = true
