@@ -20,22 +20,22 @@ fun MFile.md5(): String {
     return md.digest()
 }
 
+private val DEFAULT_IGNORE_DS_STORE = true
+private val DEFAULT_IGNORE_FILE_NAMES = listOf<String>()
+private val DEFAULT_IGNORE_ALL_WITH_PATH_PARTS = listOf<String>()
 
 fun MFile.recursiveMD5(
-    ignoreDSStore: Boolean = true,
-    ignoreFileNames: List<String> = listOf(),
-    ignoreAllWithPathParts: List<String> = listOf()
+    ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
+    ignoreFileNames: List<String> = DEFAULT_IGNORE_FILE_NAMES,
+    ignoreAllWithPathParts: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS
 ): String {
     val md = MyMd5Digest()
-    walk().sortedBy { it.absolutePath }.map { it.toMFile() }.filter {
-        it != this
-                && (!ignoreDSStore || it.name != DS_STORE)
-                && it.name !in ignoreFileNames
-                && it.path.split(MFile.separator).none { it in ignoreAllWithPathParts }
-    }.forEach {
-        md.update(it.relativeTo(this@recursiveMD5).path)
-        md.update(it.readBytes())
-    }
+    md.updateFromFileRecursively(
+        file = this,
+        ignoreDSStore = ignoreDSStore,
+        ignoreFileNames = ignoreFileNames,
+        ignoreAllWithPathParts = ignoreAllWithPathParts
+    )
     return md.digest()
 }
 
@@ -50,5 +50,23 @@ class MyMd5Digest {
         md.update(string.encodeToByteArray())
     }
 
-    fun digest() = md.digest().encodeToURLBase64WithoutPadding()
+    fun updateFromFileRecursively(
+        file: MFile,
+        ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
+        ignoreFileNames: List<String> = DEFAULT_IGNORE_FILE_NAMES,
+        ignoreAllWithPathParts: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS
+    ) {
+        file.walk().sortedBy { it.absolutePath }.map { it.toMFile() }.filter {
+            it != file
+                    && (!ignoreDSStore || it.name != DS_STORE)
+                    && it.name !in ignoreFileNames
+                    && it.path.split(MFile.separator).none { it in ignoreAllWithPathParts }
+        }.forEach {
+            update(it.relativeTo(file).path)
+            if (!it.isDir()) update(it.readBytes())
+        }
+    }
+
+
+    fun digest(): String = md.digest().encodeToURLBase64WithoutPadding()
 }
