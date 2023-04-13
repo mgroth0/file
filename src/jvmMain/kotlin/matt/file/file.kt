@@ -50,6 +50,14 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     Appendable,
     PathLike<MFile> {
 
+    fun walk(direction: FileWalkDirection = FileWalkDirection.TOP_DOWN) =
+        (this as File).walk(direction = direction).map {
+            it.toMFile()
+        }
+
+    fun walkTopDown() = walk(direction = FileWalkDirection.TOP_DOWN)
+    fun walkBottomUp() = walk(direction = FileWalkDirection.BOTTOM_UP)
+
     override fun resolveNames(names: List<String>): MFile {
         var f = this
         names.forEach {
