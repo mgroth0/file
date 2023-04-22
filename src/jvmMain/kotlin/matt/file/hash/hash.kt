@@ -13,6 +13,12 @@ fun ByteArray.md5(): String {
     return md.digest()
 }
 
+fun String.md5(): String {
+    val md = MyMd5Digest()
+    md.update(this)
+    return md.digest()
+}
+
 @SeeURL("https://www.baeldung.com/java-md5")
 fun MFile.md5(): String {
     val md = MyMd5Digest()
