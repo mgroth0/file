@@ -11,7 +11,12 @@ import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.SeeURL
 import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
-import matt.model.code.sys.*
+import matt.model.code.sys.Linux
+import matt.model.code.sys.Mac
+import matt.model.code.sys.NEW_MAC
+import matt.model.code.sys.OLD_MAC
+import matt.model.code.sys.OpenMind
+import matt.model.code.sys.Windows
 
 
 const val DEFAULT_GITHUB_BRANCH_NAME = "master"
@@ -142,14 +147,14 @@ val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 val DNN_FOLDER by lazy {
     when (thisMachine) {
         NEW_MAC -> IDE_FOLDER + "dnn"
-        OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/dnn"]
+        OLD_MAC -> REGISTERED_FOLDER["todo/science/dnn"]
         else -> null
     }
 }
 val HEP_FOLDER by lazy {
     when (thisMachine) {
         NEW_MAC -> IDE_FOLDER + "hep"
-        OLD_MAC -> REGISTERED_FOLDER["matt.log.todo.todo/science/hep"]
+        OLD_MAC -> REGISTERED_FOLDER["todo/science/hep"]
         else -> null
     }
 }
