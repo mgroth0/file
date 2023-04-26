@@ -1,7 +1,6 @@
 package matt.file.type.kt
 
 import matt.file.KotlinFile
-import matt.file.service.FileReader
 
 
 fun KotlinFile.fileAnnotationSimpleClassNames() =
@@ -15,7 +14,7 @@ fun KotlinFile.fileAnnotationSimpleClassNames() =
 
 inline fun <reified A> KotlinFile.hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
 
-fun KotlinFile.consts(fileReader: FileReader) = fileReader.read(this).lines().map {
+fun KotlinFile.consts() = text.lines().map {
 	it.trim()
 }.filter { it.startsWith("const") }.associate {
 	it.substringAfter("const").substringAfter("val").substringBefore("=").trim() to it.substringAfter("=").trim()
