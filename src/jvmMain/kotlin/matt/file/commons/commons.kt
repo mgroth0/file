@@ -121,8 +121,8 @@ val KJG_NAV_KEY = "NAV"
 private val projectFolder by lazy {
     when (thisMachine) {
         is NEW_MAC, is Windows -> IDE_FOLDER
-        is OpenMind -> mFile(thisMachine.homeDir)
-        else -> NOT_IMPLEMENTED
+        is OpenMind            -> mFile(thisMachine.homeDir)
+        else                   -> NOT_IMPLEMENTED
     }
 }
 
@@ -148,14 +148,14 @@ val DNN_FOLDER by lazy {
     when (thisMachine) {
         NEW_MAC -> IDE_FOLDER + "dnn"
         OLD_MAC -> REGISTERED_FOLDER["todo/science/dnn"]
-        else -> null
+        else    -> null
     }
 }
 val HEP_FOLDER by lazy {
     when (thisMachine) {
         NEW_MAC -> IDE_FOLDER + "hep"
         OLD_MAC -> REGISTERED_FOLDER["todo/science/hep"]
-        else -> null
+        else    -> null
     }
 }
 
@@ -196,8 +196,8 @@ val APP_SUPPORT_FOLDER by lazy {
 
 val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
     when (thisMachine) {
-        is Mac -> APP_SUPPORT_FOLDER
-        is Linux -> {
+        is Mac     -> APP_SUPPORT_FOLDER
+        is Linux   -> {
             @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
             USER_HOME[".matt"].also { it.mkdir() }
         }
@@ -216,11 +216,6 @@ val GIT_MODULES_FILE_NAME = ".gitmodules"
 
 val LICENSE_FILE_NAME = "LICENSE.md"
 
-const val CERTIFICATES_FOLDER_NAME = "cer"
-const val APPLE_CERTIFICATES_FOLDER_NAME = "APPLE"
-val APPLE_CERTS_FOLDER by lazy {
-    REGISTERED_FOLDER[CERTIFICATES_FOLDER_NAME][APPLE_CERTIFICATES_FOLDER_NAME]
-}
 
 
 const val DEFAULT_FAV_ICO_NAME = "default.ico"
