@@ -71,7 +71,8 @@ class MyMd5Digest {
                     && (!ignoreDSStore || it.name != DS_STORE)
                     && it.name !in ignoreFileNames
                     && it.path.split(MFile.separator).none { it in ignoreAllWithPathParts }
-                    && it.path.split(MFile.separator).none { part -> ignoreAllWithPathPartsContaining.any { it in part } }
+                    && it.path.split(MFile.separator)
+                .none { part -> ignoreAllWithPathPartsContaining.any { it in part } }
         }.forEach {
 //            println("updating from file: $it")
             update(it.relativeTo(file).path)
@@ -82,3 +83,10 @@ class MyMd5Digest {
 
     fun digest(): String = md.digest().encodeToURLBase64WithoutPadding()
 }
+
+
+/*
+java BenchmarkExample
+CRC32 time (ms): 531
+MD5 time (ms): 1754
+* */
