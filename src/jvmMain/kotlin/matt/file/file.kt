@@ -425,7 +425,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     fun recursiveSize() = recurse { it.listFilesAsList() }.map { it.size() }.reduce { acc, byteSize -> acc + byteSize }
 
     fun clearIfTooBigThenAppendText(s: String) {
-        if (size().kb > 10) {
+        if (size().kiB > 10) {
             write("cleared because over 10KB") /*got an out of memory error when limit was set as 100KB*/
         }
         append(s)
