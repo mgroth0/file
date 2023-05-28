@@ -4,8 +4,13 @@ package matt.file.construct
 
 import matt.collect.map.dmap.withStoringDefault
 import matt.collect.map.lazyMap
-import matt.file.*
+import matt.file.FileExtension
+import matt.file.Folder
+import matt.file.MFile
+import matt.file.UnknownFile
+import matt.file.fileClassForExtension
 import matt.model.code.ok.JavaIoFileIsOk
+import matt.model.data.message.SFile
 import java.io.File
 import java.lang.reflect.Constructor
 import java.net.URI
@@ -14,7 +19,7 @@ import kotlin.reflect.KClass
 
 fun Path.toMFile() = toFile().toMFile()
 fun File.toMFile(cls: KClass<out MFile>? = null) = mFile(this, cls = cls)
-
+fun File.toSFile() = SFile(path)
 
 fun mFile(file: MFile) = mFile(file.userPath)
 fun mFile(file: File, cls: KClass<out MFile>? = null) = mFile(file.path, cls = cls)

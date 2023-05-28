@@ -166,6 +166,10 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     fun listNonDSStoreFiles() = listFiles()?.filter { it !is DSStoreFile }
 
+    fun siblings(): List<MFile> {
+        return parentFile!!.listFiles()!!.filter { it != this }
+    }
+
     override fun listFiles(): Array<MFile>? {
         return super.listFiles()?.map { it.toMFile() }?.toTypedArray()
     }
@@ -271,7 +275,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     fun mkdir(child: String) = resolve(child).apply {
         mkdir()
-    }.toMFile().requireIsFolder()
+    }.toMFile().requireIsExistingFolder()
 
     fun mkdir(int: Int) = mkdir(int.toString())
 
@@ -356,8 +360,8 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     infix fun withExtension(ext: String): MFile {
         return when (this.extension) {
-            ext -> this
-            "" -> mFile(this.cpath + "." + ext)
+            ext  -> this
+            ""   -> mFile(this.cpath + "." + ext)
             else -> mFile(this.cpath.replace("." + this.extension, ".$ext"))
         }
     }
