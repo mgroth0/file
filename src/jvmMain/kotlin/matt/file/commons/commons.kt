@@ -54,6 +54,9 @@ val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val YOUR_KIT_APP_FOLDER by lazy {
     SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]
 }
+val JPROFILER_APP_FOLDER by lazy {
+    SYS_APPLICATIONS_FOLDER["JProfiler.app"]
+}
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
 val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
