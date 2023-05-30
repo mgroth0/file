@@ -42,8 +42,6 @@ enum class OpenMindUserStorageLocation {
 }
 
 
-
-
-val BRIAR_EXTRACT_FOLDER = OM_LOCAL_DATA_FOLDER["briar_extract"]
+val BRIAR_EXTRACT_FOLDER = OM_LOCAL_DATA_FOLDER["BRS1_extract"]
 val BRIAR_EXTRACT_DATA_FOLDER = BRIAR_EXTRACT_FOLDER["data"]
 val BRIAR_EXTRACT_METADATA_FOLDER = BRIAR_EXTRACT_FOLDER["metadata.json"]
