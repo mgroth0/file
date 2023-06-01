@@ -45,3 +45,13 @@ enum class OpenMindUserStorageLocation {
 val BRIAR_EXTRACT_FOLDER = OM_LOCAL_DATA_FOLDER["BRS1_extract"]
 val BRIAR_EXTRACT_DATA_FOLDER = BRIAR_EXTRACT_FOLDER["data"]
 val BRIAR_EXTRACT_METADATA_FOLDER = BRIAR_EXTRACT_FOLDER["metadata.json"]
+
+val OM_JPROFILER_CONFIG_FILE by lazy {
+    OpenMindFiles.OM2_HOME[".jprofiler_config.xml"]
+}
+
+val OM_SNAPSHOT_FOLDER = OpenMindFiles.OM2_TEMP["jprofiler"]
+
+val OM_LATEST_JP_SNAPSHOT by lazy {
+    OM_SNAPSHOT_FOLDER["latest.jps"]
+}
