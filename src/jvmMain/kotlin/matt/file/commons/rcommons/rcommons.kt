@@ -7,8 +7,12 @@ import matt.file.commons.rcommons.OpenMindUserStorageLocation.om5
 import matt.file.construct.mFile
 import matt.lang.anno.SeeURL
 
+val OM_LOCAL_FOLDER by lazy {
+    mFile("/local")
+}
+
 val OM_LOCAL_DATA_FOLDER by lazy {
-    mFile("/local/data")
+    OM_LOCAL_FOLDER["data"]
 }
 
 
@@ -21,6 +25,7 @@ object OpenMindFiles {
     val OM2_OLD_HOME = mFile("/om2/vast/cbmm/$OM_USER")
     val OM2_HOME = om2.forMe()
     val OM2_TEMP = OM2_HOME["temp"]
+    val OM2_SINHA_TRANSFER = OM2_TEMP["sinha_node_transfer"]
     val OM_SINGULARITY_FOLDER = OM2_HOME["singularity"]
     val OM2_REG = OM2_OLD_HOME + REGISTERED_FOLDER.name
     val OM2_IDE = OM2_REG + IDE_FOLDER.name
@@ -30,6 +35,7 @@ object OpenMindFiles {
     val OM_DATA_FOLD = OM2_OLD_HOME["data"]
 
     val SBATCH_OUTPUT_FOLDER = OM2_HOME["output"]
+    val NVIDIA_SMI_OUTPUT = OM2_HOME["nvidia-smi-output"]
 
 }
 
@@ -44,7 +50,7 @@ enum class OpenMindUserStorageLocation {
 
 val BRIAR_EXTRACT_FOLDER = OM_LOCAL_DATA_FOLDER["BRS1_extract"]
 val BRIAR_EXTRACT_DATA_FOLDER = BRIAR_EXTRACT_FOLDER["data"]
-val BRIAR_EXTRACT_METADATA_FOLDER = BRIAR_EXTRACT_FOLDER["metadata.json"]
+val BRIAR_EXTRACT_METADATA_FILE = BRIAR_EXTRACT_FOLDER["metadata.json"]
 
 val OM_JPROFILER_CONFIG_FILE by lazy {
     OpenMindFiles.OM2_HOME[".jprofiler_config.xml"]
