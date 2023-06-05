@@ -1,12 +1,13 @@
 package matt.file
 
 import matt.file.construct.mFile
-import matt.lang.not
+import matt.file.ext.FileExtension
 import matt.model.data.file.FilePath
 import matt.model.data.file.FolderPath
 import matt.model.data.message.SFile
 import matt.model.obj.text.MightExistAndWritableText
 import matt.model.obj.text.WritableBytes
+import matt.prim.str.ensurePrefix
 import kotlin.reflect.KClass
 
 
@@ -16,6 +17,20 @@ interface FileOrURL {
 
     fun resolve(other: String): FileOrURL
     operator fun plus(other: String) = resolve(other)
+
+    operator fun get(item: String): FileOrURL {
+        return resolve(item)
+    }
+
+}
+
+object FSRoot : FileOrURL {
+    override val cpath: String
+        get() = TODO("Not yet implemented")
+
+    override fun resolve(other: String): MFile {
+        return mFile(other.ensurePrefix("/"))
+    }
 }
 
 
@@ -40,27 +55,6 @@ fun SFile.toMFile() = mFile(path)
 
 fun MFile.toSFile() = SFile(userPath)
 
-class FileExtension(input: String) {
-    init {
-        require(not(input.endsWith("."))) {
-            "file extension \"${input}\" should not end with a dot"
-        }
-    }
-
-    val id = input.removePrefix(".")
-
-    override fun equals(other: Any?): Boolean {
-        return other is FileExtension && other.id == id
-    }
-
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
-
-    val afterDot = id
-    val withPrefixDot = ".$id"
-
-}
 
 expect sealed class MFile(userPath: String) : CommonFile, MightExistAndWritableText, WritableBytes {
 

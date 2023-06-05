@@ -1,5 +1,6 @@
 package matt.file.copy
 
+import matt.lang.If
 import matt.lang.anno.SeeURL
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -25,7 +26,7 @@ import java.util.*
  * if an I/O error occurs
  */
 @Throws(IOException::class)
-fun copyDirectoryWithAttributes(source: Path, target: Path) {
+fun copyDirectoryWithAttributes(source: Path, target: Path, overwrite: Boolean = false) {
     Files.walkFileTree(source, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Int.MAX_VALUE, object : FileVisitor<Path?> {
         @Throws(IOException::class)
         override fun preVisitDirectory(
@@ -126,7 +127,8 @@ fun copyDirectoryWithAttributes(source: Path, target: Path) {
         ): FileVisitResult {
             Files.copy(
                 file!!, target.resolve(source.relativize(file)),
-                StandardCopyOption.COPY_ATTRIBUTES
+                StandardCopyOption.COPY_ATTRIBUTES,
+                *If(overwrite).then(StandardCopyOption.REPLACE_EXISTING)
             )
             return FileVisitResult.CONTINUE
         }

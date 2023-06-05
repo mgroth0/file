@@ -1,10 +1,10 @@
 package matt.file.commons
 
 
-import matt.file.FileExtension
 import matt.file.Folder
 import matt.file.MFile
 import matt.file.construct.mFile
+import matt.file.ext.FileExtension
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
@@ -182,7 +182,7 @@ val RAM_NUMBERED_FILES by lazy {
     NumberedFiles(
         folder = DEEPHYS_RAM_SAMPLES_FOLDER,
         prefix = "",
-        extension = FileExtension("json")
+        extension = FileExtension.JSON
     )
 }
 
@@ -218,7 +218,6 @@ val GIT_IGNORE_FILE_NAME = ".gitignore"
 val GIT_MODULES_FILE_NAME = ".gitmodules"
 
 val LICENSE_FILE_NAME = "LICENSE.md"
-
 
 
 const val DEFAULT_FAV_ICO_NAME = "default.ico"

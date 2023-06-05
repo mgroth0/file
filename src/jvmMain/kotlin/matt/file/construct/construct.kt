@@ -4,10 +4,10 @@ package matt.file.construct
 
 import matt.collect.map.dmap.withStoringDefault
 import matt.collect.map.lazyMap
-import matt.file.FileExtension
 import matt.file.Folder
 import matt.file.MFile
 import matt.file.UnknownFile
+import matt.file.ext.FileExtension
 import matt.file.fileClassForExtension
 import matt.model.code.ok.JavaIoFileIsOk
 import matt.model.data.message.SFile

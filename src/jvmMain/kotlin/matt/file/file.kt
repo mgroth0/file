@@ -8,6 +8,7 @@ import matt.collect.itr.recurse.recurse
 import matt.collect.itr.search
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
+import matt.file.ext.FileExtension
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.userHome
@@ -35,6 +36,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
+
 
 
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
@@ -340,7 +342,8 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     }
 
-    fun resRepExt(newExt: String) = mFile(parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt)
+    fun resRepExt(newExt: FileExtension) =
+        mFile(parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt.afterDot)
 
     actual fun deleteIfExists() {
         if (exists()) {
@@ -377,7 +380,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
         return resolve(item)
     }
 
-    operator fun get(item: String): MFile {
+    final override operator fun get(item: String): MFile {
         return resolve(item)
     }
 
