@@ -56,7 +56,15 @@ fun SFile.toMFile() = mFile(path)
 fun MFile.toSFile() = SFile(userPath)
 
 
-expect sealed class MFile(userPath: String) : CommonFile, MightExistAndWritableText, WritableBytes {
+enum class CaseSensitivity {
+    CaseSensitive, CaseInSensitive
+}
+
+
+expect val defaultCaseSensitivity: CaseSensitivity
+
+expect sealed class MFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) : CommonFile,
+    MightExistAndWritableText, WritableBytes {
 
 
     override fun isDir(): Boolean
@@ -130,7 +138,8 @@ fun fileClassForExtension(extension: FileExtension): KClass<out MFile> {
 }
 
 
-class UnknownFile(userPath: String) : MFile(userPath)
+class UnknownFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
 fun MFile.asFolder() = Folder(userPath)
 
@@ -142,15 +151,18 @@ fun MFile.requireIsExistingFolder(): Folder {
     return this
 }
 
-open class Folder(userPath: String) : MFile(userPath), FolderPath {
+open class Folder(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity), FolderPath {
     constructor(mFile: MFile) : this(mFile.userPath)
 }
 
-sealed class CodeFile(userPath: String) : MFile(userPath)
+sealed class CodeFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
 val String.kt get() = KotlinFile("$this.kt")
 
-class KotlinFile(userPath: String) : CodeFile(userPath) {
+class KotlinFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity) {
     companion object {
         const val FILE_ANNO_LINE_MARKER = "@file:"
     }
@@ -158,111 +170,162 @@ class KotlinFile(userPath: String) : CodeFile(userPath) {
 
 val String.py get() = PythonFile("$this.py")
 
-class PythonFile(userPath: String) : CodeFile(userPath)
-class JavaFile(userPath: String) : CodeFile(userPath)
-class GroovyFile(userPath: String) : CodeFile(userPath)
+class PythonFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity)
+
+class JavaFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity)
+
+class GroovyFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity)
+
 interface ShellFile : CommonFile
 
 val String.sh get() = ShellFileImpl("$this.sh")
 
-class ShellFileImpl(userPath: String) : CodeFile(userPath), ShellFile
-class ZshFile(userPath: String) : CodeFile(userPath), ShellFile
+class ShellFileImpl(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity), ShellFile
+
+class ZshFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity), ShellFile
 
 val String.scpt get() = BinaryApplescriptFile("$this.scpt")
 
-class BinaryApplescriptFile(userPath: String) : ExecutableFile(userPath)
+class BinaryApplescriptFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ExecutableFile(userPath, caseSensitivity)
 
 val String.applescript get() = ApplescriptFile("$this.applescript")
 
-class ApplescriptFile(userPath: String) : CodeFile(userPath)
+class ApplescriptFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    CodeFile(userPath, caseSensitivity)
 
 interface ArchiveFile : CommonFile
 
-sealed class BaseZip(userPath: String) : MFile(userPath), ArchiveFile
+sealed class BaseZip(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity), ArchiveFile
 
-class ZipFile(userPath: String) : BaseZip(userPath)
+class ZipFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    BaseZip(userPath, caseSensitivity)
 
 val String.jar get() = JarFile("$this.jar")
 
-class JarFile(userPath: String) : BaseZip(userPath)
+class JarFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    BaseZip(userPath, caseSensitivity)
 
-sealed class ExecutableFile(userPath: String) : MFile(userPath)
+sealed class ExecutableFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
 val String.kexe get() = KExeFile("$this.kexe")
 
-class KExeFile(userPath: String) : ExecutableFile(userPath)
-class ExeFile(userPath: String) : ExecutableFile(userPath)
+class KExeFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ExecutableFile(userPath, caseSensitivity)
+
+class ExeFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ExecutableFile(userPath, caseSensitivity)
 
 
-sealed class DiskImageFile(userPath: String) : MFile(userPath)
-class DmgFile(userPath: String) : DiskImageFile(userPath)
+sealed class DiskImageFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
+
+class DmgFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DiskImageFile(userPath, caseSensitivity)
 
 
 sealed class DataFile(
-    userPath: String, val binary: Boolean
-) : MFile(userPath) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath) //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
+    userPath: String,
+    caseSensitivity: CaseSensitivity = defaultCaseSensitivity,
+    val binary: Boolean
+) : MFile(
+    userPath,
+    caseSensitivity
+) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath) //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
 
 
 val String.json get() = JsonFile("$this.json")
 
-class JsonFile(userPath: String) : DataFile(userPath, binary = false)
+class JsonFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = false)
 
 val String.cbor get() = CborFile("$this.cbor")
 
-class CborFile(userPath: String) : DataFile(userPath, binary = true)
+class CborFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = true)
 
 
 sealed interface MarkupLanguageFile : CommonFile
-class XMLFile(userPath: String) : DataFile(userPath, binary = false), MarkupLanguageFile
-class HTMLFile(userPath: String) : MFile(userPath), MarkupLanguageFile
+class XMLFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = false), MarkupLanguageFile
+
+class HTMLFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity), MarkupLanguageFile
 
 val String.md get() = MarkDownFile("$this.md")
 
-class MarkDownFile(userPath: String) : MFile(userPath), MarkupLanguageFile
+class MarkDownFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity), MarkupLanguageFile
 
 
-sealed class ImageFile(userPath: String, val raster: Boolean) : MFile(userPath)
+sealed class ImageFile(userPath: String, caseSensitivity: CaseSensitivity, val raster: Boolean) : MFile(userPath, caseSensitivity)
 
 val String.png get() = PngFile("$this.png")
 
-class PngFile(userPath: String) : ImageFile(userPath, raster = true)
-class JpgFile(userPath: String) : ImageFile(userPath, raster = true)
-class TiffFile(userPath: String) : ImageFile(userPath, raster = true)
+class PngFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ImageFile(userPath, caseSensitivity, raster = true)
+
+class JpgFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ImageFile(userPath, caseSensitivity, raster = true)
+
+class TiffFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ImageFile(userPath, caseSensitivity, raster = true)
 
 val String.svg get() = SvgFile("$this.svg")
 
-class SvgFile(userPath: String) : ImageFile(userPath, raster = false)
+class SvgFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ImageFile(userPath, caseSensitivity, raster = false)
 
 val String.icns get() = ICNSFile("$this.icns")
 
 
-class ICNSFile(userPath: String) : ImageFile(userPath, raster = true)
+class ICNSFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ImageFile(userPath, caseSensitivity, raster = true)
 
 val String.ico get() = ICOFile("$this.ico")
 
-class ICOFile(userPath: String) : ImageFile(userPath, raster = true)
+class ICOFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    ImageFile(userPath, caseSensitivity, raster = true)
 
 
-class MP3File(userPath: String) : MFile(userPath)
+class MP3File(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
 val String.mp4 get() = MP4File("$this.mp4")
 
-class MP4File(userPath: String) : MFile(userPath)
+class MP4File(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
-class PdfFile(userPath: String) : MFile(userPath)
+class PdfFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
-class PropsFile(userPath: String) : DataFile(userPath, binary = false)
+class PropsFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = false)
 
-class YamlFile(userPath: String) : DataFile(userPath, binary = false)
-class TomlFile(userPath: String) : DataFile(userPath, binary = false)
+class YamlFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = false)
+
+class TomlFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = false)
 
 val String.log get() = LogFile("$this.log")
 
-class LogFile(userPath: String) : MFile(userPath)
+class LogFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
 
 val String.txt get() = TxtFile("$this.txt")
 
-class TxtFile(userPath: String) : MFile(userPath)
-class DSStoreFile(userPath: String) : DataFile(userPath, binary = false)
+class TxtFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    MFile(userPath, caseSensitivity)
+
+class DSStoreFile(userPath: String, caseSensitivity: CaseSensitivity = defaultCaseSensitivity) :
+    DataFile(userPath, caseSensitivity, binary = false)
 
 

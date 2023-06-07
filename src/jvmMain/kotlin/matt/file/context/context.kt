@@ -46,7 +46,7 @@ interface ComputeContextFiles {
     val libjprofilertiPath: String
     val defaultPathPrefix: FileOrURL
     val briarDataFolder: MFile
-    val om2Home get() = mFile(defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(MFile.unixSeperator)].cpath)
+    val om2Home get() = mFile(defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(MFile.unixSeparator)].cpath)
     val jProfilerConfigFile: MFile get() = om2Home[".jprofiler_config.xml"]
     val jarsFolder get() = om2Home["jars"]
     val tempFolder get() = om2Home["temp"]
@@ -61,5 +61,10 @@ interface ComputeContextFiles {
 
     val sbatchOutputFolder get() = om2Home["output"]
     val nvidiaSmiOutput get() = om2Home["nvidia-smi-output"]
+
+    val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath)
+    val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json")
+
+    val brs1Folder get() = briarDataFolder [ "BRS1"]
 
 }

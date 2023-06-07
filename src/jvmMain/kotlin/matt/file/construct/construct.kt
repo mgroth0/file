@@ -4,9 +4,11 @@ package matt.file.construct
 
 import matt.collect.map.dmap.withStoringDefault
 import matt.collect.map.lazyMap
+import matt.file.CaseSensitivity
 import matt.file.Folder
 import matt.file.MFile
 import matt.file.UnknownFile
+import matt.file.defaultCaseSensitivity
 import matt.file.ext.FileExtension
 import matt.file.fileClassForExtension
 import matt.model.code.ok.JavaIoFileIsOk
@@ -18,25 +20,37 @@ import java.nio.file.Path
 import kotlin.reflect.KClass
 
 fun Path.toMFile() = toFile().toMFile()
-fun File.toMFile(cls: KClass<out MFile>? = null) = mFile(this, cls = cls)
+fun File.toMFile(
+    caseSensitivity: CaseSensitivity? = null,
+    cls: KClass<out MFile>? = null
+) = mFile(this, cls = cls, caseSensitivity = caseSensitivity)
+
 fun File.toSFile() = SFile(path)
 
 fun mFile(file: MFile) = mFile(file.userPath)
-fun mFile(file: File, cls: KClass<out MFile>? = null) = mFile(file.path, cls = cls)
+fun mFile(file: File, caseSensitivity: CaseSensitivity? = null, cls: KClass<out MFile>? = null) =
+    mFile(file.path, cls = cls, caseSensitivity = caseSensitivity)
+
 fun mFile(parent: String, child: String) = mFile(File(parent, child))
 fun mFile(parent: MFile, child: String) = mFile(parent.cpath, child)
 fun mFile(uri: URI) = mFile(File(uri))
 
 fun unTypedMFile(userPath: String) = UnknownFile(userPath)
 
-actual fun mFile(userPath: String, cls: KClass<out MFile>?): MFile {
+actual fun mFile(userPath: String, caseSensitivity: CaseSensitivity?, cls: KClass<out MFile>?): MFile {
     if (cls != null && cls != MFile::class) {
         val constructor = constructorsByCls[cls]
         /*return constructor.call(userPath)*/
-        return constructor.newInstance(userPath) as MFile
+        if (caseSensitivity != null) {
+            return constructor.newInstance(userPath, caseSensitivity) as MFile
+        }
+        return constructor.newInstance(userPath, defaultCaseSensitivity) as MFile
     }
     val f = File(userPath)
-    return constructors[f.extension].newInstance(userPath) as MFile
+    if (caseSensitivity != null) {
+        return constructors[f.extension].newInstance(userPath, caseSensitivity) as MFile
+    }
+    return constructors[f.extension].newInstance(userPath, defaultCaseSensitivity) as MFile
     /*.call(userPath)*/
 }
 

@@ -1,13 +1,17 @@
 package matt.file
 
+import matt.file.CaseSensitivity.CaseInSensitive
 import matt.file.construct.mFile
 import matt.lang.NOT_IMPLEMENTED
 import matt.model.obj.text.MightExistAndWritableText
 import matt.model.obj.text.WritableBytes
 import kotlin.reflect.KClass
 
+actual val defaultCaseSensitivity by lazy {
+    CaseInSensitive
+}
 
-actual sealed class MFile actual constructor(userPath: String) : CommonFile, MightExistAndWritableText, WritableBytes {
+actual sealed class MFile actual constructor(userPath: String, caseSensitivity: CaseSensitivity) : CommonFile, MightExistAndWritableText, WritableBytes {
 
 
     actual val userPath = userPath.removeSuffix(SEP)

@@ -11,6 +11,8 @@ class FileExtension(input: String) {
         val EMLX = FileExtension("emlx")
         val ZIP = FileExtension("zip")
         val FFMPEG = FileExtension("ffmpeg") /*I invented this*/
+        val MOG = FileExtension("mog") /*I invented this*/
+        val COMMAND = FileExtension("command") /*I invented this*/
     }
 
     init {

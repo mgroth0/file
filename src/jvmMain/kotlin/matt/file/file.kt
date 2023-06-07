@@ -6,6 +6,8 @@ package matt.file
 import matt.collect.itr.filterNotNull
 import matt.collect.itr.recurse.recurse
 import matt.collect.itr.search
+import matt.file.CaseSensitivity.CaseInSensitive
+import matt.file.CaseSensitivity.CaseSensitive
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
 import matt.file.ext.FileExtension
@@ -37,13 +39,19 @@ import java.nio.file.StandardCopyOption
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 
+actual val defaultCaseSensitivity by lazy {
+    if (thisMachine.caseSensitive) CaseSensitive else CaseInSensitive
+}
 
 
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
   I'm actually shocked it took me so long to figure this out*/
 
-/*TODO: SUBCLASS IS PROBABLAMATIC BEACUASE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
-actual sealed class MFile actual constructor(actual val userPath: String) : File(userPath),
+/*TODO: SUBCLASS IS PROBLEMATIC BECAUSE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
+actual sealed class MFile actual constructor(
+    actual val userPath: String,
+    val caseSensitivity: CaseSensitivity
+) : File(userPath),
     CommonFile,
     Streamable,
     MightExistAndWritableText,
@@ -117,13 +125,10 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     companion object {
 
-        val osFun by lazy { if (thisMachine.caseSensitive) { s: String -> s } else { s: String -> s.lower() } }
-
-        fun String.osFun() = osFun(this)
 
         val separatorChar by lazy { File.separatorChar }
         val separator: String by lazy { File.separator }
-        const val unixSeperator: String = "/"
+        const val unixSeparator: String = "/"
 
         /*these are colons meant to delimit lists of files*/
         @Deprecated("I can't think of any use case of this other than to cause bugs")
@@ -141,8 +146,22 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     }
 
+    val identityGetter by lazy {
+        when (caseSensitivity) {
+            CaseSensitive   -> {
+                { s: String -> s }
+            }
+
+            CaseInSensitive -> {
+                { s: String ->
+                    s.lower()
+                }
+            }
+        }
+    }
+
     fun readChannel() = FileChannel.open(this.toPath())
-    fun writeChannel() = RandomAccessFile(this, "rw").channel
+    fun writeChannel(): FileChannel = RandomAccessFile(this, "rw").channel
 
     actual override val fName: String = name
 
@@ -163,7 +182,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     }
 
     override fun getAbsoluteFile(): MFile {
-        return super.getAbsoluteFile().toMFile()
+        return super.getAbsoluteFile().toMFile(caseSensitivity = caseSensitivity)
     }
 
     fun listNonDSStoreFiles() = listFiles()?.filter { it !is DSStoreFile }
@@ -173,15 +192,15 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     }
 
     override fun listFiles(): Array<MFile>? {
-        return super.listFiles()?.map { it.toMFile() }?.toTypedArray()
+        return super.listFiles()?.map { it.toMFile(caseSensitivity = caseSensitivity) }?.toTypedArray()
     }
 
     override fun listFiles(fiilenameFilter: FilenameFilter?): Array<MFile>? {
-        return super.listFiles(fiilenameFilter)?.map { it.toMFile() }?.toTypedArray()
+        return super.listFiles(fiilenameFilter)?.map { it.toMFile(caseSensitivity = caseSensitivity) }?.toTypedArray()
     }
 
     override fun listFiles(fileFilter: FileFilter?): Array<MFile>? {
-        return super.listFiles(fileFilter)?.map { it.toMFile() }?.toTypedArray()
+        return super.listFiles(fileFilter)?.map { it.toMFile(caseSensitivity = caseSensitivity) }?.toTypedArray()
     }
 
     fun listFilesOrEmpty() = listFiles() ?: arrayOf()
@@ -189,7 +208,7 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     /*must remain lower since in ext.kt i look here for matching with a astring*/
     /*MUST REMAIN LAZY because for android osFun contains a "network" op that blocks the main thread and throws an error*/
-    override val idFile by lazy { File(osFun(userPath)) }
+    override val idFile by lazy { File(identityGetter(userPath)) }
 
 
     override operator fun compareTo(other: File?): Int = idFile.compareTo((other as MFile).idFile)
@@ -216,25 +235,29 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
 
     /*MUST KEEP THESE METHODS HERE AND NOT AS EXTENSIONS IN ORDER TO ROBUSTLY OVERRIDE KOTLIN.STDLIB'S DEFAULT FILE EXTENSIONS. OTHERWISE, I'D HAVE TO MICROMANAGE MY IMPORTS TO MAKE SURE I'M IMPORTING THE CORRECT EXTENSIONS*/
 
-    fun wildcardChildrenPath() = path.ensureSuffix(MFile.separator) + "*"
+    fun wildcardChildrenPath() = path.ensureSuffix(separator) + "*"
 
-    fun relativeTo(base: MFile): MFile = idFile.relativeTo(base.idFile).toMFile()
+    fun relativeTo(base: MFile): MFile = idFile.relativeTo(base.idFile).toMFile(base.caseSensitivity)
 
 
     fun startsWith(other: MFile): Boolean = idFile.startsWith(other.idFile)
-    fun startsWith(other: String): Boolean = idFile.startsWith(osFun(other))
+    fun startsWith(other: String): Boolean = idFile.startsWith(identityGetter(other))
     fun endsWith(other: MFile) = idFile.endsWith(other.idFile)
-    fun endsWith(other: String): Boolean = idFile.endsWith(other.osFun())
+    fun endsWith(other: String): Boolean = idFile.endsWith(identityGetter(other))
 
 
-    actual fun resolve(other: MFile, cls: KClass<out MFile>?): MFile = userFile.resolve(other).toMFile(cls = cls)
-    actual override fun resolve(other: String): MFile = userFile.resolve(other).toMFile()
+    actual fun resolve(other: MFile, cls: KClass<out MFile>?): MFile =
+        userFile.resolve(other).toMFile(cls = cls, caseSensitivity = caseSensitivity)
+
+    actual override fun resolve(other: String): MFile =
+        userFile.resolve(other).toMFile(caseSensitivity = caseSensitivity)
 
 
-    fun resolveSibling(relative: MFile) = userFile.resolveSibling(relative).toMFile()
+    fun resolveSibling(relative: MFile) = userFile.resolveSibling(relative).toMFile(caseSensitivity = caseSensitivity)
 
 
-    fun resolveSibling(relative: String): MFile = userFile.resolveSibling(relative).toMFile()
+    fun resolveSibling(relative: String): MFile =
+        userFile.resolveSibling(relative).toMFile(caseSensitivity = caseSensitivity)
 
     fun mkparents() = parentFile!!.mkdirs()
 
@@ -343,7 +366,10 @@ actual sealed class MFile actual constructor(actual val userPath: String) : File
     }
 
     fun resRepExt(newExt: FileExtension) =
-        mFile(parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt.afterDot)
+        mFile(
+            parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt.afterDot,
+            caseSensitivity = caseSensitivity
+        )
 
     actual fun deleteIfExists() {
         if (exists()) {
