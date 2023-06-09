@@ -52,7 +52,8 @@ val IDE_FOLDER by lazy { REGISTERED_FOLDER["ide"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
 val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
 val YOUR_KIT_APP_FOLDER by lazy {
-    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]
+    /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]*/
+    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.5.app"]
 }
 val JPROFILER_APP_FOLDER by lazy {
     SYS_APPLICATIONS_FOLDER["JProfiler.app"]
@@ -223,4 +224,4 @@ val LICENSE_FILE_NAME = "LICENSE.md"
 const val DEFAULT_FAV_ICO_NAME = "default.ico"
 const val FAV_ICO_NAME = "favicon.ico"
 const val DOCS_FOLDER_NAME = "docs"
-
+const val STATIC_ROOT_NAME = "static"
