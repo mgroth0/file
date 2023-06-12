@@ -28,9 +28,7 @@ object FSRoot : FileOrURL {
     override val cpath: String
         get() = TODO("Not yet implemented")
 
-    override fun resolve(other: String): MFile {
-        return mFile(other.ensurePrefix("/"))
-    }
+    override fun resolve(other: String) = mFile(other.ensurePrefix("/"))
 }
 
 
@@ -265,7 +263,8 @@ class MarkDownFile(userPath: String, caseSensitivity: CaseSensitivity = defaultC
     MFile(userPath, caseSensitivity), MarkupLanguageFile
 
 
-sealed class ImageFile(userPath: String, caseSensitivity: CaseSensitivity, val raster: Boolean) : MFile(userPath, caseSensitivity)
+sealed class ImageFile(userPath: String, caseSensitivity: CaseSensitivity, val raster: Boolean) :
+    MFile(userPath, caseSensitivity)
 
 val String.png get() = PngFile("$this.png")
 
