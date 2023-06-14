@@ -2,6 +2,7 @@ package matt.file.commons.lcommons
 
 import matt.file.CaseSensitivity.CaseSensitive
 import matt.file.MFile
+import matt.file.commons.CACHE_FOLDER
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
 import matt.file.construct.mFile
@@ -14,9 +15,12 @@ class LocalComputeContextFiles : ComputeContextFiles {
     private val fakeOmFs = fakeRemoteFs["om"]
     override val defaultPathPrefix = fakeOmFs
     override val briarDataFolder: MFile
-        get() = mFile("/Volumes/Untitled/",caseSensitivity = CaseSensitive)
-    override val briarExtractFolder: MFile
-        get() = DATA_FOLDER["BRS1_extract"]
+        get() = mFile("/Volumes/Untitled/", caseSensitivity = CaseSensitive)
+    override val briarExtractsFolder: MFile
+        get() = DATA_FOLDER["BriarExtracts"]
     override val libjprofilertiPath: String
         get() = MAC_LIBJPROFILERTI_PATH
+
+    override val cacheFolder: MFile
+        get() = CACHE_FOLDER["local_compute_context"]
 }

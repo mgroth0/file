@@ -5,6 +5,7 @@ import matt.file.FileOrURL
 import matt.file.MFile
 import matt.file.commons.IDE_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
+import matt.file.commons.rcommons.OpenMindFiles.OM2_HOME
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om2
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om5
 import matt.file.construct.mFile
@@ -19,16 +20,15 @@ class OpenMindComputeContextFiles : ComputeContextFiles {
     override val briarDataFolder: MFile
         get() = OM_LOCAL_FOLDER["data"]
 
-    override val briarExtractFolder: MFile
-        get() = briarDataFolder["BRS1_extract"]
+    override val briarExtractsFolder: MFile
+        get() = briarDataFolder
 
     override val libjprofilertiPath: String
         get() = "/opt/jprofiler13/bin/linux-x64/libjprofilerti.so"
+
+    override val cacheFolder: MFile
+        get() = OM2_HOME["cache"]["remote_compute_context"]
 }
-
-
-
-
 
 
 const val OM_USER = "mjgroth"
@@ -48,8 +48,6 @@ object OpenMindFiles {
 
 
     val OM_DATA_FOLD = OM2_OLD_HOME["data"]
-
-
 
 
 }

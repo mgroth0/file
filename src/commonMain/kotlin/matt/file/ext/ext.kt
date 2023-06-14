@@ -5,6 +5,7 @@ import matt.lang.not
 class FileExtension(input: String) {
     companion object {
         val JSON = FileExtension("json")
+        val CBOR = FileExtension("cbor")
         val APP = FileExtension("app")
         val PDF = FileExtension("pdf")
         val BIB = FileExtension("bib")

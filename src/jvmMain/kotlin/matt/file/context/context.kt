@@ -53,18 +53,15 @@ interface ComputeContextFiles {
     val snapshotFolder get() = tempFolder["jprofiler"]
     val latestJpSnapshot get() = snapshotFolder["latest.jps"]
     val rTaskOutputs get() = om2Home["rTaskOutputs"]
-
-
-    val briarExtractFolder: MFile
-    val briarExtractDataFolder get() = briarExtractFolder["data"]
-    val briarExtractMetadataFile get() = briarExtractFolder[BRIAR_EXTRACT_METADATA_FILE_NAME]
-
+    val briarExtractsFolder: MFile
     val sbatchOutputFolder get() = om2Home["output"]
     val nvidiaSmiOutput get() = om2Home["nvidia-smi-output"]
 
     val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath)
     val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json")
 
-    val brs1Folder get() = briarDataFolder [ "BRS1"]
+    val brs1Folder get() = briarDataFolder["BRS1"]
+
+    val cacheFolder: MFile
 
 }
