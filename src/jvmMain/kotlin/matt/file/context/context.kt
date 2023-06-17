@@ -12,6 +12,7 @@ import matt.file.construct.mFile
 @Serializable
 sealed interface ComputeContext {
     val files: ComputeContextFiles
+    val taskLabel: String
 }
 
 @Serializable
@@ -24,16 +25,32 @@ sealed class ComputeContextImpl : ComputeContext {
 @Serializable
 @SerialName("OM")
 class OpenMindComputeContext : ComputeContextImpl() {
+    override val taskLabel = "OpenMind"
     override val files by lazy {
         OpenMindComputeContextFiles()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is OpenMindComputeContext
+    }
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 }
 
 @Serializable
 @SerialName("Local")
 class LocalComputeContext : ComputeContextImpl() {
+    override val taskLabel = "Local"
     override val files by lazy {
         LocalComputeContextFiles()
+    }
+    override fun equals(other: Any?): Boolean {
+        return other is LocalComputeContextFiles
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
     }
 }
 
