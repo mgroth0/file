@@ -475,16 +475,7 @@ actual sealed class MFile actual constructor(
     }
 
 
-    fun next(): MFile {
-        var ii = 0
-        while (true) {
-            val f = mFile(absolutePath + ii.toString())
-            if (!f.exists()) {
-                return f
-            }
-            ii += 1
-        }
-    }
+
 
     fun doubleBackupWrite(s: String, thread: Boolean = false) {
 
