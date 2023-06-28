@@ -24,6 +24,15 @@ interface FileOrURL {
 
 }
 
+class UnknownFileOrURL(path: String) : FileOrURL {
+    override val cpath = path
+
+    override fun resolve(other: String): FileOrURL {
+        TODO("Not yet implemented")
+    }
+
+}
+
 object FSRoot : FileOrURL {
     override val cpath: String
         get() = TODO("Not yet implemented")

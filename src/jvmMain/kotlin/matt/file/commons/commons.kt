@@ -39,6 +39,7 @@ val GBUILD_DIST_FOLDER by lazy { GBUILD_FOLDER + "dist" }
 val DOWNLOADS_FOLDER by lazy { USER_HOME + "Downloads" }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
+val BIN_JS_FOLDER by lazy { BIN_FOLDER + "js" }
 val BIN_BIN by lazy { BIN_FOLDER + "bin" }
 val BIN_BIN_BIN by lazy { BIN_BIN + "bin" }
 val BIN_BIN_BIN_BIN by lazy { BIN_BIN_BIN + "bin" }
@@ -225,3 +226,5 @@ const val DEFAULT_FAV_ICO_NAME = "default.ico"
 const val FAV_ICO_NAME = "favicon.ico"
 const val DOCS_FOLDER_NAME = "docs"
 const val STATIC_ROOT_NAME = "static"
+
+const val DockerfileName = "Dockerfile"
