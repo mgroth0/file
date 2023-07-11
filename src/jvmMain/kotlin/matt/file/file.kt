@@ -13,6 +13,8 @@ import matt.file.construct.toMFile
 import matt.file.ext.FileExtension
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
+import matt.lang.require.requireIs
+import matt.lang.require.requirePositive
 import matt.lang.userHome
 import matt.log.NOPLogger
 import matt.log.warn.warn
@@ -51,13 +53,7 @@ actual val defaultCaseSensitivity by lazy {
 actual sealed class MFile actual constructor(
     actual val userPath: String,
     val caseSensitivity: CaseSensitivity
-) : File(userPath),
-    CommonFile,
-    Streamable,
-    MightExistAndWritableText,
-    WritableBytes,
-    IDFile,
-    Appendable,
+) : File(userPath), CommonFile, Streamable, MightExistAndWritableText, WritableBytes, IDFile, Appendable,
     PathLike<MFile> {
 
     fun walk(direction: FileWalkDirection = FileWalkDirection.TOP_DOWN) =
@@ -90,7 +86,11 @@ actual sealed class MFile actual constructor(
         return this
     }
 
-    override fun append(csq: CharSequence, start: Int, end: Int): java.lang.Appendable {
+    override fun append(
+        csq: CharSequence,
+        start: Int,
+        end: Int
+    ): java.lang.Appendable {
         return append(csq.subSequence(start, end))
     }
 
@@ -98,8 +98,7 @@ actual sealed class MFile actual constructor(
     val betterURLIGuess
         get() = "file://${
             absolutePath.replace(
-                ' '.toString(),
-                "%20"
+                ' '.toString(), "%20"
             )
         }" /*the url above does not include the double slash? so IntelliJ console doesn't recognize it as a url?*/
 
@@ -119,8 +118,16 @@ actual sealed class MFile actual constructor(
 
     constructor(file: MFile) : this(file.userPath)
     constructor(file: File) : this(file.path)
-    constructor(parent: String, child: String) : this(File(parent, child))
-    constructor(parent: MFile, child: String) : this(parent.cpath, child)
+    constructor(
+        parent: String,
+        child: String
+    ) : this(File(parent, child))
+
+    constructor(
+        parent: MFile,
+        child: String
+    ) : this(parent.cpath, child)
+
     constructor(uri: URI) : this(File(uri))
 
     companion object {
@@ -139,10 +146,16 @@ actual sealed class MFile actual constructor(
         val pathSeparator: String by lazy { File.pathSeparator }
 
         fun listRoots() = File.listRoots().map { mFile(it) }.toTypedArray()
-        fun createTempFile(prefix: String, suffix: String?, directory: MFile?) =
-            mFile(File.createTempFile(prefix, suffix, directory))
+        fun createTempFile(
+            prefix: String,
+            suffix: String?,
+            directory: MFile?
+        ) = mFile(File.createTempFile(prefix, suffix, directory))
 
-        fun createTempFile(prefix: String, suffix: String?) = mFile(File.createTempFile(prefix, suffix))
+        fun createTempFile(
+            prefix: String,
+            suffix: String?
+        ) = mFile(File.createTempFile(prefix, suffix))
 
     }
 
@@ -206,15 +219,14 @@ actual sealed class MFile actual constructor(
     fun listFilesOrEmpty() = listFiles() ?: arrayOf()
     actual fun listFilesAsList() = listFiles()?.toList()
 
-    /*must remain lower since in ext.kt i look here for matching with a astring*/
-    /*MUST REMAIN LAZY because for android osFun contains a "network" op that blocks the main thread and throws an error*/
+    /*must remain lower since in ext.kt i look here for matching with a astring*//*MUST REMAIN LAZY because for android osFun contains a "network" op that blocks the main thread and throws an error*/
     override val idFile by lazy { File(identityGetter(userPath)) }
 
 
     override operator fun compareTo(other: File?): Int = idFile.compareTo((other as MFile).idFile)
     override fun equals(other: Any?): Boolean {
         return if (other is File) {
-            require(other is MFile) {
+            requireIs<MFile>(other) {
                 "$other is a File yes, but its not an MFile"
             }
             idFile == other.idFile
@@ -246,8 +258,10 @@ actual sealed class MFile actual constructor(
     fun endsWith(other: String): Boolean = idFile.endsWith(identityGetter(other))
 
 
-    actual fun resolve(other: MFile, cls: KClass<out MFile>?): MFile =
-        userFile.resolve(other).toMFile(cls = cls, caseSensitivity = caseSensitivity)
+    actual fun resolve(
+        other: MFile,
+        cls: KClass<out MFile>?
+    ): MFile = userFile.resolve(other).toMFile(cls = cls, caseSensitivity = caseSensitivity)
 
     actual override fun resolve(other: String): MFile =
         userFile.resolve(other).toMFile(caseSensitivity = caseSensitivity)
@@ -286,7 +300,10 @@ actual sealed class MFile actual constructor(
 
     fun isImage() = extension in listOf("png", "jpg", "jpeg")
 
-    fun append(s: String, mkdirs: Boolean = true) {
+    fun append(
+        s: String,
+        mkdirs: Boolean = true
+    ) {
         if (mkdirs) mkparents()
         appendText(s)
     }
@@ -295,7 +312,10 @@ actual sealed class MFile actual constructor(
         createNewFile()
     }.toMFile()
 
-    fun createNewFile(child: String, text: String) = createNewFile(child).also { it.text = text }
+    fun createNewFile(
+        child: String,
+        text: String
+    ) = createNewFile(child).also { it.text = text }
 
 
     fun mkdir(child: String) = resolve(child).apply {
@@ -304,7 +324,10 @@ actual sealed class MFile actual constructor(
 
     fun mkdir(int: Int) = mkdir(int.toString())
 
-    fun write(s: String, mkparents: Boolean = true) {
+    fun write(
+        s: String,
+        mkparents: Boolean = true
+    ) {
         if (mkparents) mkparents()
         writeText(s)
     }
@@ -316,7 +339,10 @@ actual sealed class MFile actual constructor(
     infix fun withLastNameExtension(s: String) = mFile(abspath.removeSuffix(separator) + s)
 
 
-    fun moveInto(newParent: MFile, overwrite: Boolean = false): MFile {
+    fun moveInto(
+        newParent: MFile,
+        overwrite: Boolean = false
+    ): MFile {
         return (if (overwrite) Files.move(
             this.toPath(), (newParent + this.name).toPath(), StandardCopyOption.REPLACE_EXISTING
         )
@@ -338,19 +364,15 @@ actual sealed class MFile actual constructor(
         @Suppress("UNUSED_PARAMETER") log: Reporter = NOPLogger
     ): () -> MFile {
 
-        require(maxN > 0) {
-            "maxN should be greater than 0 but it is ${maxN}"
-        }
+        requirePositive(maxN)
         val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
             f.name.toIntOrNull()?.let { IndexFolder(f) }
         }.sortedBy { it.index }
         val firstSubIndexFold = existingSubIndexFolds.firstOrNull()
 
-        val nextSubIndexFold =
-            if (existingSubIndexFolds.isEmpty()) IndexFolder(
-                resolve("1")
-            ) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist }
-                ?: existingSubIndexFolds.last().next()
+        val nextSubIndexFold = if (existingSubIndexFolds.isEmpty()) IndexFolder(
+            resolve("1")
+        ) else existingSubIndexFolds.firstOrNull { (it + filename).doesNotExist } ?: existingSubIndexFolds.last().next()
 
 
         return {
@@ -365,11 +387,10 @@ actual sealed class MFile actual constructor(
 
     }
 
-    fun resRepExt(newExt: FileExtension) =
-        mFile(
-            parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt.afterDot,
-            caseSensitivity = caseSensitivity
-        )
+    fun resRepExt(newExt: FileExtension) = mFile(
+        parentFile!!.absolutePath + separator + nameWithoutExtension + "." + newExt.afterDot,
+        caseSensitivity = caseSensitivity
+    )
 
     actual fun deleteIfExists() {
         if (exists()) {
@@ -380,9 +401,6 @@ actual sealed class MFile actual constructor(
             }
         }
     }
-
-
-    val doesNotExist get() = !exists()
 
 
     val mExtension = FileExtension(name.substringAfter("."))
@@ -475,9 +493,10 @@ actual sealed class MFile actual constructor(
     }
 
 
-
-
-    fun doubleBackupWrite(s: String, thread: Boolean = false) {
+    fun doubleBackupWrite(
+        s: String,
+        thread: Boolean = false
+    ) {
 
         mkparents()
         createNewFile()
@@ -507,7 +526,8 @@ actual sealed class MFile actual constructor(
 
 
     internal fun backupWork(
-        @Suppress("UNUSED_PARAMETER") thread: Boolean = false, text: String? = null
+        @Suppress("UNUSED_PARAMETER") thread: Boolean = false,
+        text: String? = null
     ): () -> Unit {
 
         require(this.exists()) {
@@ -536,7 +556,10 @@ actual sealed class MFile actual constructor(
 
     }
 
-    fun backup(thread: Boolean = false, text: String? = null) {
+    fun backup(
+        thread: Boolean = false,
+        text: String? = null
+    ) {
 
         val work = backupWork(thread = thread, text = text)
         if (thread) {
@@ -562,8 +585,11 @@ actual sealed class MFile actual constructor(
 
     fun relativeToOrSelf(base: MFile): MFile = idFile.relativeToOrSelf(base.idFile).toMFile()
     fun relativeToOrNull(base: MFile): MFile? = idFile.relativeToOrNull(base.idFile)?.toMFile()
-    fun copyTo(target: MFile, overwrite: Boolean = false, bufferSize: Int = DEFAULT_BUFFER_SIZE): MFile =
-        userFile.copyTo(target, overwrite, bufferSize).toMFile()
+    fun copyTo(
+        target: MFile,
+        overwrite: Boolean = false,
+        bufferSize: Int = DEFAULT_BUFFER_SIZE
+    ): MFile = userFile.copyTo(target, overwrite, bufferSize).toMFile()
 
     actual override fun mkdirs(): Boolean {
         return super.mkdirs()

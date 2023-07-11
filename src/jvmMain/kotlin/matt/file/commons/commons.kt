@@ -9,6 +9,7 @@ import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.SeeURL
+import matt.lang.require.requireIs
 import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
 import matt.model.code.sys.Linux
@@ -32,6 +33,9 @@ val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
     thisMachine.registeredDir?.let { USER_HOME[it] }
         ?: matt.file.ext.createTempDir(prefix = "registered")
+}
+val BACKUP_FOLDER by lazy {
+    REGISTERED_FOLDER["backup"]
 }
 val GBUILD_FOLDER by lazy { REGISTERED_FOLDER + "gbuild" }
 val GBUILD_JAR_FOLDER by lazy { GBUILD_FOLDER + "jar" }
@@ -80,6 +84,7 @@ val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
 
 val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
+val WEB_TMP_DIR by lazy { mFile("/tmp").also { it.mkdir() } }
 
 
 //fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
@@ -189,12 +194,12 @@ val RAM_NUMBERED_FILES by lazy {
 }
 
 val USER_LIB_FOLDER by lazy {
-    require(thisMachine is Mac)
+    requireIs<Mac>(thisMachine)
     USER_HOME["Library"]
 }
 
 val APP_SUPPORT_FOLDER by lazy {
-    require(thisMachine is Mac)
+    requireIs<Mac>(thisMachine)
     USER_LIB_FOLDER["Application Support"]
 }
 
@@ -228,3 +233,5 @@ const val DOCS_FOLDER_NAME = "docs"
 const val STATIC_ROOT_NAME = "static"
 
 const val DockerfileName = "Dockerfile"
+
+val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"

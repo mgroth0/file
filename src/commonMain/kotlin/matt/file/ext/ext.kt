@@ -1,6 +1,6 @@
 package matt.file.ext
 
-import matt.lang.not
+import matt.lang.require.requireNotEndsWith
 
 class FileExtension(input: String) {
     companion object {
@@ -17,7 +17,7 @@ class FileExtension(input: String) {
     }
 
     init {
-        require(not(input.endsWith("."))) {
+        requireNotEndsWith(input, ".") {
             "file extension \"${input}\" should not end with a dot"
         }
     }

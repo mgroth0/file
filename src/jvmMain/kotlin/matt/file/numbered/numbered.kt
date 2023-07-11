@@ -1,12 +1,14 @@
 package matt.file.numbered
 
 import matt.file.MFile
-import matt.file.construct.mFile
 import matt.file.ext.FileExtension
 import matt.prim.str.isInt
 
+/*TODO: MERGE THIS CODE WITH nextFileThatDoesNotExistWithNameLike and COMMON CODE*/
 class NumberedFiles(
-    private val folder: MFile, val prefix: String, val extension: FileExtension
+    private val folder: MFile,
+    val prefix: String,
+    val extension: FileExtension
 ) {
 
     private fun currentValidFiles() = folder.listFiles()?.filter {
@@ -25,37 +27,3 @@ class NumberedFiles(
 
 }
 
-fun MFile.next(): MFile {
-    var ii = 0
-    while (true) {
-        val f = mFile(absolutePath + ii.toString())
-        if (!f.exists()) {
-            return f
-        }
-        ii += 1
-    }
-}
-
-fun MFile.withNumber(num: Int): MFile {
-    return if ("." !in name) {
-        mFile(
-            "$abspath ($num)"
-        )
-    } else {
-        mFile(
-            abspath.substringBeforeLast(".") + " ($num)." + abspath.substringAfterLast(
-                "."
-            )
-        )
-    }
-}
-
-fun MFile.numberedSequence() = sequence<MFile> {
-    yield(this@numberedSequence)
-    var i = 2
-    while (true) {
-        yield(this@numberedSequence.withNumber(i++))
-    }
-}
-
-fun MFile.firstNonExistingFromNumberedSequence() = numberedSequence().first { it.doesNotExist }
