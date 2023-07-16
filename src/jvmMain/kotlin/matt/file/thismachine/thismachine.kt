@@ -23,6 +23,7 @@ import matt.model.code.sys.UnknownLinuxMachine
 import matt.model.code.sys.UnknownSiliconMacMachine
 import matt.model.code.sys.UnknownWindowsMachine
 import matt.model.code.sys.VagrantLinuxMachine
+import matt.log.warn.warn
 
 const val NEW_MAC_USERNAME = "matthewgroth"
 const val OLD_MAC_USERNAME = "matt"
@@ -32,7 +33,7 @@ const val PRETEND_NOT_MATT = false
 
 fun isMatt(): Boolean {
     if (PRETEND_NOT_MATT) {
-        warnOnce("PRETEND_NOT_MATT=true")
+        warn("PRETEND_NOT_MATT=true")
     }
     return !PRETEND_NOT_MATT && userName == NEW_MAC_USERNAME
 }

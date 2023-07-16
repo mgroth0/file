@@ -140,13 +140,18 @@ enum class SubRoots {
     k
 }
 
+
+interface LocatedIdeProject: ProjectIdea {
+    val folder: MFile
+}
+
 //val subRoots = listOf(/*"KJ",*/"k")
 
-enum class IdeProject : ProjectIdea {
+enum class IdeProject : LocatedIdeProject {
     /*this should be automatically generated*/
     kcomp, all, dnn, hep;
 
-    val folder by lazy { projectFolder + name }
+    override val folder by lazy { projectFolder + name }
     val subRootFolders by lazy { SubRoots.values().map { folder + it.name } }
 }
 
