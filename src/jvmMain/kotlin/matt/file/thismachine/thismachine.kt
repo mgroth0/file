@@ -9,7 +9,6 @@ import matt.lang.platform.OS
 import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
-import matt.log.warn.warnOnce
 import matt.model.code.sys.Machine
 import matt.model.code.sys.NEW_MAC
 import matt.model.code.sys.OLD_MAC
@@ -23,7 +22,6 @@ import matt.model.code.sys.UnknownLinuxMachine
 import matt.model.code.sys.UnknownSiliconMacMachine
 import matt.model.code.sys.UnknownWindowsMachine
 import matt.model.code.sys.VagrantLinuxMachine
-import matt.log.warn.warn
 
 const val NEW_MAC_USERNAME = "matthewgroth"
 const val OLD_MAC_USERNAME = "matt"
