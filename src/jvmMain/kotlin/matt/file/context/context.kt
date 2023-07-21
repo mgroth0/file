@@ -8,12 +8,30 @@ import matt.file.commons.lcommons.LocalComputeContextFiles
 import matt.file.commons.rcommons.OpenMindComputeContextFiles
 import matt.file.commons.rcommons.OpenMindFiles
 import matt.file.construct.mFile
+import matt.lang.context.DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
+import matt.lang.context.DEFAULT_MAC_PROGRAM_PATH_CONTEXT
+import matt.lang.context.DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
+import matt.lang.platform.OsEnum
+import matt.lang.platform.OsEnum.Linux
+import matt.lang.platform.OsEnum.Mac
+import matt.lang.platform.OsEnum.Windows
 
 @Serializable
 sealed interface ComputeContext {
     val files: ComputeContextFiles
     val taskLabel: String
+    val needsModules: Boolean
+    val os: OsEnum
 }
+
+val ComputeContext.shellPathContext
+    get() = when (os) {
+        OsEnum.Linux -> DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
+        OsEnum.Mac   -> DEFAULT_MAC_PROGRAM_PATH_CONTEXT
+        Windows      -> DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
+    }
+
+
 
 @Serializable
 sealed class ComputeContextImpl : ComputeContext {
@@ -25,7 +43,9 @@ sealed class ComputeContextImpl : ComputeContext {
 @Serializable
 @SerialName("OM")
 class OpenMindComputeContext : ComputeContextImpl() {
+    override val needsModules = true
     override val taskLabel = "OpenMind"
+    override val os = Linux
     override val files by lazy {
         OpenMindComputeContextFiles()
     }
@@ -33,18 +53,23 @@ class OpenMindComputeContext : ComputeContextImpl() {
     override fun equals(other: Any?): Boolean {
         return other is OpenMindComputeContext
     }
+
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }
+
 }
 
 @Serializable
 @SerialName("Local")
 class LocalComputeContext : ComputeContextImpl() {
+    override val os = Mac
+    override val needsModules = false
     override val taskLabel = "Local"
     override val files by lazy {
         LocalComputeContextFiles()
     }
+
     override fun equals(other: Any?): Boolean {
         return other is LocalComputeContextFiles
     }
@@ -53,7 +78,6 @@ class LocalComputeContext : ComputeContextImpl() {
         return javaClass.hashCode()
     }
 }
-
 
 
 interface ComputeContextFiles {

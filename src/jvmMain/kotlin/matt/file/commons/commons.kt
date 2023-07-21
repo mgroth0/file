@@ -152,7 +152,7 @@ enum class IdeProject : LocatedIdeProject {
     kcomp, all, dnn, hep;
 
     override val folder by lazy { projectFolder + name }
-    val subRootFolders by lazy { SubRoots.values().map { folder + it.name } }
+    val subRootFolders by lazy { SubRoots.entries.map { folder + it.name } }
 }
 
 
