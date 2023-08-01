@@ -21,5 +21,6 @@ pencil(),
 clock_b(),
 loop(),
 slide(),
-folder();
+folder(),
+gradle();
 }
