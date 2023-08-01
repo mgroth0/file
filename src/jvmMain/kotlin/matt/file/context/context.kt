@@ -4,6 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import matt.file.FileOrURL
 import matt.file.MFile
+import matt.file.commons.GRADLE_PROPERTIES_FILE_NAME
+import matt.file.commons.USER_HOME
 import matt.file.commons.lcommons.LocalComputeContextFiles
 import matt.file.commons.rcommons.OpenMindComputeContextFiles
 import matt.file.commons.rcommons.OpenMindFiles
@@ -15,12 +17,15 @@ import matt.lang.platform.OsEnum
 import matt.lang.platform.OsEnum.Linux
 import matt.lang.platform.OsEnum.Mac
 import matt.lang.platform.OsEnum.Windows
+import java.util.*
 
 @Serializable
 sealed interface ComputeContext {
     val files: ComputeContextFiles
     val taskLabel: String
     val needsModules: Boolean
+    val usesJavaInSingularity: Boolean
+    val javaHome: MFile?
     val os: OsEnum
 }
 
@@ -30,7 +35,6 @@ val ComputeContext.shellPathContext
         OsEnum.Mac   -> DEFAULT_MAC_PROGRAM_PATH_CONTEXT
         Windows      -> DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
     }
-
 
 
 @Serializable
@@ -44,6 +48,8 @@ sealed class ComputeContextImpl : ComputeContext {
 @SerialName("OM")
 class OpenMindComputeContext : ComputeContextImpl() {
     override val needsModules = true
+    override val javaHome = null
+    override val usesJavaInSingularity = true
     override val taskLabel = "OpenMind"
     override val os = Linux
     override val files by lazy {
@@ -65,6 +71,10 @@ class OpenMindComputeContext : ComputeContextImpl() {
 class LocalComputeContext : ComputeContextImpl() {
     override val os = Mac
     override val needsModules = false
+    override val usesJavaInSingularity = false
+    override val javaHome by lazy {
+        GRADLE_JAVA_HOME
+    }
     override val taskLabel = "Local"
     override val files by lazy {
         LocalComputeContextFiles()
@@ -77,8 +87,19 @@ class LocalComputeContext : ComputeContextImpl() {
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }
+
+
 }
 
+val GRADLE_JAVA_HOME by lazy {
+    mFile(
+        Properties().apply {
+            load(
+                (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).reader()
+            )
+        }["org.gradle.java.home"].toString()
+    )
+}
 
 interface ComputeContextFiles {
 
