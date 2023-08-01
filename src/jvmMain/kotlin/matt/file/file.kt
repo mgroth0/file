@@ -318,17 +318,19 @@ actual sealed class MFile actual constructor(
     ) = createNewFile(child).also { it.text = text }
 
 
-    fun mkdir(child: String) = resolve(child).apply {
+    /*calling this 'mkdir' like I used to could cause errors since it shares a name with the shell command*/
+    fun mkFold(child: String) = resolve(child).apply {
         mkdir()
     }.toMFile().requireIsExistingFolder()
 
-    fun mkdir(int: Int) = mkdir(int.toString())
+    /*calling this 'mkdir' like I used to could cause errors since it shares a name with the shell command*/
+    fun mkFold(int: Int) = mkFold(int.toString())
 
     fun write(
         s: String,
-        mkparents: Boolean = true
+        mkParents: Boolean = true
     ) {
-        if (mkparents) mkparents()
+        if (mkParents) mkparents()
         writeText(s)
     }
 
