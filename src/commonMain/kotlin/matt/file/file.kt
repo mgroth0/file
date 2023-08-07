@@ -328,7 +328,8 @@ sealed class DataFile(
 ) : MFile(
     userPath,
     caseSensitivity
-) //sealed class HumanReadableDataFile(userPath: String): DataFile(userPath) //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
+)
+//sealed class HumanReadableDataFile(userPath: String): DataFile(userPath) //sealed class BinaryDataFile(userPath: String): DataFile(userPath)
 
 
 val String.json get() = JsonFile("$this.json")

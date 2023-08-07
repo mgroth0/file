@@ -8,8 +8,11 @@ import matt.file.ext.FileExtension
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
+import matt.lang.SubRoots
 import matt.lang.anno.SeeURL
 import matt.lang.require.requireIs
+import matt.lang.sysprop.props.UserDir
+import matt.lang.sysprop.props.UserHome
 import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
 import matt.model.code.sys.Linux
@@ -82,7 +85,7 @@ class LogContext(parentFolder: MFile) {
 val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
 
 
-val USER_DIR by lazy { mFile(System.getProperty("user.dir")) }
+val USER_DIR by lazy { mFile(UserDir.get()) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
 val WEB_TMP_DIR by lazy { mFile("/tmp").also { it.mkdir() } }
 
@@ -136,16 +139,10 @@ private val projectFolder by lazy {
     }
 }
 
-enum class SubRoots {
-    k
-}
-
 
 interface LocatedIdeProject: ProjectIdea {
     val folder: MFile
 }
-
-//val subRoots = listOf(/*"KJ",*/"k")
 
 enum class IdeProject : LocatedIdeProject {
     /*this should be automatically generated*/
@@ -177,7 +174,9 @@ val HEP_FOLDER by lazy {
 const val GRADLEW_NAME = "gradlew"
 
 
-val desktopFile by lazy { mFile(System.getProperty("user.home")).resolve("Desktop") }
+
+
+val desktopFile by lazy { mFile(UserHome.get()).resolve("Desktop") }
 
 const val CHANGELIST_MD = "changelist.md"
 
@@ -240,3 +239,6 @@ const val STATIC_ROOT_NAME = "static"
 const val DockerfileName = "Dockerfile"
 
 val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"
+
+
+const val PRIV_FOLD_NAME = ".private"

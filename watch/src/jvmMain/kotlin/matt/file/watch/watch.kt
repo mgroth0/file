@@ -6,24 +6,27 @@ import matt.obs.watch.watchProp
 import kotlin.time.Duration
 
 fun MFile.createRecursiveLastModifiedProp(checkInterval: Duration) = watchProp(checkInterval) {
-  recursiveLastModified()
+    recursiveLastModified()
 }
 
 fun MFile.createFileSizeProp(checkInterval: Duration) = watchProp(checkInterval) {
-  takeIf { exists() }?.size()
+    takeIf { exists() }?.size()
 }
 
 fun MFile.createRecursiveFileSizeProp(checkInterval: Duration) = watchProp(checkInterval) {
-  takeIf { exists() }?.recursiveSize()
+    takeIf { exists() }?.recursiveSize()
 }
 
 fun MFile.createFileExistsProp(checkInterval: Duration) = watchProp(checkInterval) {
-  exists()
+    exists()
 }
 
-fun MFile.onChange(checkInterval: Duration, op: Op) {
-  val prop = createRecursiveLastModifiedProp(checkInterval)
-  prop.onChange {
-	op()
-  }
+fun MFile.onChange(
+    checkInterval: Duration,
+    op: Op
+) {
+    val prop = createRecursiveLastModifiedProp(checkInterval)
+    prop.onChange {
+        op()
+    }
 }

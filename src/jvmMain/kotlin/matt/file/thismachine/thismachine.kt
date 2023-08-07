@@ -6,6 +6,7 @@ import matt.lang.platform.ARCH
 import matt.lang.platform.Linux
 import matt.lang.platform.Mac
 import matt.lang.platform.OS
+import matt.lang.shutdown.preaper.ProcessReaper
 import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
@@ -63,7 +64,9 @@ val thisMachine: Machine by lazy {
                     slurmJobID = System.getenv("SLURM_JOBID")
                 )
             } ?: UnknownLinuxMachine(hostname = hostname, homeDir = userHome, isAarch64 = lazy {
-                ProcessBuilder("dpkg", "--print-architecture").start().inputStream.readAllBytes()
+                val p = ProcessBuilder("dpkg", "--print-architecture").start()
+                ProcessReaper.ensureProcessEndsWithThisJvm(p)
+                p.inputStream.readAllBytes()
                     .decodeToString()
                     .trim() in listOf("arm64", "aarch64")
             })
