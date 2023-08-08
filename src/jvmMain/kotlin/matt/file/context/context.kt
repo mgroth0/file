@@ -106,6 +106,7 @@ interface ComputeContextFiles {
 
     companion object {
         const val BRIAR_EXTRACT_METADATA_FILE_NAME = "metadata.json"
+        const val BRIAR_EXTRACT_MINIMAL_METADATA_FILE_NAME = "metadata_minimal.json"
     }
 
     val libjprofilertiPath: String
