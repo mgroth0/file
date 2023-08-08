@@ -42,7 +42,9 @@ fun copyPathWithAttributes(
             DirCopyFileVisitor(source = source, target = target, overwrite = overwrite)
         )
     } else {
+//        println("copying $source to $target with attributes")
         copyFileWithAttributes(source, target, overwrite = overwrite)
+
     }
 
 }

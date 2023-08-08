@@ -13,6 +13,7 @@ import matt.file.construct.mFile
 import matt.lang.context.DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_MAC_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
+import matt.lang.platform.HasOs
 import matt.lang.platform.OsEnum
 import matt.lang.platform.OsEnum.Linux
 import matt.lang.platform.OsEnum.Mac
@@ -20,13 +21,13 @@ import matt.lang.platform.OsEnum.Windows
 import java.util.*
 
 @Serializable
-sealed interface ComputeContext {
+sealed interface ComputeContext: HasOs {
     val files: ComputeContextFiles
     val taskLabel: String
     val needsModules: Boolean
     val usesJavaInSingularity: Boolean
     val javaHome: MFile?
-    val os: OsEnum
+    override val os: OsEnum
 }
 
 val ComputeContext.shellPathContext
@@ -119,7 +120,6 @@ interface ComputeContextFiles {
     val rTaskOutputs get() = om2Home["rTaskOutputs"]
     val briarExtractsFolder: MFile
     val sbatchOutputFolder get() = om2Home["output"]
-    val nvidiaSmiOutput get() = om2Home["nvidia-smi-output"]
 
     val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath)
     val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json")

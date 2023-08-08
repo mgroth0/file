@@ -242,3 +242,4 @@ val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"
 
 
 const val PRIV_FOLD_NAME = ".private"
+

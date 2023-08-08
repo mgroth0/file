@@ -15,6 +15,8 @@ class FileExtension(input: String) {
         val MOG = FileExtension("mog") /*I invented this*/
         val COMMAND = FileExtension("command") /*I invented this*/
         val KT = FileExtension("kt")
+        val MP3 = FileExtension("mp3")
+        val MP4 = FileExtension("mp4")
     }
 
     init {
