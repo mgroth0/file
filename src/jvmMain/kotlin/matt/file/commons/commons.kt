@@ -176,7 +176,7 @@ const val GRADLEW_NAME = "gradlew"
 
 
 
-val desktopFile by lazy { mFile(UserHome.get()).resolve("Desktop") }
+val desktopFolder by lazy { mFile(UserHome.get()).resolve("Desktop") }
 
 const val CHANGELIST_MD = "changelist.md"
 

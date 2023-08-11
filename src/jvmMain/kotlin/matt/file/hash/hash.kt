@@ -9,7 +9,7 @@ import matt.model.data.hash.md5.MD5
 import matt.prim.base64.encodeToURLBase64WithoutPadding
 import java.security.MessageDigest
 
-internal actual fun myMd5Digest(): MyMd5Digest = JvmMd5HashDigest()
+actual fun myMd5Digest(): MyMd5Digest = JvmMd5HashDigest()
 
 private const val DEFAULT_IGNORE_DS_STORE = true
 private val DEFAULT_IGNORE_FILE_NAMES = listOf<String>()
