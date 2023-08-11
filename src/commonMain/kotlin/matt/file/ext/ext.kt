@@ -17,6 +17,7 @@ class FileExtension(input: String) {
         val KT = FileExtension("kt")
         val MP3 = FileExtension("mp3")
         val MP4 = FileExtension("mp4")
+        val PORT = FileExtension("port")
     }
 
     init {
