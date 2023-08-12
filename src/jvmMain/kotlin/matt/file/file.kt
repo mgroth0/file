@@ -4,6 +4,7 @@
 package matt.file
 
 import matt.collect.itr.filterNotNull
+import matt.collect.itr.recurse.DEFAULT_INCLUDE_SELF
 import matt.collect.itr.recurse.recurse
 import matt.collect.itr.search
 import matt.file.CaseSensitivity.CaseInSensitive
@@ -74,6 +75,9 @@ actual sealed class MFile actual constructor(
 
     override fun relativeNamesFrom(other: MFile): List<String> {
         return this.relativeTo(other).path.split(SEP).filter { it.isNotBlank() }
+    }
+     fun relativeNamesFromWithUserFiles(other: MFile): List<String> {
+        return this.relativeToWithUserFiles(other).path.split(SEP).filter { it.isNotBlank() }
     }
 
     override fun append(c: Char): java.lang.Appendable {
@@ -250,6 +254,7 @@ actual sealed class MFile actual constructor(
     fun wildcardChildrenPath() = path.ensureSuffix(separator) + "*"
 
     fun relativeTo(base: MFile): MFile = idFile.relativeTo(base.idFile).toMFile(base.caseSensitivity)
+    fun relativeToWithUserFiles(base: MFile): MFile = userFile.relativeTo(base.userFile).toMFile(base.caseSensitivity)
 
 
     fun startsWith(other: MFile): Boolean = idFile.startsWith(other.idFile)
@@ -574,7 +579,7 @@ actual sealed class MFile actual constructor(
     }
 
 
-    fun recursiveChildren() = recurse { it.listFiles()?.toList() ?: listOf() }
+    fun recursiveChildren(includeSelf: Boolean = DEFAULT_INCLUDE_SELF) = recurse(includeSelf=includeSelf) { it.listFiles()?.toList() ?: listOf() }
 
     val ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
     val absolutePathEnforced: String get() = ensureAbsolute.absolutePath

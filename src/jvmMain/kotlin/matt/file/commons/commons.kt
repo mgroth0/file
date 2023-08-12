@@ -71,7 +71,7 @@ val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
 
 
-private val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
+ val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 
 class LogContext(parentFolder: MFile) {
     val logFolder by lazy {
