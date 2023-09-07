@@ -3,9 +3,11 @@ package matt.file
 import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
+import matt.image.Image
 import matt.model.data.file.FilePath
 import matt.model.data.file.FolderPath
 import matt.model.data.message.SFile
+import matt.model.data.message.SafeFile
 import matt.model.obj.text.MightExist
 import matt.model.obj.text.MightExistAndWritableText
 import matt.model.obj.text.WritableBytes
@@ -78,8 +80,12 @@ interface CommonFile : FileOrURL, FilePath, MightExist {
 internal expect val SEP: String
 
 fun SFile.toMFile() = mFile(path)
+fun SafeFile.toMFile() = mFile(filePath)
 
 fun MFile.toSFile() = SFile(userPath)
+fun MFile.toSafeFile() = SafeFile(userPath)
+
+fun SFile.toSafeFile() = SafeFile(path)
 
 
 enum class CaseSensitivity {
@@ -376,7 +382,7 @@ sealed class ImageFile(
     caseSensitivity: CaseSensitivity,
     val raster: Boolean
 ) :
-    MFile(userPath, caseSensitivity)
+    MFile(userPath, caseSensitivity), Image
 
 val String.png get() = PngFile("$this.png")
 

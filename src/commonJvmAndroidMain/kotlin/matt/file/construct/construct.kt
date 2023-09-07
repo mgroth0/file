@@ -12,7 +12,7 @@ import matt.file.defaultCaseSensitivity
 import matt.file.ext.FileExtension
 import matt.file.fileClassForExtension
 import matt.lang.anno.Optimization
-import matt.model.code.ok.JavaIoFileIsOk
+import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.model.data.message.SFile
 import java.io.BufferedReader
 import java.io.File

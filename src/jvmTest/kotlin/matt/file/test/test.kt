@@ -7,7 +7,7 @@ import matt.file.FSRoot
 import matt.file.Src
 import matt.file.UnknownFileOrURL
 import matt.file.construct.toMFile
-import matt.model.code.ok.JavaIoFileIsOk
+import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.test.JupiterTestAssertions.assertRunsInOneMinute
 import java.io.File
 import kotlin.test.Test

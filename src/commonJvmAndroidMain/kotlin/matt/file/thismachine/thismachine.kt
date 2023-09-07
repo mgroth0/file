@@ -1,12 +1,12 @@
 package matt.file.thismachine
 
+import matt.async.thread.TheProcessReaper
 import matt.lang.function.Op
 import matt.lang.hostname
 import matt.lang.platform.ARCH
 import matt.lang.platform.Linux
 import matt.lang.platform.Mac
 import matt.lang.platform.OS
-import matt.lang.shutdown.preaper.ProcessReaper
 import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
@@ -47,7 +47,7 @@ val thisMachine: Machine by lazy {
     when (OS) {
 
 
-        Linux                -> {
+        Linux -> {
             if (hostname == "vagrant") VagrantLinuxMachine()
             else (if (hostname.startsWith(SLURM_NODE_HOSTNAME_PREFIX)) OpenMindSlurmNode(
 
@@ -67,7 +67,7 @@ val thisMachine: Machine by lazy {
                 )
             } ?: UnknownLinuxMachine(hostname = hostname, homeDir = userHome, isAarch64 = lazy {
                 val p = ProcessBuilder("dpkg", "--print-architecture").start()
-                ProcessReaper.ensureProcessEndsWithThisJvm(p)
+                TheProcessReaper.ensureProcessEndsWithThisJvm(p)
                 p.inputStream.readAllBytes()
                     .decodeToString()
                     .trim() in listOf("arm64", "aarch64")
@@ -75,7 +75,7 @@ val thisMachine: Machine by lazy {
         }
 
 
-        Mac -> when (ARCH) {
+        Mac   -> when (ARCH) {
             "aarch64" -> when (userName) {
                 NEW_MAC_USERNAME -> NEW_MAC
                 else             -> UnknownSiliconMacMachine(homeDir = userHome)
@@ -90,7 +90,7 @@ val thisMachine: Machine by lazy {
             }
         }
 
-        else                 -> when (userName) {
+        else  -> when (userName) {
             /*THESE MADE ME TESTING ON WINDOWS MACHINES LESS RELIABLE*/
             /*"mgrot"        -> GAMING_WINDOWS*/
             /*"matthewgroth" -> WINDOWS_11_PAR_WORK*/
