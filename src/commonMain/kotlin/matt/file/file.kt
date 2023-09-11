@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
 import matt.image.Image
-import matt.model.data.file.FilePath
-import matt.model.data.file.FolderPath
+import matt.lang.model.file.FilePath
+import matt.lang.model.file.FolderPath
 import matt.model.data.message.SFile
 import matt.model.data.message.SafeFile
 import matt.model.obj.text.MightExist
@@ -101,6 +101,7 @@ expect sealed class MFile(
 ) : CommonFile,
     MightExistAndWritableText, WritableBytes {
 
+    val caseSensitivity: CaseSensitivity
 
     override fun isDir(): Boolean
     override val partSep: String
@@ -112,10 +113,7 @@ expect sealed class MFile(
 
     override fun getParentFile(): MFile?
 
-    fun resolve(
-        other: MFile,
-        cls: KClass<out MFile>? = null
-    ): MFile
+    fun resolve(other: MFile): MFile
 
     override fun resolve(other: String): MFile
 
@@ -138,6 +136,12 @@ expect sealed class MFile(
 
 
 fun fileClassForExtension(extension: FileExtension): KClass<out MFile> {
+
+//    TestCommonThreadObject
+//    TestCommonJvmAndroidThreadObject
+//    TestAndroidThreadObject
+//    TestJvmThreadObject
+
     return when (extension.afterDot) {
         "kt"           -> KotlinFile::class
         "py"           -> PythonFile::class
@@ -208,6 +212,8 @@ sealed class CodeFile(
     MFile(userPath, caseSensitivity)
 
 val String.kt get() = KotlinFile("$this.kt")
+
+fun MFile.asKotlinFile() = KotlinFile(userPath, caseSensitivity = caseSensitivity)
 
 class KotlinFile(
     userPath: String,

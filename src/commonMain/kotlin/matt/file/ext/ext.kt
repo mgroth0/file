@@ -1,8 +1,10 @@
 package matt.file.ext
 
 import matt.lang.require.requireNotEndsWith
+import kotlin.jvm.JvmInline
 
 class FileExtension(input: String) {
+
     companion object {
         val JSON = FileExtension("json")
         val CBOR = FileExtension("cbor")
@@ -23,6 +25,31 @@ class FileExtension(input: String) {
         val MODEL = FileExtension("model")
         val TEST = FileExtension("test")
         val PNG = FileExtension("png")
+        val JPEG = FileExtension("jpeg")
+        val JPG = FileExtension("jpg")
+        val SVG = FileExtension("svg")
+        val PY = FileExtension("py")
+        val JAVA = FileExtension("java")
+        val GROOVY = FileExtension("groovy")
+        val TXT = FileExtension("txt")
+        val DS_Store = FileExtension("DS_Store")
+        val OUT = FileExtension("out")
+        val ERR = FileExtension("err")
+        val TAR = FileExtension("tar")
+        val OBJ = FileExtension("obj")
+        val HTML = FileExtension("html")
+
+        val IMAGE_EXTENSIONS = ExtensionSet(
+            PNG,
+            JPEG,
+            JPG,
+            SVG
+        )
+
+
+        val IML = FileExtension("iml")
+        val IPR = FileExtension("ipr")
+        val IWS = FileExtension("iws")
 
     }
 
@@ -45,4 +72,18 @@ class FileExtension(input: String) {
     val afterDot = id
     val withPrefixDot = ".$id"
 
+
+    val isImage by lazy {
+        this in IMAGE_EXTENSIONS
+    }
+
+}
+
+@JvmInline
+value class ExtensionSet internal constructor(val extensions: Set<FileExtension>) : Set<FileExtension> by extensions {
+    constructor (vararg exts: FileExtension) : this(setOf(*exts))
+
+    init {
+        require(extensions.isNotEmpty())
+    }
 }

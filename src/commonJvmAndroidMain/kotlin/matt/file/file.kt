@@ -10,11 +10,15 @@ import matt.collect.itr.recurse.recurse
 import matt.collect.itr.search
 import matt.file.CaseSensitivity.CaseInSensitive
 import matt.file.CaseSensitivity.CaseSensitive
+import matt.file.commons.DS_STORE
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
+import matt.file.ext.ExtensionSet
 import matt.file.ext.FileExtension
-import matt.file.thismachine.thisMachine
 import matt.lang.NOT_IMPLEMENTED
+import matt.lang.anno.EnforcedMin
+import matt.lang.anno.See
+import matt.lang.anno.SeeURL
 import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.lang.require.requireIs
 import matt.lang.require.requirePositive
@@ -40,7 +44,6 @@ import java.net.URL
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
-import kotlin.reflect.KClass
 
 
 /*mac file, matt file, whatever*//*sadly this is necessary. Java.io.file is an absolute failure because it doesn't respect Mac OSX's case sensitivity rules
@@ -49,7 +52,7 @@ import kotlin.reflect.KClass
 /*TODO: SUBCLASS IS PROBLEMATIC BECAUSE OF THE BUILTIN KOTLIN `RESOLVES` FUNCTION (can I disable or override it? maybe in unnamed package?) WHICH SECRETLY TURNS THIS BACK INTO A REGULAR FILE*//*TODO:  NOT SUBCLASSING JAVA.FILE IS PROBLEMATIC BECAUSE I NEED TONS OF BOILERPLATE SINCE THE FILE CLASS HAS SO MANY METHODS, EXTENSION METHODS, CLASSES, AND LIBRARIES IT WORKS WITH*/
 actual sealed class MFile actual constructor(
     actual val userPath: String,
-    val caseSensitivity: CaseSensitivity
+    actual val caseSensitivity: CaseSensitivity
 ) : File(userPath), CommonFile, Streamable, MightExistAndWritableText, WritableBytes, IDFile, Appendable,
     PathLike<MFile> {
 
@@ -62,6 +65,12 @@ actual sealed class MFile actual constructor(
     fun walkBottomUp() = walk(direction = FileWalkDirection.BOTTOM_UP)
 
     override fun resolveNames(names: List<String>): MFile {
+
+//        TestCommonThreadObject
+//        TestCommonJvmAndroidThreadObject
+//        TestAndroidThreadObject
+//        TestJvmThreadObject
+
         var f = this
         names.forEach {
             f = f[it]
@@ -96,12 +105,7 @@ actual sealed class MFile actual constructor(
     }
 
     val url get() = toURI().toURL()
-    val betterURLIGuess
-        get() = "file://${
-            absolutePath.replace(
-                ' '.toString(), "%20"
-            )
-        }" /*the url above does not include the double slash? so IntelliJ console doesn't recognize it as a url?*/
+
 
     actual override val filePath: String get() = super.getPath()
     actual override val cpath: String = path
@@ -199,7 +203,7 @@ actual sealed class MFile actual constructor(
         return super.getAbsoluteFile().toMFile(caseSensitivity = caseSensitivity)
     }
 
-    fun listNonDSStoreFiles() = listFiles()?.filter { it !is DSStoreFile }
+    fun listNonDSStoreFiles() = listFiles()?.filter { it.name != DS_STORE }
 
     fun siblings(): List<MFile> {
         return parentFile!!.listFiles()!!.filter { it != this }
@@ -260,10 +264,7 @@ actual sealed class MFile actual constructor(
     fun endsWith(other: String): Boolean = idFile.endsWith(identityGetter(other))
 
 
-    actual fun resolve(
-        other: MFile,
-        cls: KClass<out MFile>?
-    ): MFile = userFile.resolve(other).toMFile(cls = cls, caseSensitivity = caseSensitivity)
+    actual fun resolve(other: MFile): MFile = userFile.resolve(other).toMFile(caseSensitivity = caseSensitivity)
 
     actual override fun resolve(other: String): MFile =
         userFile.resolve(other).toMFile(caseSensitivity = caseSensitivity)
@@ -407,7 +408,31 @@ actual sealed class MFile actual constructor(
     }
 
 
-    val mExtension = FileExtension(name.substringAfter("."))
+    val mExtension =
+        name.substringAfter(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }?.let(::FileExtension)
+
+    fun hasExtension(extension: FileExtension) = mExtension == extension
+
+    @EnforcedMin
+    fun hasAnyExtension(
+        extension: FileExtension,
+        vararg extensions: FileExtension
+    ): Boolean {
+        val ext = mExtension
+        if (ext == extension) return true
+        extensions.forEach {
+            if (it == ext) return true
+        }
+        return false
+    }
+
+    fun hasAnyExtension(
+        extensions: ExtensionSet,
+    ): Boolean {
+        val ext = mExtension
+        return extensions.any { it == ext }
+    }
+
 
     infix fun withExtension(ext: String): MFile {
         return when (this.extension) {
@@ -447,8 +472,8 @@ actual sealed class MFile actual constructor(
         return resolve(item.toString())
     }
 
-    inline operator fun <reified F : MFile> plus(item: F): F {
-        return resolve(item, F::class) as F
+    operator fun plus(item: MFile): MFile {
+        return resolve(item)
     }
 
 
@@ -662,3 +687,54 @@ interface URLLike {
     fun toJavaURL(): URL
     fun toJavaURI(): URI
 }
+
+fun Array<MFile>.withExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
+fun Iterable<MFile>.withExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
+fun Set<MFile>.withExtension(ext: FileExtension) = filterTo(mutableSetOf()) { it.hasExtension(ext) }
+fun Sequence<MFile>.withExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
+
+
+@EnforcedMin
+fun Array<MFile>.withAnyExtension(
+    ext: FileExtension,
+    vararg exts: FileExtension
+) = filter { it.hasAnyExtension(ext, *exts) }
+
+@EnforcedMin
+fun Iterable<MFile>.withAnyExtension(
+    ext: FileExtension,
+    vararg exts: FileExtension
+) = filter { it.hasAnyExtension(ext, *exts) }
+
+@EnforcedMin
+fun Set<MFile>.withAnyExtension(
+    ext: FileExtension,
+    vararg exts: FileExtension
+) = filterTo(mutableSetOf()) { it.hasAnyExtension(ext, *exts) }
+
+@EnforcedMin
+fun Sequence<MFile>.withAnyExtension(
+    ext: FileExtension,
+    vararg exts: FileExtension
+) = filter { it.hasAnyExtension(ext, *exts) }
+
+
+@EnforcedMin
+fun Array<MFile>.withAnyExtension(
+    exts: ExtensionSet
+) = filter { it.hasAnyExtension(exts) }
+
+@EnforcedMin
+fun Iterable<MFile>.withAnyExtension(
+    exts: ExtensionSet
+) = filter { it.hasAnyExtension(exts) }
+
+@EnforcedMin
+fun Set<MFile>.withAnyExtension(
+    exts: ExtensionSet
+) = filterTo(mutableSetOf()) { it.hasAnyExtension(exts) }
+
+@EnforcedMin
+fun Sequence<MFile>.withAnyExtension(
+    exts: ExtensionSet
+) = filter { it.hasAnyExtension(exts) }

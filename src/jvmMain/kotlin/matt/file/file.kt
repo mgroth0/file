@@ -7,5 +7,11 @@ import matt.file.thismachine.thisMachine
 
 
 actual val defaultCaseSensitivity by lazy {
+
+//    TestCommonThreadObject
+//    TestCommonJvmAndroidThreadObject
+//    TestAndroidThreadObject
+//    TestJvmThreadObject
+
     if (thisMachine.caseSensitive) CaseSensitive else CaseInSensitive
 }

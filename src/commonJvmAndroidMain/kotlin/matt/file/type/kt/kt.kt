@@ -1,6 +1,8 @@
 package matt.file.type.kt
 
 import matt.file.KotlinFile
+import matt.lang.classname.SimpleClassName
+import matt.lang.classname.simpleClassName
 
 
 fun KotlinFile.fileAnnotationSimpleClassNames() =
@@ -10,9 +12,9 @@ fun KotlinFile.fileAnnotationSimpleClassNames() =
 		.substringBefore("(")
 		.trim()
 	}.toList()
-  }
+  }.map { SimpleClassName(it) }
 
-inline fun <reified A> KotlinFile.hasFileAnnotation() = A::class.simpleName in fileAnnotationSimpleClassNames()
+inline fun <reified A> KotlinFile.hasFileAnnotation() = A::class.simpleClassName in fileAnnotationSimpleClassNames()
 
 fun KotlinFile.consts() = text.lines().map {
 	it.trim()

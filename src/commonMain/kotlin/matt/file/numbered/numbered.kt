@@ -2,7 +2,7 @@ package matt.file.numbered
 
 import matt.file.MFile
 import matt.file.construct.mFile
-import matt.model.data.file.FilePath
+import matt.lang.model.file.FilePath
 
 fun FilePath.next(): MFile {
     var ii = 0

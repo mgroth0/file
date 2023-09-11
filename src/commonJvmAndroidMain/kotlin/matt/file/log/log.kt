@@ -7,7 +7,7 @@ import matt.lang.go
 import matt.log.AppendLogger
 
 
-class LogFileLogger(val file: LogFile) : AppendLogger(file.bufferedWriter().apply { }) {
+class LogFileLogger(val file: MFile) : AppendLogger(file.bufferedWriter().apply { }) {
     init {
         file.parentFile?.mkdirs()
     }

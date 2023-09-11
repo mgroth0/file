@@ -8,8 +8,13 @@
     },
     {
       "type": "Project",
-      "cfg": "commonMainApi",
+      "cfg": "commonJvmAndroidMainApi",
       "path": ":k:log"
+    },
+    {
+      "type": "Project",
+      "cfg": "commonMainApi",
+      "path": ":k:model"
     },
     {
       "type": "Project",
