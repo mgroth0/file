@@ -1,15 +1,15 @@
+@file:JvmName("ConstructJvmAndroidKt")
 @file:JavaIoFileIsOk
 
 package matt.file.construct
 
-import matt.file.CaseSensitivity
-import matt.file.Folder
-import matt.file.MFile
-import matt.file.UnknownFile
-import matt.file.defaultCaseSensitivity
+import matt.file.JioFile
+import matt.file.toJioFile
 import matt.lang.anno.Optimization
 import matt.lang.anno.ok.JavaIoFileIsOk
-import matt.model.data.message.SFile
+import matt.lang.model.file.FileSystem
+import matt.lang.model.file.FsFile
+import matt.model.data.message.MacFile
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -17,7 +17,6 @@ import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.net.URI
 import java.nio.file.Path
-import kotlin.reflect.KClass
 
 @Optimization
 fun fileTextIfItExists(path: String): String? {
@@ -31,46 +30,47 @@ fun fileTextIfItExists(path: String): String? {
     }
 }
 
-fun Path.toMFile() = toFile().toMFile()
-fun File.toMFile(
-    caseSensitivity: CaseSensitivity? = null,
-    cls: KClass<out MFile>? = null
-) = mFile(this, cls = cls, caseSensitivity = caseSensitivity)
+context(FileSystem)
+fun Path.toMFile(): JioFile = toFile().toMFile()
 
-fun File.toSFile() = SFile(path)
+fun Path.toMFile(fs: FileSystem): JioFile = toFile().toMFile(fs)
 
-fun mFile(file: MFile) = mFile(file.userPath)
+context(FileSystem)
+fun File.toMFile(): JioFile = mFile(this.path, this@FileSystem).toJioFile()
+
+fun JioFile.toMFile() = this
+
+fun File.toMFile(fs: FileSystem) = with(fs) {toMFile()}
+
+
+fun File.toSFile() = MacFile(path)
+
+context(FileSystem)
 fun mFile(
     file: File,
-    caseSensitivity: CaseSensitivity? = null,
-    cls: KClass<out MFile>? = null
-) =
-    mFile(file.path, cls = cls, caseSensitivity = caseSensitivity)
+): JioFile = mFile(file.path, this@FileSystem).toJioFile()
 
+fun mFile(
+    file: File,
+    fs: FileSystem
+): JioFile = mFile(file.path, fs).toJioFile()
+
+context(FileSystem)
 fun mFile(
     parent: String,
     child: String
-) = mFile(File(parent, child))
+): JioFile = mFile(parent, this@FileSystem).toJioFile() + child
 
 fun mFile(
-    parent: MFile,
+    parent: FsFile,
     child: String
-) = mFile(parent.cpath, child)
+) = parent.resolve(child)
 
-fun mFile(uri: URI) = mFile(File(uri))
+context(FileSystem)
+fun mFile(uri: URI): JioFile = mFile(File(uri))
 
-fun unTypedMFile(userPath: String) = UnknownFile(userPath)
 
+context(FileSystem)
+fun mFile(path: String): JioFile = mFile(path, this@FileSystem).toJioFile()
 
-actual fun mFile(
-    userPath: String,
-    caseSensitivity: CaseSensitivity?,
-    cls: KClass<out MFile>?
-): MFile = UnknownFile(
-    userPath,
-    caseSensitivity ?: defaultCaseSensitivity
-)
-
-fun mFolder(userPath: String): Folder {
-    return Folder(userPath)
-}
+fun mFile(path: FsFile): JioFile = path.toJioFile()

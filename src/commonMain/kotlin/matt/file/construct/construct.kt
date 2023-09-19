@@ -1,11 +1,11 @@
 package matt.file.construct
 
-import matt.file.CaseSensitivity
-import matt.file.MFile
-import kotlin.reflect.KClass
+import matt.file.FsFileImpl
+import matt.lang.model.file.FileSystem
+import matt.lang.model.file.constructFilePath
 
-expect fun mFile(
-    userPath: String,
-    caseSensitivity: CaseSensitivity? = null,
-    cls: KClass<out MFile>? = null
-): MFile
+fun mFile(
+    inputPath: String,
+    fileSystem: FileSystem,
+) = FsFileImpl(fileSystem.constructFilePath(inputPath), fileSystem)
+

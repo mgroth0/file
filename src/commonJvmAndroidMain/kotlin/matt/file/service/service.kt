@@ -1,11 +1,12 @@
 package matt.file.service
 
-import matt.file.MFile
+import matt.model.obj.text.ReadableFile
 
-object DefaultFileReader: FileReader {
 
-  override fun read(file: MFile): String {
-	return file.readText()
-  }
+object DefaultFileReader : FileReader {
+
+    override fun read(file: ReadableFile): String {
+        return file.text
+    }
 
 }

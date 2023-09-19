@@ -1,33 +1,36 @@
 package matt.file.numbered
 
-import matt.file.MFile
 import matt.file.construct.mFile
-import matt.lang.model.file.FilePath
+import matt.file.toIoFile
+import matt.lang.model.file.FsFile
+import matt.lang.model.file.fName
 
-fun FilePath.next(): MFile {
+fun FsFile.next(): FsFile {
     var ii = 0
     while (true) {
-        val f = mFile(filePath + ii.toString())
-        if (!f.exists()) {
+        val f = mFile(path + ii.toString(),fileSystem)
+        if (!f.toIoFile().exists()) {
             return f
         }
         ii += 1
     }
 }
 
-fun FilePath.withNumber(num: Int): MFile {
+fun FsFile.withNumber(num: Int): FsFile {
     return if ("." !in fName) mFile(
-        "$filePath ($num)"
+        "$filePath ($num)",
+        fileSystem
     )
     else mFile(
         filePath.substringBeforeLast(".") + " ($num)." + filePath.substringAfterLast(
             "."
-        )
+        ),
+        fileSystem
     )
 }
 
 
-fun MFile.numberedSequence() = sequence {
+fun FsFile.numberedSequence() = sequence {
     yield(this@numberedSequence)
     var i = 2
     while (true) {
@@ -35,4 +38,4 @@ fun MFile.numberedSequence() = sequence {
     }
 }
 
-fun MFile.firstNonExistingFromNumberedSequence() = numberedSequence().first { it.doesNotExist }
+fun FsFile.firstNonExistingFromNumberedSequence() = numberedSequence().first { it.toIoFile().doesNotExist }

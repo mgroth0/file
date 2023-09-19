@@ -14,6 +14,11 @@
     {
       "type": "Project",
       "cfg": "commonMainApi",
+      "path": ":k:io"
+    },
+    {
+      "type": "Project",
+      "cfg": "commonMainApi",
       "path": ":k:model"
     },
     {

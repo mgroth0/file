@@ -1,15 +1,19 @@
 package matt.file.commons
 
 
-import matt.file.Folder
-import matt.file.MFile
+import matt.file.JioFile
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
+import matt.file.toJioFile
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.SubRoots
 import matt.lang.anno.SeeURL
+import matt.lang.model.file.FsFile
+import matt.lang.model.file.FsFileNameImpl
+import matt.lang.model.file.MacFileSystem
+import matt.lang.model.file.types.asFolder
 import matt.lang.require.requireIs
 import matt.lang.sysprop.props.UserDir
 import matt.lang.sysprop.props.UserHome
@@ -21,6 +25,7 @@ import matt.model.code.sys.NEW_MAC
 import matt.model.code.sys.OLD_MAC
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.Windows
+import matt.model.code.sys.WindowsFileSystem
 
 
 const val DEFAULT_GITHUB_BRANCH_NAME = "master"
@@ -28,14 +33,16 @@ const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
-val USER_HOME by lazy { mFile(thisMachine.homeDir) }
+val USER_HOME by lazy { mFile(thisMachine.homeDir, thisMachine.fileSystem) }
 
 
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
-    thisMachine.registeredDir?.let { USER_HOME[it] }
-        ?: matt.file.ext.createTempDir(prefix = "registered")
+    with(thisMachine.fileSystem) {
+        thisMachine.registeredDir?.let { USER_HOME[it].toJioFile() }
+            ?: matt.file.ext.createTempDir(prefix = "registered")
+    }
 }
 val BACKUP_FOLDER by lazy {
     REGISTERED_FOLDER["backup"]
@@ -58,7 +65,7 @@ val BIN_JAR_FOLDER by lazy { BIN_FOLDER + "jar" }
 val APPLESCRIPT_FOLDER by lazy { (BIN_FOLDER + "applescript").apply { mkdirs() } }
 val IDE_FOLDER by lazy { REGISTERED_FOLDER["ide"] }
 val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
-val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications") }
+val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications", MacFileSystem) }
 val YOUR_KIT_APP_FOLDER by lazy {
     /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]*/
     SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.5.app"]
@@ -66,16 +73,16 @@ val YOUR_KIT_APP_FOLDER by lazy {
 val JPROFILER_APP_FOLDER by lazy {
     SYS_APPLICATIONS_FOLDER["JProfiler.app"]
 }
-val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data") }
+val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data").toJioFile() }
 val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
 
 
- val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
+val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 
-class LogContext(parentFolder: MFile) {
+class LogContext(parentFolder: FsFile) {
     val logFolder by lazy {
-        parentFolder["log"].apply { mkdirs() }
+        parentFolder["log"].toJioFile().apply { mkdirs() }
     }
     val exceptionFolder by lazy {
         logFolder["errorReports"]
@@ -85,9 +92,9 @@ class LogContext(parentFolder: MFile) {
 val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
 
 
-val USER_DIR by lazy { mFile(UserDir.get()) }
+val USER_DIR by lazy { mFile(UserDir.get(), thisMachine.fileSystem) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
-val WEB_TMP_DIR by lazy { mFile("/tmp").also { it.mkdir() } }
+val WEB_TMP_DIR by lazy { mFile("/tmp", thisMachine.fileSystem).also { it.toJioFile().mkdir() } }
 
 
 //fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
@@ -104,7 +111,7 @@ val GRADLE_PROPERTIES_FILE_NAME by lazy { "gradle.properties" }
 //object CommonFileNames {
 
 
-const val DS_STORE = ".DS_Store"
+val DS_STORE = FsFileNameImpl(".DS_Store", MacFileSystem)
 const val MODULE_INFO_JAVA_NAME = "module-info.java"
 const val ANDROID_MANIFEST_NAME = "AndroidManifest.xml"
 const val BUILDSRC_FILE_NAME = "buildSrc"
@@ -114,19 +121,32 @@ const val BUILD_GRADLE_KTS_NAME = "build.gradle.kts"
 const val SETTINGS_GRADLE_KTS_NAME = "settings.gradle.kts"
 const val BUILD_JSON_NAME = "build.json"
 const val CACHE_INVALIDATOR_TXT = "cache-invalidator.txt"
+const val KARMA_CONFIG_D_NAME = "karma.config.d"
 
 //}
 
 
-object MavenLocalFolder : Folder((USER_HOME + ".m2").userPath) {
-    object RepoFolder : Folder(resolve("repository").userPath) {
-        object MattRepo : Folder(resolve("matt").userPath) {
-            object FlowRepo : Folder(resolve("flow").userPath) {
-
-            }
-        }
-    }
+val MavenLocalFolder by lazy {
+    USER_HOME + ".m2"
 }
+val RepoFolder by lazy {
+    MavenLocalFolder + "repository"
+}
+val MattRepo by lazy {
+    RepoFolder + "matt"
+}
+val FlowRepo by lazy {
+    MattRepo + "flow"
+}
+//object MavenLocalFolder : FsFile((USER_HOME + ).userPath) {
+//    object RepoFolder : FsFile(resolve("repository").userPath) {
+//        object MattRepo : FsFile(resolve("matt").userPath) {
+//            object FlowRepo : FsFile(resolve("flow").userPath) {
+//
+//            }
+//        }
+//    }
+//}
 
 
 val KJG_NAV_KEY = "NAV"
@@ -134,14 +154,14 @@ val KJG_NAV_KEY = "NAV"
 private val projectFolder by lazy {
     when (thisMachine) {
         is NEW_MAC, is Windows -> IDE_FOLDER
-        is OpenMind            -> mFile(thisMachine.homeDir)
+        is OpenMind            -> mFile(thisMachine.homeDir, thisMachine.fileSystem).toJioFile()
         else                   -> NOT_IMPLEMENTED
     }
 }
 
 
-interface LocatedIdeProject: ProjectIdea {
-    val folder: MFile
+interface LocatedIdeProject : ProjectIdea {
+    val folder: JioFile
 }
 
 enum class IdeProject : LocatedIdeProject {
@@ -174,24 +194,22 @@ val HEP_FOLDER by lazy {
 const val GRADLEW_NAME = "gradlew"
 
 
-
-
-val desktopFolder by lazy { mFile(UserHome.get()).resolve("Desktop") }
+val desktopFolder by lazy { with(thisMachine.fileSystem) { mFile(UserHome.get())["Desktop"] } }
 
 const val CHANGELIST_MD = "changelist.md"
 
 
 val FILE_ACCESS_CHECK_FILE by lazy { USER_DIR + "Desktop" + ".FileAccessCheck.txt" }
-fun hasFullFileAccess() = FILE_ACCESS_CHECK_FILE.exists()
+fun hasFullFileAccess() = FILE_ACCESS_CHECK_FILE.toJioFile().exists()
 
 
 val TEST_DATA_FOLDER = DATA_FOLDER["test"]
 val DEEPHYS_TEST_DATA_FOLDER = TEST_DATA_FOLDER["deephys"]
-val DEEPHYS_TEST_RESULT_JSON = DEEPHYS_TEST_DATA_FOLDER["results.json"]
+val DEEPHYS_TEST_RESULT_JSON = DEEPHYS_TEST_DATA_FOLDER["results.json"].toJioFile()
 val DEEPHYS_RAM_SAMPLES_FOLDER = DEEPHYS_TEST_DATA_FOLDER["ram"]
 val RAM_NUMBERED_FILES by lazy {
     NumberedFiles(
-        folder = DEEPHYS_RAM_SAMPLES_FOLDER,
+        folder = DEEPHYS_RAM_SAMPLES_FOLDER.asFolder(),
         prefix = "",
         extension = FileExtension.JSON
     )
@@ -213,11 +231,11 @@ val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
         is Mac     -> APP_SUPPORT_FOLDER
         is Linux   -> {
             @SeeURL("https://stackoverflow.com/questions/6561172/find-directory-for-application-data-on-linux-and-macintosh")
-            USER_HOME[".matt"].also { it.mkdir() }
+            USER_HOME[".matt"].also { it.toJioFile().mkdir() }
         }
 
         is Windows -> {
-            mFile("C:\\Users\\${userName}\\AppData\\Roaming")
+            mFile("C:\\Users\\${userName}\\AppData\\Roaming", WindowsFileSystem)
         }
     }
 }
@@ -225,6 +243,7 @@ val PLATFORM_INDEPENDENT_APP_SUPPORT_FOLDER by lazy {
 val THREE_D_PRINT_FOLDER = REGISTERED_FOLDER["3dprint"]
 
 val DEFAULT_GIT_FILE_NAME = ".git"
+val IDEA_FOLDER_NAME = ".idea"
 val GIT_IGNORE_FILE_NAME = ".gitignore"
 val GIT_MODULES_FILE_NAME = ".gitmodules"
 

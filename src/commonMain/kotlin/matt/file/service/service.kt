@@ -1,12 +1,12 @@
 package matt.file.service
 
-import matt.file.MFile
 import matt.model.code.idea.ServiceIdea
+import matt.model.obj.text.ReadableFile
 
-fun interface FileReader: ServiceIdea {
-  fun read(file: MFile): String
+fun interface FileReader : ServiceIdea {
+    fun read(file: ReadableFile): String
 }
 
-object NoFileReader: FileReader {
-  override fun read(file: MFile) = error("no file reading")
+object NoFileReader : FileReader {
+    override fun read(file: ReadableFile) = error("no file reading")
 }

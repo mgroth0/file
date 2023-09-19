@@ -1,55 +1,108 @@
 package matt.file.ext
 
+import matt.lang.model.file.FsFile
+import matt.lang.model.file.fName
 import matt.lang.require.requireNotEndsWith
+import matt.model.code.delegate.SimpleGetter
+import matt.prim.str.lower
 import kotlin.jvm.JvmInline
+
+val FsFile.mExtension
+    get() = fName.substringAfter(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }
+        ?.let(::FileExtension)
 
 class FileExtension(input: String) {
 
     companion object {
-        val JSON = FileExtension("json")
-        val CBOR = FileExtension("cbor")
-        val APP = FileExtension("app")
-        val PDF = FileExtension("pdf")
-        val BIB = FileExtension("bib")
-        val EMLX = FileExtension("emlx")
-        val ZIP = FileExtension("zip")
-        val FFMPEG = FileExtension("ffmpeg") /*I invented this*/
-        val MOG = FileExtension("mog") /*I invented this*/
-        val COMMAND = FileExtension("command") /*I invented this*/
-        val KT = FileExtension("kt")
-        val MP3 = FileExtension("mp3")
-        val MP4 = FileExtension("mp4")
-        val PORT = FileExtension("port")
-        val COMP = FileExtension("comp")
-        val COMP_MEM = FileExtension("comp_mem")
-        val MODEL = FileExtension("model")
-        val TEST = FileExtension("test")
-        val PNG = FileExtension("png")
-        val JPEG = FileExtension("jpeg")
-        val JPG = FileExtension("jpg")
-        val SVG = FileExtension("svg")
-        val PY = FileExtension("py")
-        val JAVA = FileExtension("java")
-        val GROOVY = FileExtension("groovy")
-        val TXT = FileExtension("txt")
-        val DS_Store = FileExtension("DS_Store")
-        val OUT = FileExtension("out")
-        val ERR = FileExtension("err")
-        val TAR = FileExtension("tar")
-        val OBJ = FileExtension("obj")
-        val HTML = FileExtension("html")
 
+        private val ext get() = matt.lang.delegation.provider {
+            SimpleGetter(FileExtension(it.lower()))
+        }
+
+        val STATUS by ext /*my invention*/
+
+        val TEX by ext
+        val AU3 by ext
+        val JSON by ext
+        val CBOR by ext
+        val APP by ext
+        val PDF by ext
+        val BIB by ext
+        val EMLX by ext
+        val ZIP by ext
+        val FFMPEG by ext /*I invented this*/
+        val MOG by ext /*I invented this*/
+        val COMMAND by ext /*I invented this*/
+        val KT by ext
+        val KTS by ext
+        val CSS by ext
+        val LESS by ext
+        val JS by ext
+        val GRADLE by ext
+        val TAGS by ext /*probably was my own invention. not sure. used in fx file node.*/
+        val COFFEESCRIPT by ext
+        val MP3 by ext
+        val MP4 by ext
+        val PORT by ext
+        val COMP by ext
+        val COMP_MEM by ext
+        val MODEL by ext
+        val TEST by ext
+        val PNG by ext
+        val JPEG by ext
+        val JPG by ext
+        val SVG by ext
+        val PY by ext
+        val JAVA by ext
+        val GROOVY by ext
+        val TXT by ext
+        val DS_Store = FileExtension("DS_Store")
+        val OUT by ext
+        val ERR by ext
+        val TAR by ext
+        val OBJ by ext
+        val HTML by ext
+        val SH by ext
+        val ZSHRC by ext
+        val ZSH by ext
+        val SCPT by ext
+
+        val TIF by ext
+        val TIFF by ext
+        val ICN by ext
+        val ICO by ext
         val IMAGE_EXTENSIONS = ExtensionSet(
             PNG,
             JPEG,
             JPG,
-            SVG
+            SVG,
+            TIF,
+            TIFF,
+            ICN,
+            ICO
         )
 
 
-        val IML = FileExtension("iml")
-        val IPR = FileExtension("ipr")
-        val IWS = FileExtension("iws")
+        val IML by ext
+        val IPR by ext
+        val IWS by ext
+
+        val APPLESCRIPT by ext
+        val JAR by ext
+        val KEXE by ext
+        val EXE by ext
+        val XML by ext
+        val PROPERTIES by ext
+        val YAML by ext
+        val YML by ext
+        val TOML by ext
+        val LOG by ext
+        val DMG by ext
+        val MD by ext
+
+        val CRDOWNLOAD by ext
+
+
 
     }
 
@@ -59,7 +112,7 @@ class FileExtension(input: String) {
         }
     }
 
-    val id = input.removePrefix(".")
+    val id = input.removePrefix(".").lower()
 
     override fun equals(other: Any?): Boolean {
         return other is FileExtension && other.id == id

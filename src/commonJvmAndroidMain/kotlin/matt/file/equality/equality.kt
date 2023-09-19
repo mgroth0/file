@@ -1,21 +1,25 @@
 package matt.file.equality
 
-import matt.file.Folder
-import matt.file.MFile
+import matt.file.JioFile
 import matt.file.commons.DS_STORE
 import matt.file.hash.md5
 import matt.file.hash.recursiveMD5
+import matt.file.toJioFile
 import matt.lang.anno.SeeURL
+import matt.lang.model.file.FsFile
+import matt.lang.model.file.FsFileNameImpl
+import matt.lang.model.file.types.Folder
+import matt.lang.model.file.types.asFolder
 
-infix fun MFile.hasIdenticalDataToUsingHash(other: MFile): Boolean {
+infix fun JioFile.hasIdenticalDataToUsingHash(other: JioFile): Boolean {
     return md5() == other.md5()
 }
 
 @SeeURL("https://stackoverflow.com/a/22819255/6596010")
-infix fun MFile.hasIdenticalDataTo(other: MFile): Boolean {
+infix fun JioFile.hasIdenticalDataTo(other: JioFile): Boolean {
     if (doesNotExist) error("$this does not exist")
     if (other.doesNotExist) error("$other does not exist")
-    if (length() != other.length()) {
+    if (size() != other.size()) {
         return false
     }
 
@@ -34,8 +38,8 @@ infix fun MFile.hasIdenticalDataTo(other: MFile): Boolean {
 
 }
 
-fun MFile.isRecursivelyIdenticalToUsingHash(
-    other: MFile,
+fun JioFile.isRecursivelyIdenticalToUsingHash(
+    other: JioFile,
     ignoreDSStore: Boolean = true,
     ignoreFileNames: List<String> = listOf()
 ): Boolean {
@@ -60,23 +64,28 @@ fun Folder.firstRecursiveDiff(
     ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
     ignoreFileNames: List<String> = listOf()
 ): String? {
+
 //    if (name != other.name) return "name $name is different from ${other.name}"
 
-    fun predicate(file: MFile) = (!ignoreDSStore || file.name != DS_STORE) && file.name !in ignoreFileNames
+    fun predicate(file: FsFile) = (!ignoreDSStore || !file.hasName(DS_STORE)) && file.fsFileName !in (ignoreFileNames.map {
+        FsFileNameImpl(it,fileSystem)
+    })
 
-    val files = this.listFiles()!!.filter(::predicate)
-    val otherFiles = other.listFiles()!!.filter(::predicate)
+    val files = this.toJioFile().listFiles()!!.filter(::predicate)
+    val otherFiles = other.toJioFile().listFiles()!!.filter(::predicate)
 
     if (files.size != otherFiles.size) return "${this.path}: size ${files.size} is different from ${otherFiles.size}"
 
 
     files.forEach { file ->
+        check(file.isAbsolute)
         val otherFile =
             otherFiles.firstOrNull { it.name == file.name } ?: return "${this.path}: otherFiles has no ${file.name}"
+        check(otherFile.isAbsolute)
         if (file.isDir()) {
             if (!otherFile.isDir()) return "${this.path}: $otherFile is not a dir"
-            val rResult = Folder(file.absolutePath).firstRecursiveDiff(
-                Folder(otherFile.absolutePath),
+            val rResult = file.asFolder().firstRecursiveDiff(
+                otherFile.asFolder(),
                 ignoreDSStore = ignoreDSStore,
                 ignoreFileNames = ignoreFileNames
             )

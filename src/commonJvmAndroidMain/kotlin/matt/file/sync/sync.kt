@@ -1,9 +1,11 @@
 package matt.file.sync
 
-import matt.file.MFile
+import matt.file.ext.backup
+import matt.file.toJioFile
+import matt.lang.model.file.FsFile
 
 class SynchronizedFileManager(
-    private val file: MFile
+    private val file: FsFile
 ) {
 
     var scheduledFinalBackup: Boolean = false
@@ -13,11 +15,11 @@ class SynchronizedFileManager(
     fun backup(ensureFinal: Boolean = false) {
         check(!scheduledFinalBackup)
         if (ensureFinal) scheduledFinalBackup = true
-        file.backup(thread = false)
+        file.toJioFile().backup(thread = false)
     }
 
     @Synchronized
-    fun read() = file.text
+    fun read() = file.toJioFile().text
 
     var didFinalWrite: Boolean = false
         private set
@@ -29,7 +31,7 @@ class SynchronizedFileManager(
     ) {
         check(!didFinalWrite)
         if (ensureFinal) didFinalWrite = true
-        file.write(text)
+        file.toJioFile().write(text)
     }
 
 }

@@ -1,20 +1,22 @@
 package matt.file.log
 
-import matt.file.LogFile
-import matt.file.MFile
+import matt.file.JioFile
+import matt.file.toIoFile
+import matt.file.toJioFile
 import matt.lang.function.Produce
 import matt.lang.go
+import matt.lang.model.file.FsFile
 import matt.log.AppendLogger
 
 
-class LogFileLogger(val file: MFile) : AppendLogger(file.bufferedWriter().apply { }) {
+class LogFileLogger(val file: FsFile) : AppendLogger(file.toJioFile().bufferedWriter().apply { }) {
     init {
-        file.parentFile?.mkdirs()
+        file.parent?.toIoFile()?.mkdirs()
     }
 
     override fun postLog() {
-        if (file.readLines().size > 1000) {
-            file.writeText(
+        if (file.toJioFile().readLines().size > 1000) {
+            file.toJioFile().writeText(
                 "overwriting log file since it has > 1000 lines. Did this because I'm experiencing hanging and thought it might be this huge file. Todo: backup before delete"
             )
         }
@@ -23,7 +25,7 @@ class LogFileLogger(val file: MFile) : AppendLogger(file.bufferedWriter().apply 
 
 
 inline fun <R> runAndAndPrintLogFilesOnException(
-    vararg files: Pair<String, MFile>,
+    vararg files: Pair<String, JioFile>,
     op: Produce<R>
 ): R {
     try {

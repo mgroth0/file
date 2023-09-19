@@ -1,17 +1,18 @@
 package matt.file.props
 
-import matt.file.MFile
 import matt.file.props.propthing.saveConvertForProps
+import matt.lang.file.toJFile
+import matt.lang.model.file.FsFile
 import java.util.*
 
-fun Properties.writeToSortedWithoutTimestampComments(file: MFile) {
+fun Properties.writeToSortedWithoutTimestampComments(file: FsFile) {
     val rawProps = this
     /*
         * See: `${}` Properties::store
         * https://stackoverflow.com/a/6184414/6596010
         * Don't want timestamp comment. Also I want the entries sorted to avoid pointless commits
         * */
-    file.outputStream().use { os ->
+    file.toJFile().outputStream().use { os ->
 
         val bw = os.bufferedWriter()
         val escUnicode = false

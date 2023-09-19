@@ -1,6 +1,5 @@
 package matt.file.thismachine
 
-import matt.async.thread.TheProcessReaper
 import matt.lang.function.Op
 import matt.lang.hostname
 import matt.lang.platform.ARCH
@@ -10,7 +9,6 @@ import matt.lang.platform.OS
 import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
-import matt.model.code.sys.Machine
 import matt.model.code.sys.NEW_MAC
 import matt.model.code.sys.OLD_MAC
 import matt.model.code.sys.OpenMind
@@ -42,8 +40,7 @@ fun ifMatt(op: Op) {
 }
 
 
-
-val thisMachine: Machine by lazy {
+val thisMachine by lazy {
     when (OS) {
 
 
@@ -66,11 +63,17 @@ val thisMachine: Machine by lazy {
                     slurmJobID = System.getenv("SLURM_JOBID")
                 )
             } ?: UnknownLinuxMachine(hostname = hostname, homeDir = userHome, isAarch64 = lazy {
+
                 val p = ProcessBuilder("dpkg", "--print-architecture").start()
-                TheProcessReaper.ensureProcessEndsWithThisJvm(p)
-                p.inputStream.readAllBytes()
-                    .decodeToString()
-                    .trim() in listOf("arm64", "aarch64")
+                try {
+                    /*processRepeaper.ensureProcessEndsWithThisJvm(p)*/
+                    p.inputStream.readAllBytes()
+                        .decodeToString()
+                        .trim() in listOf("arm64", "aarch64")
+                } finally {
+                    /*Dodge requirement to use ProcessReaper here, which would have devastating effects on everything that statically depends on theis variable*/
+                    p.destroyForcibly()
+                }
             })
         }
 

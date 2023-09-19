@@ -1,9 +1,6 @@
 package matt.file.context
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import matt.file.FileOrURL
-import matt.file.MFile
+import matt.lang.model.file.FileOrURL
 import matt.file.commons.GRADLE_PROPERTIES_FILE_NAME
 import matt.file.commons.USER_HOME
 import matt.file.commons.lcommons.LocalComputeContextFiles
@@ -13,21 +10,34 @@ import matt.file.construct.mFile
 import matt.lang.context.DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_MAC_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
+import matt.lang.model.file.UnsafeFilePath
 import matt.lang.platform.HasOs
 import matt.lang.platform.OsEnum
 import matt.lang.platform.OsEnum.Linux
 import matt.lang.platform.OsEnum.Mac
 import matt.lang.platform.OsEnum.Windows
 import java.util.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import matt.file.JioFile
+import matt.file.thismachine.thisMachine
+import matt.file.toJioFile
+import matt.lang.model.file.FileSystem
+import matt.lang.model.file.FsFile
+import matt.lang.model.file.MacFileSystem
+import matt.lang.model.file.toUnsafe
+import matt.model.code.sys.LinuxFileSystem
+
 
 @Serializable
-sealed interface ComputeContext: HasOs {
+sealed interface ComputeContext : HasOs {
     val files: ComputeContextFiles
     val taskLabel: String
     val needsModules: Boolean
     val usesJavaInSingularity: Boolean
-    val javaHome: MFile?
+    val javaHome: UnsafeFilePath?
     override val os: OsEnum
+    val fileSystem: FileSystem
 }
 
 val ComputeContext.shellPathContext
@@ -65,6 +75,9 @@ class OpenMindComputeContext : ComputeContextImpl() {
         return javaClass.hashCode()
     }
 
+    override val fileSystem: FileSystem
+        get() = LinuxFileSystem
+
 }
 
 @Serializable
@@ -74,7 +87,7 @@ class LocalComputeContext : ComputeContextImpl() {
     override val needsModules = false
     override val usesJavaInSingularity = false
     override val javaHome by lazy {
-        GRADLE_JAVA_HOME
+        GRADLE_JAVA_HOME.toUnsafe()
     }
     override val taskLabel = "Local"
     override val files by lazy {
@@ -89,17 +102,22 @@ class LocalComputeContext : ComputeContextImpl() {
         return javaClass.hashCode()
     }
 
+    override val fileSystem: FileSystem
+        get() = MacFileSystem
+
 
 }
 
 val GRADLE_JAVA_HOME by lazy {
-    mFile(
-        Properties().apply {
-            load(
-                (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).reader()
-            )
-        }["org.gradle.java.home"].toString()
-    )
+    with(thisMachine.fileSystem) {
+        mFile(
+            Properties().apply {
+                load(
+                    (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).toJioFile().reader()
+                )
+            }["org.gradle.java.home"].toString(),
+        )
+    }
 }
 
 interface ComputeContextFiles {
@@ -111,22 +129,26 @@ interface ComputeContextFiles {
 
     val libjprofilertiPath: String
     val defaultPathPrefix: FileOrURL
-    val briarDataFolder: MFile
-    val om2Home get() = mFile(defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(MFile.unixSeparator)].cpath)
-    val jProfilerConfigFile: MFile get() = om2Home[".jprofiler_config.xml"]
+    val briarDataFolder: FsFile
+    val om2Home
+        get() = mFile(
+            defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].cpath,
+            LinuxFileSystem
+        ).toJioFile()
+    val jProfilerConfigFile: FsFile get() = om2Home[".jprofiler_config.xml"]
     val jarsFolder get() = om2Home["jars"]
     val tempFolder get() = om2Home["temp"]
     val snapshotFolder get() = tempFolder["jprofiler"]
     val latestJpSnapshot get() = snapshotFolder["latest.jps"]
     val rTaskOutputs get() = om2Home["rTaskOutputs"]
-    val briarExtractsFolder: MFile
+    val briarExtractsFolder: JioFile
     val sbatchOutputFolder get() = om2Home["output"]
 
-    val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath)
-    val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json")
+    val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath,LinuxFileSystem)
+    val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json",LinuxFileSystem)
 
     val brs1Folder get() = briarDataFolder["BRS1"]
 
-    val cacheFolder: MFile
+    val cacheFolder: JioFile
 
 }

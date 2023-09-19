@@ -1,8 +1,8 @@
 package matt.file.hash
 
-import matt.file.MFile
 import matt.lang.anno.SeeURL
 import matt.model.data.hash.md5.MD5
+import matt.model.obj.text.HasBytes
 
 
 fun ByteArray.md5(): MD5 {
@@ -18,7 +18,7 @@ fun String.md5(): MD5 {
 }
 
 @SeeURL("https://www.baeldung.com/java-md5")
-fun MFile.md5(): MD5 {
+fun HasBytes.md5(): MD5 {
     val md = myMd5Digest()
     md.update(bytes)
     return md.digest()

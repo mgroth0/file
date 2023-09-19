@@ -1,8 +1,6 @@
 package matt.file.commons.rcommons
 
 import matt.file.FSRoot
-import matt.file.FileOrURL
-import matt.file.MFile
 import matt.file.commons.IDE_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
 import matt.file.commons.rcommons.OpenMindFiles.OM2_HOME
@@ -10,24 +8,27 @@ import matt.file.commons.rcommons.OpenMindUserStorageLocation.om2
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om5
 import matt.file.construct.mFile
 import matt.file.context.ComputeContextFiles
+import matt.file.toJioFile
 import matt.lang.anno.SeeURL
+import matt.lang.model.file.FileOrURL
+import matt.model.code.sys.LinuxFileSystem
 
 class OpenMindComputeContextFiles : ComputeContextFiles {
-    override val defaultPathPrefix: FileOrURL = FSRoot
+    override val defaultPathPrefix: FileOrURL = FSRoot(LinuxFileSystem)
     private val OM_LOCAL_FOLDER by lazy {
-        mFile("/local")
+        mFile("/local", LinuxFileSystem)
     }
-    override val briarDataFolder: MFile
+    override val briarDataFolder
         get() = OM_LOCAL_FOLDER["data"]
 
-    override val briarExtractsFolder: MFile
-        get() = briarDataFolder
+    override val briarExtractsFolder
+        get() = briarDataFolder.toJioFile()
 
     override val libjprofilertiPath: String
         get() = "/opt/jprofiler13/bin/linux-x64/libjprofilerti.so"
 
-    override val cacheFolder: MFile
-        get() = OM2_HOME["cache"]["remote_compute_context"]
+    override val cacheFolder
+        get() = OM2_HOME["cache"]["remote_compute_context"].toJioFile()
 }
 
 
@@ -37,7 +38,7 @@ const val OM_USER = "mjgroth"
 object OpenMindFiles {
 
     val OM5_HOME = om5.forMe()
-    val OM2_OLD_HOME = mFile("/om2/vast/cbmm/$OM_USER")
+    val OM2_OLD_HOME = mFile("/om2/vast/cbmm/$OM_USER", LinuxFileSystem)
     val OM2_HOME = om2.forMe()
     val OM2_TEMP = OM2_HOME["temp"]
     val OM2_SINHA_TRANSFER = OM2_TEMP["sinha_node_transfer"]
@@ -56,7 +57,7 @@ enum class OpenMindUserStorageLocation {
     om2,
     om5;
 
-    fun forUser(user: String) = mFile("/$name/user/$user")
+    fun forUser(user: String) = mFile("/$name/user/$user", LinuxFileSystem)
     fun forMe() = forUser(OM_USER)
 }
 

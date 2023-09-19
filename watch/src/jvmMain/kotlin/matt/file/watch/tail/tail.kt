@@ -1,9 +1,9 @@
 package matt.file.watch.tail
 
 import matt.async.thread.namedThread
-import matt.file.MFile
+import matt.file.JioFile
 
-fun tail(file: MFile) = namedThread(isDaemon = true, name = "tail Thread") {
+fun tail(file: JioFile) = namedThread(isDaemon = true, name = "tail Thread") {
     var got = ""
     while (true) {
         if (file.exists()) {

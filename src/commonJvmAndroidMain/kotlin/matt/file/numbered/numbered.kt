@@ -1,23 +1,25 @@
 package matt.file.numbered
 
-import matt.file.MFile
 import matt.file.ext.FileExtension
+import matt.file.toIoFile
+import matt.lang.model.file.fName
+import matt.lang.model.file.types.Folder
 import matt.prim.str.isInt
 
 /*TODO: MERGE THIS CODE WITH nextFileThatDoesNotExistWithNameLike and COMMON CODE*/
 class NumberedFiles(
-    private val folder: MFile,
+    private val folder: Folder,
     val prefix: String,
     val extension: FileExtension
 ) {
 
-    private fun currentValidFiles() = folder.listFiles()?.filter {
-        it.name.startsWith(prefix) && it.name.endsWith(extension.withPrefixDot) && it.name.substringAfter(prefix)
+    private fun currentValidFiles() = folder.toIoFile().listFilesAsList()?.filter {
+        it.fName.startsWith(prefix) && it.fName.endsWith(extension.withPrefixDot) && it.fName.substringAfter(prefix)
             .substringBefore(extension.withPrefixDot).isInt()
     } ?: listOf()
 
     fun currentMaxNumber() = currentValidFiles().map {
-        it.name.substringAfter(prefix).substringBefore(extension.withPrefixDot).toInt()
+        it.fName.substringAfter(prefix).substringBefore(extension.withPrefixDot).toInt()
     }.sorted().maxOrNull()
 
     fun currentMaxFile() = currentMaxNumber()?.let { numberToFile(it) }

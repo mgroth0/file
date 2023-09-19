@@ -2,12 +2,13 @@
 
 package matt.file.hash
 
-import matt.file.MFile
+import matt.file.JvmMFile
 import matt.file.commons.DS_STORE
 import matt.file.construct.toMFile
+import matt.file.ext.walk
 import matt.model.data.hash.md5.MD5
-import matt.prim.base64.encodeToURLBase64WithoutPadding
 import java.security.MessageDigest
+import matt.prim.base64.encodeToURLBase64WithoutPadding
 
 actual fun myMd5Digest(): MyMd5Digest = JvmMd5HashDigest()
 
@@ -17,7 +18,7 @@ private val DEFAULT_IGNORE_ALL_WITH_PATH_PARTS = listOf<String>()
 private val DEFAULT_IGNORE_ALL_WITH_PATH_PARTS_CONTAINING = listOf<String>()
 
 
-fun MFile.recursiveMD5(
+fun JvmMFile.recursiveMD5(
     ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
     ignoreFileNames: List<String> = DEFAULT_IGNORE_FILE_NAMES,
     ignoreAllWithPathParts: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS,
@@ -44,19 +45,28 @@ class JvmMd5HashDigest() : MyMd5Digest() {
 
 
     fun updateFromFileRecursively(
-        file: MFile,
+        file: JvmMFile,
         ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
         ignoreFileNames: List<String> = DEFAULT_IGNORE_FILE_NAMES,
         ignoreAllWithPathParts: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS,
         ignoreAllWithPathPartsContaining: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS_CONTAINING
     ) {
-        file.walk().sortedBy { it.absolutePath }.map { it.toMFile() }.filter {
-            it != file && (!ignoreDSStore || it.name != DS_STORE) && it.name !in ignoreFileNames && it.path.split(MFile.separator)
-                .none { it in ignoreAllWithPathParts } && it.path.split(MFile.separator)
+        require(file.isAbsolute)
+//        println("updateFromFileRecursively: $file")
+        file.walk().sortedBy {
+//            println("walking through: ${it.path}")
+            it.path
+        }.map { it.toMFile() }.filter {
+            it != file && (!ignoreDSStore || !it.hasName(DS_STORE)) && it.name !in ignoreFileNames && it.path.split(file.fileSystem.separator)
+                .none { it in ignoreAllWithPathParts } && it.path.split(file.fileSystem.separator)
                 .none { part -> ignoreAllWithPathPartsContaining.any { it in part } }
         }.forEach {
 //            println("updating from file: $it")
-            update(it.relativeTo(file).path)
+            if (it == file) {
+                update("")
+            } else {
+                update(it.relativeTo(file).path)
+            }
             if (!it.isDir()) update(it.readBytes())
         }
     }
