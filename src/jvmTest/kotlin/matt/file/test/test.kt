@@ -9,7 +9,7 @@ import matt.file.UnknownFileOrURL
 import matt.file.construct.toMFile
 import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.lang.model.file.MacFileSystem
-import matt.test.JupiterTestAssertions.assertRunsInOneMinute
+import matt.test.assertions.JupiterTestAssertions.assertRunsInOneMinute
 import java.io.File
 import kotlin.test.Test
 

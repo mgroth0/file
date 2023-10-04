@@ -36,7 +36,7 @@ fun JvmMFile.recursiveMD5(
 }
 
 
-class JvmMd5HashDigest() : MyMd5Digest() {
+class JvmMd5HashDigest : MyMd5Digest() {
     private val md: MessageDigest = MessageDigest.getInstance("MD5")
 
     override fun update(bytes: ByteArray) {
@@ -52,16 +52,22 @@ class JvmMd5HashDigest() : MyMd5Digest() {
         ignoreAllWithPathPartsContaining: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS_CONTAINING
     ) {
         require(file.isAbsolute)
-//        println("updateFromFileRecursively: $file")
         file.walk().sortedBy {
-//            println("walking through: ${it.path}")
             it.path
-        }.map { it.toMFile() }.filter {
-            it != file && (!ignoreDSStore || !it.hasName(DS_STORE)) && it.name !in ignoreFileNames && it.path.split(file.fileSystem.separator)
-                .none { it in ignoreAllWithPathParts } && it.path.split(file.fileSystem.separator)
+        }.map {
+            it.toMFile()
+        }.filter {
+            it != file
+        }.filter {
+            !ignoreDSStore || !it.hasName(DS_STORE)
+        }.filter {
+            it.name !in ignoreFileNames
+        }.filter {
+            it.path.split(file.fileSystem.separator).none { it in ignoreAllWithPathParts }
+        }.filter {
+            it.path.split(file.fileSystem.separator)
                 .none { part -> ignoreAllWithPathPartsContaining.any { it in part } }
         }.forEach {
-//            println("updating from file: $it")
             if (it == file) {
                 update("")
             } else {

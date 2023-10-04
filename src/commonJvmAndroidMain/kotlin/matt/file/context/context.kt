@@ -20,6 +20,8 @@ import java.util.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import matt.file.JioFile
+import matt.file.context.BriarDataSplit.BRS
+import matt.file.context.BriarDataSplit.BTS
 import matt.file.thismachine.thisMachine
 import matt.file.toJioFile
 import matt.lang.model.file.FileSystem
@@ -42,8 +44,8 @@ sealed interface ComputeContext : HasOs {
 
 val ComputeContext.shellPathContext
     get() = when (os) {
-        OsEnum.Linux -> DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
-        OsEnum.Mac   -> DEFAULT_MAC_PROGRAM_PATH_CONTEXT
+        Linux -> DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
+        Mac   -> DEFAULT_MAC_PROGRAM_PATH_CONTEXT
         Windows      -> DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
     }
 
@@ -95,7 +97,7 @@ class LocalComputeContext : ComputeContextImpl() {
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is LocalComputeContextFiles
+        return other is LocalComputeContext
     }
 
     override fun hashCode(): Int {
@@ -147,8 +149,14 @@ interface ComputeContextFiles {
     val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath,LinuxFileSystem)
     val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json",LinuxFileSystem)
 
-    val brs1Folder get() = briarDataFolder["BRS1"]
+    val brs1Folder get() = briarDataFolder["${BRS.name}1"]
+    val bts1Folder get() = briarDataFolder["${BTS.name}1"]
 
     val cacheFolder: JioFile
 
+}
+
+
+enum class BriarDataSplit {
+    BRS, BTS
 }

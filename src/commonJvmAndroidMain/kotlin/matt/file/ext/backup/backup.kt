@@ -1,0 +1,63 @@
+package matt.file.ext.backup
+
+import matt.file.JvmMFile
+import matt.file.commons.BACKUP_FOLDER
+import matt.file.ext.mkparents
+import matt.file.ext.weird.getNextSubIndexedFile
+import matt.file.toJioFile
+import matt.lang.file.toJFile
+import matt.lang.model.file.FsFile
+
+internal val FsFile.defaultBackupFolder get() = parent!! + "backups"
+val FsFile.registeredBackupFolder get() = BACKUP_FOLDER["by_path"][path.removePrefix(fileSystem.separator)]
+
+fun JvmMFile.backup(
+    text: String? = null,
+    backupFolder: FsFile = defaultBackupFolder
+) {
+    doBackupWork(text = text, backupFolder = backupFolder)
+}
+
+fun JvmMFile.doubleBackupWrite(
+    s: String,
+) {
+
+    mkparents()
+    toJFile().createNewFile()
+
+    /*this is important. Extra security is always good.*/
+
+    /*now I'm backing up version before AND after the change. */
+
+    /*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
+
+    /*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
+
+    val old = readText()
+
+    doBackupWork(text = old, backupFolder = defaultBackupFolder)
+    writeText(s)
+    doBackupWork(text = old, backupFolder = defaultBackupFolder)
+
+}
+
+
+private fun JvmMFile.doBackupWork(
+    text: String? = null,
+    backupFolder: FsFile
+) {
+    val backFolderJio = backupFolder.toJioFile()
+    backFolderJio.mkdirs()
+    require(backFolderJio.isDir()) { "backupFolder not a dir" }
+    val backupTarget = backFolderJio.getNextSubIndexedFile(name, 100)
+    if (isDir()) {
+        backupTarget.deleteIfExists()
+        toJFile().copyRecursively(backupTarget.toJFile())
+        return
+    }
+
+    val realText = text ?: readText()
+
+    backupTarget.text = realText
+
+}

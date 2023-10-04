@@ -9,8 +9,8 @@ import matt.lang.platform.OS
 import matt.lang.userHome
 import matt.lang.userName
 import matt.log.warn.warn
-import matt.model.code.sys.NEW_MAC
-import matt.model.code.sys.OLD_MAC
+import matt.model.code.sys.NewMac
+import matt.model.code.sys.OldMac
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.OpenMindDTN
 import matt.model.code.sys.OpenMindMainHeadNode
@@ -80,14 +80,14 @@ val thisMachine by lazy {
 
         Mac   -> when (ARCH) {
             "aarch64" -> when (userName) {
-                NEW_MAC_USERNAME -> NEW_MAC
+                NEW_MAC_USERNAME -> NewMac
                 else             -> UnknownSiliconMacMachine(homeDir = userHome)
             }
 
             else      -> {
                 warn("arch($ARCH) is not aarch64. add this new value to the when expression and remove the \"else\"")
                 when (userName) {
-                    OLD_MAC_USERNAME -> OLD_MAC
+                    OLD_MAC_USERNAME -> OldMac
                     else             -> UnknownIntelMacMachine(homeDir = userHome)
                 }
             }

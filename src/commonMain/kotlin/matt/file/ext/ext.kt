@@ -15,9 +15,10 @@ class FileExtension(input: String) {
 
     companion object {
 
-        private val ext get() = matt.lang.delegation.provider {
-            SimpleGetter(FileExtension(it.lower()))
-        }
+        private val ext
+            get() = matt.lang.delegation.provider {
+                SimpleGetter(FileExtension(it.lower()))
+            }
 
         val STATUS by ext /*my invention*/
 
@@ -43,6 +44,7 @@ class FileExtension(input: String) {
         val COFFEESCRIPT by ext
         val MP3 by ext
         val MP4 by ext
+        val TS by ext
         val PORT by ext
         val COMP by ext
         val COMP_MEM by ext
@@ -71,6 +73,8 @@ class FileExtension(input: String) {
         val TIFF by ext
         val ICN by ext
         val ICO by ext
+        val ICNS by ext
+        val NEF by ext
         val IMAGE_EXTENSIONS = ExtensionSet(
             PNG,
             JPEG,
@@ -79,7 +83,9 @@ class FileExtension(input: String) {
             TIF,
             TIFF,
             ICN,
-            ICO
+            ICO,
+            ICNS,
+            NEF
         )
 
 
@@ -101,7 +107,6 @@ class FileExtension(input: String) {
         val MD by ext
 
         val CRDOWNLOAD by ext
-
 
 
     }

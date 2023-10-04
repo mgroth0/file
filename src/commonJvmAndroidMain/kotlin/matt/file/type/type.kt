@@ -1,6 +1,7 @@
 package matt.file.type
 
 import matt.file.construct.mFile
+import matt.file.ext.FileExtension
 import matt.file.types.checkType
 import matt.file.types.typedFile
 import matt.lang.model.file.FileSystem
@@ -25,52 +26,52 @@ import matt.lang.model.file.types.UnknownShellType
 
 context(FileSystem)
 val String.py
-    get() = typedFile(mFile("$this.py")).checkType(Python)
+    get() = typedFile(mFile("$this${FileExtension.PY.withPrefixDot}")).checkType(Python)
 context(FileSystem)
 val String.kt
-    get() = typedFile(mFile("$this.kt")).checkType(Kotlin)
+    get() = typedFile(mFile("$this${FileExtension.KT.withPrefixDot}")).checkType(Kotlin)
 context(FileSystem)
 val String.sh
-    get() = typedFile(mFile("$this.sh")).checkType(UnknownShellType)
+    get() = typedFile(mFile("$this${FileExtension.SH.withPrefixDot}")).checkType(UnknownShellType)
 context(FileSystem)
 val String.scpt
-    get() = typedFile(mFile("$this.scpt")).checkType(BinaryApplescript)
+    get() = typedFile(mFile("$this${FileExtension.SCPT.withPrefixDot}")).checkType(BinaryApplescript)
 context(FileSystem)
 val String.applescript
-    get() = typedFile(mFile("$this.applescript")).checkType(Applescript)
+    get() = typedFile(mFile("$this${FileExtension.APPLESCRIPT.withPrefixDot}")).checkType(Applescript)
 context(FileSystem)
 val String.jar
-    get() = typedFile(mFile("$this.jar")).checkType(Jar)
+    get() = typedFile(mFile("$this${FileExtension.JAR.withPrefixDot}")).checkType(Jar)
 context(FileSystem)
 val String.kexe
-    get() = typedFile(mFile("$this.kexe")).checkType(Kexe)
+    get() = typedFile(mFile("$this${FileExtension.KEXE.withPrefixDot}")).checkType(Kexe)
 context(FileSystem)
 val String.json
-    get() = typedFile(mFile("$this.json")).checkType(Json)
+    get() = typedFile(mFile("$this${FileExtension.JSON.withPrefixDot}")).checkType(Json)
 context(FileSystem)
 val String.cbor
-    get() = typedFile(mFile("$this.cbor")).checkType(Cbor)
+    get() = typedFile(mFile("$this${FileExtension.CBOR.withPrefixDot}")).checkType(Cbor)
 context(FileSystem)
 val String.md
-    get() = typedFile(mFile("$this.md")).checkType(Markdown)
+    get() = typedFile(mFile("$this${FileExtension.MD.withPrefixDot}")).checkType(Markdown)
 context(FileSystem)
 val String.png
-    get() = typedFile(mFile("$this.png")).checkType(Png)
+    get() = typedFile(mFile("$this${FileExtension.PNG.withPrefixDot}")).checkType(Png)
 context(FileSystem)
 val String.svg
-    get() = typedFile(mFile("$this.svg")).checkType(Svg)
+    get() = typedFile(mFile("$this${FileExtension.SVG.withPrefixDot}")).checkType(Svg)
 context(FileSystem)
 val String.icns
-    get() = typedFile(mFile("$this.icns")).checkType(Icns)
+    get() = typedFile(mFile("$this${FileExtension.ICNS.withPrefixDot}")).checkType(Icns)
 context(FileSystem)
 val String.ico
-    get() = typedFile(mFile("$this.ico")).checkType(Ico)
+    get() = typedFile(mFile("$this${FileExtension.ICO.withPrefixDot}")).checkType(Ico)
 context(FileSystem)
 val String.mp4
-    get() = typedFile(mFile("$this.mp4")).checkType(Mp4)
+    get() = typedFile(mFile("$this${FileExtension.MP4.withPrefixDot}")).checkType(Mp4)
 context(FileSystem)
 val String.log
-    get() = typedFile(mFile("$this.log")).checkType(Log)
+    get() = typedFile(mFile("$this${FileExtension.LOG.withPrefixDot}")).checkType(Log)
 context(FileSystem)
 val String.txt
-    get() = typedFile(mFile("$this.txt")).checkType(Txt)
+    get() = typedFile(mFile("$this${FileExtension.TXT.withPrefixDot}")).checkType(Txt)

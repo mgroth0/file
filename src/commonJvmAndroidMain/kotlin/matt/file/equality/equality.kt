@@ -6,10 +6,12 @@ import matt.file.hash.md5
 import matt.file.hash.recursiveMD5
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
+import matt.lang.anno.optin.IncubatingMattCode
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.FsFileNameImpl
 import matt.lang.model.file.types.Folder
 import matt.lang.model.file.types.asFolder
+import java.util.jar.JarFile
 
 infix fun JioFile.hasIdenticalDataToUsingHash(other: JioFile): Boolean {
     return md5() == other.md5()
@@ -65,11 +67,10 @@ fun Folder.firstRecursiveDiff(
     ignoreFileNames: List<String> = listOf()
 ): String? {
 
-//    if (name != other.name) return "name $name is different from ${other.name}"
-
-    fun predicate(file: FsFile) = (!ignoreDSStore || !file.hasName(DS_STORE)) && file.fsFileName !in (ignoreFileNames.map {
-        FsFileNameImpl(it,fileSystem)
-    })
+    fun predicate(file: FsFile) =
+        (!ignoreDSStore || !file.hasName(DS_STORE)) && file.fsFileName !in (ignoreFileNames.map {
+            FsFileNameImpl(it, fileSystem)
+        })
 
     val files = this.toJioFile().listFiles()!!.filter(::predicate)
     val otherFiles = other.toJioFile().listFiles()!!.filter(::predicate)
@@ -101,5 +102,40 @@ fun Folder.firstRecursiveDiff(
 
 
 
+    return null
+}
+
+
+@IncubatingMattCode
+fun JarFile.firstRecursiveDifference(other: JarFile): String? {
+    val mySize = this.size()
+    val otherSize = other.size()
+    if (mySize!=otherSize) {
+        return "number of entries is different between $mySize, $otherSize"
+    }
+    val myEntries = entries()
+    val otherEntries = other.entries()
+    while (true) {
+        if (!myEntries.hasMoreElements()) break
+        if (!otherEntries.hasMoreElements()) break
+        val myEntry = myEntries.nextElement()
+        val otherEntry = otherEntries.nextElement()
+        if (myEntry.name != otherEntry.name) {
+            return "names are different between ${myEntry.name},${otherEntry.name}"
+        }
+        if (myEntry.size != otherEntry.size) {
+            return "sizes of ${myEntry.name} are different between ${myEntry.size},${otherEntry.size}"
+        }
+        if (myEntry.isDirectory != otherEntry.isDirectory) {
+            return "isDirectory of ${myEntry.name} are different between ${myEntry.isDirectory},${otherEntry.isDirectory}"
+        }
+        if (myEntry.comment != otherEntry.comment) {
+            return "comment of ${myEntry.name} is different between ${myEntry.comment},${otherEntry.comment}"
+        }
+        if (myEntry.crc != otherEntry.crc) {
+            return "crc of ${myEntry.name} is different between ${myEntry.crc},${otherEntry.crc}"
+        }
+
+    }
     return null
 }

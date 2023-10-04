@@ -9,6 +9,7 @@ import matt.lang.anno.Optimization
 import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.lang.model.file.FileSystem
 import matt.lang.model.file.FsFile
+import matt.model.data.message.AbsMacFile
 import matt.model.data.message.MacFile
 import java.io.BufferedReader
 import java.io.File
@@ -44,6 +45,7 @@ fun File.toMFile(fs: FileSystem) = with(fs) {toMFile()}
 
 
 fun File.toSFile() = MacFile(path)
+fun File.toAbsMacFile() = AbsMacFile(path)
 
 context(FileSystem)
 fun mFile(

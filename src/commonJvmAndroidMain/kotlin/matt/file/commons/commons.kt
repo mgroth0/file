@@ -21,8 +21,8 @@ import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
 import matt.model.code.sys.Linux
 import matt.model.code.sys.Mac
-import matt.model.code.sys.NEW_MAC
-import matt.model.code.sys.OLD_MAC
+import matt.model.code.sys.NewMac
+import matt.model.code.sys.OldMac
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.Windows
 import matt.model.code.sys.WindowsFileSystem
@@ -35,6 +35,7 @@ const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 //object CommonFiles {
 val USER_HOME by lazy { mFile(thisMachine.homeDir, thisMachine.fileSystem) }
 
+val VOLUMES_FOLDER by lazy { mFile("/Volumes", MacFileSystem) }
 
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
@@ -50,6 +51,10 @@ val BACKUP_FOLDER by lazy {
 val GBUILD_FOLDER by lazy { REGISTERED_FOLDER + "gbuild" }
 val GBUILD_JAR_FOLDER by lazy { GBUILD_FOLDER + "jar" }
 val GBUILD_DIST_FOLDER by lazy { GBUILD_FOLDER + "dist" }
+private val GBUILD_MAVEN_FOLDER by lazy { GBUILD_FOLDER + "maven" }
+val GBUILD_MAVEN_CURRENT_FOLDER by lazy { GBUILD_MAVEN_FOLDER + "current" }
+private val GBUILD_MAVEN_SNAPSHOTS_FOLDER by lazy { GBUILD_MAVEN_FOLDER + "snapshots" }
+fun gbuildMavenSnapshotFolder(num: Int) = GBUILD_MAVEN_SNAPSHOTS_FOLDER[num.toString()]
 val DOWNLOADS_FOLDER by lazy { USER_HOME + "Downloads" }
 val ICON_FOLDER by lazy { REGISTERED_FOLDER["icon"] }
 val BIN_FOLDER by lazy { REGISTERED_FOLDER + "bin" }
@@ -68,7 +73,8 @@ val COMMON_PROJ_FOLDER by lazy { REGISTERED_FOLDER["common"] }
 val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications", MacFileSystem) }
 val YOUR_KIT_APP_FOLDER by lazy {
     /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]*/
-    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.5.app"]
+    /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.5.app"]*/
+    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.9.app"]
 }
 val JPROFILER_APP_FOLDER by lazy {
     SYS_APPLICATIONS_FOLDER["JProfiler.app"]
@@ -153,8 +159,8 @@ val KJG_NAV_KEY = "NAV"
 
 private val projectFolder by lazy {
     when (thisMachine) {
-        is NEW_MAC, is Windows -> IDE_FOLDER
-        is OpenMind            -> mFile(thisMachine.homeDir, thisMachine.fileSystem).toJioFile()
+        is NewMac, is Windows -> IDE_FOLDER
+        is OpenMind           -> mFile(thisMachine.homeDir, thisMachine.fileSystem).toJioFile()
         else                   -> NOT_IMPLEMENTED
     }
 }
@@ -178,16 +184,16 @@ val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 
 val DNN_FOLDER by lazy {
     when (thisMachine) {
-        NEW_MAC -> IDE_FOLDER + "dnn"
-        OLD_MAC -> REGISTERED_FOLDER["todo/science/dnn"]
-        else    -> null
+        NewMac -> IDE_FOLDER + "dnn"
+        OldMac -> REGISTERED_FOLDER["todo/science/dnn"]
+        else   -> null
     }
 }
 val HEP_FOLDER by lazy {
     when (thisMachine) {
-        NEW_MAC -> IDE_FOLDER + "hep"
-        OLD_MAC -> REGISTERED_FOLDER["todo/science/hep"]
-        else    -> null
+        NewMac -> IDE_FOLDER + "hep"
+        OldMac -> REGISTERED_FOLDER["todo/science/hep"]
+        else   -> null
     }
 }
 

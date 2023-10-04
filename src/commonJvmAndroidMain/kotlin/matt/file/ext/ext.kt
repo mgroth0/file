@@ -2,12 +2,10 @@
 
 package matt.file.ext
 
-import matt.async.thread.namedThread
 import matt.collect.itr.recurse.DEFAULT_INCLUDE_SELF
 import matt.collect.itr.recurse.recurse
 import matt.file.JioFile
 import matt.file.JvmMFile
-import matt.lang.model.file.FsFile
 import matt.file.commons.DS_STORE
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
@@ -17,12 +15,10 @@ import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.EnforcedMin
 import matt.lang.file.toJFile
 import matt.lang.model.file.FileSystem
+import matt.lang.model.file.FsFile
 import matt.lang.model.file.fName
-import matt.lang.require.requirePositive
 import matt.lang.userHome
-import matt.log.NOPLogger
 import matt.log.warn.warn
-import matt.model.code.report.Reporter
 import matt.prim.str.ensureSuffix
 import java.nio.file.FileSystems
 import java.nio.file.Files
@@ -172,83 +168,6 @@ fun JvmMFile.recursiveLastModified(): Long {
 }
 
 
-fun JvmMFile.doubleBackupWrite(
-    s: String,
-    thread: Boolean = false
-) {
-
-    mkparents()
-    toJFile().createNewFile()
-
-    /*this is important. Extra security is always good.*/
-
-    /*now I'm backing up version before AND after the change. */
-
-    /*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
-
-    /*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
-
-    val old = readText()
-    val work1 = backupWork(text = old)
-    val work2 = backupWork(text = old)
-
-    val work = {
-        work1()
-        writeText(s)
-        work2()
-    }
-
-    if (thread) namedThread("doubleBackupWrite Thread") { work() }
-    else work()
-
-}
-
-
-internal fun JvmMFile.backupWork(
-    @Suppress("UNUSED_PARAMETER") thread: Boolean = false,
-    text: String? = null
-): () -> Unit {
-
-    require(this.exists()) {
-        "cannot back up ${this}, which does not exist"
-    }
-
-
-    val backupFolder = parent!! + "backups"
-    backupFolder.mkdir()
-    require(backupFolder.isDir()) { "backupFolder not a dir" }
-
-
-    val backupFileWork = backupFolder.getNextSubIndexedFileWork(name, 100)
-
-    if (isDir()) {
-        return {
-            val target = backupFileWork()
-            target.deleteIfExists()
-            toJFile().copyRecursively(target.toJFile())
-        }
-    }
-
-    val realText = text ?: readText()
-
-    return { backupFileWork().text = realText }
-
-}
-
-fun JvmMFile.backup(
-    thread: Boolean = false,
-    text: String? = null
-) {
-
-    val work = backupWork(thread = thread, text = text)
-    if (thread) {
-        namedThread("backup Thread") {
-            work()
-        }
-    } else work()
-}
-
-
 fun JvmMFile.recursiveChildren(includeSelf: Boolean = DEFAULT_INCLUDE_SELF) =
     recurse(includeSelf = includeSelf) { it.listFiles()?.toList() ?: listOf() }
 
@@ -260,15 +179,7 @@ operator fun JvmMFile.plus(item: Char): JvmMFile {
     return resolve(item.toString())
 }
 
-/*
-operator fun JvmMFile.plus(item: JvmMFile): JvmMFile {
-    return resolve(item)
-}
 
-operator fun JvmMFile.get(item: JvmMFile): JvmMFile {
-    return resolve(item)
-}
-*/
 
 
 val JvmMFile.unixNlink get() = Files.getAttribute(this.toJFile().toPath(), "unix:nlink").toString().toInt()
@@ -301,7 +212,7 @@ fun FsFile.resRepExt(newExt: FileExtension) = mFile(
 )
 
 
-private class IndexFolder(val f: FsFile) {
+internal class IndexFolder(val f: FsFile) {
     val name = f.fName
     val index = name.toInt()
     operator fun plus(other: JvmMFile) = f[other]
@@ -310,36 +221,6 @@ private class IndexFolder(val f: FsFile) {
     fun previous() = IndexFolder(f.parent!! + (index - 1).toString())
 }
 
-
-fun JvmMFile.getNextSubIndexedFileWork(
-    filename: String,
-    maxN: Int,
-    @Suppress("UNUSED_PARAMETER") log: Reporter = NOPLogger
-): () -> JvmMFile {
-
-    requirePositive(maxN)
-    val existingSubIndexFolds = listFiles()!!.mapNotNull { f ->
-        f.name.toIntOrNull()?.let { IndexFolder(f) }
-    }.sortedBy { it.index }
-    val firstSubIndexFold = existingSubIndexFolds.firstOrNull()
-
-    val nextSubIndexFold = if (existingSubIndexFolds.isEmpty()) IndexFolder(
-        resolve("1")
-    ) else existingSubIndexFolds.firstOrNull { (it + filename).toJioFile().doesNotExist }
-        ?: existingSubIndexFolds.last().next()
-
-
-    return {
-        if (nextSubIndexFold.index > maxN) {
-            firstSubIndexFold?.plus(filename)?.toJFile()?.deleteRecursively()
-            (existingSubIndexFolds - firstSubIndexFold).filterNotNull().sortedBy { it.index }.forEach {
-                (it + filename).takeIf { it.toJioFile().exists() }?.toJioFile()?.moveInto(it.previous().f.toJioFile())
-            }
-        }
-        (nextSubIndexFold + filename).toJioFile()
-    }
-
-}
 
 /*val JvmMFile.abspath: String
     get() = toJFile().absolutePath*/

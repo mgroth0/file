@@ -3,6 +3,7 @@ package matt.file
 import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.lang.anno.Duplicated
+import matt.lang.anno.optin.ExperimentalMattCode
 import matt.lang.model.file.CommonFile
 import matt.lang.model.file.FileOrURL
 import matt.lang.model.file.FilePath
@@ -47,6 +48,10 @@ class UnknownFileOrURL(path: String) : FileOrURL {
 }
 
 class FSRoot(override val fileSystem: FileSystem) : FsFile {
+    override fun withinFileSystem(newFileSystem: FileSystem): FsFile {
+        TODO("Not yet implemented")
+    }
+
     override val fsFilePath: FsFilePath
         get() = fileSystem.constructFilePath(fileSystem.separator)
 //            UnsafeFilePath(fileSystem.separator)
@@ -82,6 +87,11 @@ open class FsFileImpl(
     override val fileSystem: FileSystem
 ) : CommonFile, FsFile {
 
+
+    @ExperimentalMattCode("need thorough testing for crazy stuff like this. This could result in have a CaseSensitive FsFilePath in a case-insensitive filesystem...")
+    final override fun withinFileSystem(newFileSystem: FileSystem): FsFile {
+        return FsFileImpl(fsFilePath, newFileSystem)
+    }
 
 //    override val parent: FsFile?
 //        get() = super.parent
