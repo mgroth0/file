@@ -74,7 +74,8 @@ val SYS_APPLICATIONS_FOLDER by lazy { mFile("/Applications", MacFileSystem) }
 val YOUR_KIT_APP_FOLDER by lazy {
     /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2022.9.app"]*/
     /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.5.app"]*/
-    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.9.app"]
+    /*SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler-2023.9.app"],*/
+    SYS_APPLICATIONS_FOLDER["YourKit-Java-Profiler.app"]
 }
 val JPROFILER_APP_FOLDER by lazy {
     SYS_APPLICATIONS_FOLDER["JProfiler.app"]
@@ -263,8 +264,10 @@ const val STATIC_ROOT_NAME = "static"
 
 const val DockerfileName = "Dockerfile"
 
-val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"
+const val JPROFILER_CONFIG_NAME = "jprofiler_config.xml"
+const val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"
 
 
 const val PRIV_FOLD_NAME = ".private"
+
 

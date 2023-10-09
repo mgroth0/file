@@ -11,7 +11,10 @@ import matt.file.context.ComputeContextFiles
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.model.file.FileOrURL
+import matt.lang.model.file.FsFile
+import matt.lang.versions.CURRENT_JPROFILER_VERSION
 import matt.model.code.sys.LinuxFileSystem
+
 
 class OpenMindComputeContextFiles : ComputeContextFiles {
     override val defaultPathPrefix: FileOrURL = FSRoot(LinuxFileSystem)
@@ -25,7 +28,11 @@ class OpenMindComputeContextFiles : ComputeContextFiles {
         get() = briarDataFolder.toJioFile()
 
     override val libjprofilertiPath: String
-        get() = "/opt/jprofiler13/bin/linux-x64/libjprofilerti.so"
+        get() = "/opt/jprofiler${CURRENT_JPROFILER_VERSION.substringBefore(".")}/bin/linux-x64/libjprofilerti.so"
+    override val jpenable: FsFile
+        get() = TODO("Not yet implemented")
+    override val yourKitAttachScript: FsFile
+        get() = TODO("Not yet implemented")
 
     override val cacheFolder
         get() = OM2_HOME["cache"]["remote_compute_context"].toJioFile()

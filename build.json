@@ -12,6 +12,13 @@
       "path": ":k:log"
     },
     {
+      "type": "Lib",
+      "cfg": "commonJvmAndroidMainApi",
+      "key": "kotlinx-serialization-core",
+      "checkIfUsed": false,
+      "note": "not required for compilation, but currently required for resolving references in the IDE due to lack of support of jvm-android modules (as of 2023.3 EAP)"
+    },
+    {
       "type": "Project",
       "cfg": "commonMainApi",
       "path": ":k:io"

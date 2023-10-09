@@ -1,28 +1,14 @@
 package matt.file.watch
 
+import kotlinx.coroutines.CoroutineScope
 import matt.file.JioFile
 import matt.file.ext.recursiveLastModified
 import matt.file.ext.recursiveSize
 import matt.lang.function.Op
-import matt.obs.watch.watchProp
+import matt.obs.watch.launchWatchProperty
 import kotlin.time.Duration
 
-fun JioFile.createRecursiveLastModifiedProp(checkInterval: Duration) = watchProp(checkInterval) {
-    recursiveLastModified()
-}
-
-fun JioFile.createFileSizeProp(checkInterval: Duration) = watchProp(checkInterval) {
-    takeIf { exists() }?.size()
-}
-
-fun JioFile.createRecursiveFileSizeProp(checkInterval: Duration) = watchProp(checkInterval) {
-    takeIf { exists() }?.recursiveSize()
-}
-
-fun JioFile.createFileExistsProp(checkInterval: Duration) = watchProp(checkInterval) {
-    exists()
-}
-
+context(CoroutineScope)
 fun JioFile.onChange(
     checkInterval: Duration,
     op: Op
@@ -32,3 +18,25 @@ fun JioFile.onChange(
         op()
     }
 }
+
+context(CoroutineScope)
+fun JioFile.createRecursiveLastModifiedProp(checkInterval: Duration) = launchWatchProperty(checkInterval) {
+    recursiveLastModified()
+}
+
+context(CoroutineScope)
+fun JioFile.createFileSizeProp(checkInterval: Duration) = launchWatchProperty(checkInterval) {
+    takeIf { exists() }?.size()
+}
+
+context(CoroutineScope)
+fun JioFile.createRecursiveFileSizeProp(checkInterval: Duration) = launchWatchProperty(checkInterval) {
+    takeIf { exists() }?.recursiveSize()
+}
+
+context(CoroutineScope)
+fun JioFile.createFileExistsProp(checkInterval: Duration) = launchWatchProperty(checkInterval) {
+    exists()
+}
+
+
