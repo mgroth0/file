@@ -32,7 +32,7 @@ fun createTempDir(
     suffix: String? = null,
     directory: FsFile? = null
 ) =
-    kotlin.io.createTempDir(prefix, suffix, directory?.toJFile()).toMFile()
+    createTempDir(prefix, suffix, directory?.toJFile()).toMFile()
 
 
 context(FileSystem)
@@ -41,8 +41,7 @@ fun createTempFile(
     prefix: String = "tmp",
     suffix: String? = null,
     directory: FsFile? = null
-) =
-    kotlin.io.createTempFile(prefix, suffix, directory?.toJFile()).toMFile()
+) = createTempFile(prefix, suffix, directory?.toJFile()).toMFile()
 
 
 /*fun matt.file.JioFile.copyRecursively(
@@ -97,7 +96,7 @@ fun JvmMFile.hasAnyExtension(
     extension: FileExtension,
     vararg extensions: FileExtension
 ): Boolean {
-    val ext = mExtension
+    val ext = singleExtension
     if (ext == extension) return true
     extensions.forEach {
         if (it == ext) return true
@@ -108,7 +107,7 @@ fun JvmMFile.hasAnyExtension(
 fun JvmMFile.hasAnyExtension(
     extensions: ExtensionSet,
 ): Boolean {
-    val ext = mExtension
+    val ext = singleExtension
     return extensions.any { it == ext }
 }
 
@@ -180,13 +179,11 @@ operator fun JvmMFile.plus(item: Char): JvmMFile {
 }
 
 
-
-
 val JvmMFile.unixNlink get() = Files.getAttribute(this.toJFile().toPath(), "unix:nlink").toString().toInt()
 val JvmMFile.hardLinkCount get() = unixNlink
 
 
-fun FsFile.hasExtension(extension: FileExtension) = mExtension == extension
+infix fun FsFile.hasExtension(extension: FileExtension) = mightHaveAnExtension && singleExtension == extension
 
 
 infix fun JvmMFile.withExtension(ext: FileExtension): JvmMFile {
@@ -247,7 +244,7 @@ fun JvmMFile.mkFold(child: String) = resolve(child).apply {
 /*calling this 'mkdir' like I used to could cause errors since it shares a name with the shell command*/
 fun JvmMFile.mkFold(int: Int) = mkFold(int.toString())
 
-fun JvmMFile.isImage() = mExtension?.isImage == true
+fun JvmMFile.isImage() = singleExtensionOrNullIfNoDots?.isImage == true
 
 
 val JvmMFile.url get() = toJFile().toURI().toURL()
@@ -267,7 +264,7 @@ fun JvmMFile.createIfNecessary(defaultText: String? = null): Boolean {
 fun JvmMFile.listNonDSStoreFiles() = listFiles()?.filter { !it.hasName(DS_STORE) }
 fun JvmMFile.listFilesOrEmpty() = listFiles() ?: arrayOf()
 
-fun JvmMFile.wildcardChildrenPath() = path.ensureSuffix(matt.file.JioFile.separator) + "*"
+fun JvmMFile.wildcardChildrenPath() = path.ensureSuffix(JioFile.separator) + "*"
 
 fun JvmMFile.startsWith(other: JvmMFile): Boolean = idFile.startsWith(other.idFile)
 fun JvmMFile.startsWith(other: String): Boolean = idFile.startsWith(identityGetter(other))

@@ -1,6 +1,7 @@
 package matt.file.commons.rcommons
 
 import matt.file.FSRoot
+import matt.file.JioFile
 import matt.file.commons.IDE_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
 import matt.file.commons.rcommons.OpenMindFiles.OM2_HOME
@@ -26,6 +27,8 @@ class OpenMindComputeContextFiles : ComputeContextFiles {
 
     override val briarExtractsFolder
         get() = briarDataFolder.toJioFile()
+    override val briarGlobalCacheFolder: JioFile
+        get() = OM_LOCAL_FOLDER["dataBriarGlobalCache"].toJioFile()
 
     override val libjprofilertiPath: String
         get() = "/opt/jprofiler${CURRENT_JPROFILER_VERSION.substringBefore(".")}/bin/linux-x64/libjprofilerti.so"

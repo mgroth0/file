@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.lang.anno.Duplicated
 import matt.lang.anno.optin.ExperimentalMattCode
+import matt.lang.assertions.require.requireNot
 import matt.lang.model.file.CommonFile
 import matt.lang.model.file.FileOrURL
 import matt.lang.model.file.FilePath
@@ -13,7 +14,6 @@ import matt.lang.model.file.FsFilePath
 import matt.lang.model.file.MacFileSystem
 import matt.lang.model.file.constructFilePath
 import matt.lang.model.file.exts.contains
-import matt.lang.require.requireNot
 import matt.model.data.message.AbsMacFile
 import matt.model.data.message.MacFile
 import matt.model.obj.text.ReadableFile
@@ -104,10 +104,11 @@ open class FsFileImpl(
 
 
     override val parent: FsFile?
-        get() {
-            if (isRoot) return null
-            if (isAbsolute && names.size == 2) return FSRoot(fileSystem)
-            return mFile(names.dropLast(1).joinToString(separator = partSep), fileSystem)
+        get() = when {
+            isRoot                         -> null
+            isAbsolute && names.size == 2  -> FSRoot(fileSystem)
+            !isAbsolute && names.size == 1 -> null
+            else                           -> mFile(names.dropLast(1).joinToString(separator = partSep), fileSystem)
         }
     override val parentFile: FsFileImpl? get() = parent?.let { it as FsFileImpl }
 

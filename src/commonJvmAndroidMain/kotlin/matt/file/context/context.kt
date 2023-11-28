@@ -1,3 +1,5 @@
+@file:JvmName("ContextJvmAndroidKt")
+
 package matt.file.context
 
 import kotlinx.serialization.SerialName
@@ -13,6 +15,7 @@ import matt.file.commons.rcommons.OpenMindFiles
 import matt.file.construct.mFile
 import matt.file.context.BriarDataSplit.BRS
 import matt.file.context.BriarDataSplit.BTS
+import matt.file.props.loadProperties
 import matt.file.thismachine.thisMachine
 import matt.file.toJioFile
 import matt.lang.context.DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
@@ -32,7 +35,6 @@ import matt.lang.platform.OsEnum.Mac
 import matt.lang.platform.OsEnum.Windows
 import matt.model.code.sys.LinuxFileSystem
 import matt.model.code.sys.OpenMind
-import java.util.*
 
 /*needs to be unsealed for class delegation (in Tests for example)*/
 interface UnsealedProcessContext : HasOs
@@ -131,11 +133,7 @@ data object HerokuProcessContext : ExecutionContextImpl() {
 val GRADLE_JAVA_HOME by lazy {
     with(thisMachine.fileSystem) {
         mFile(
-            Properties().apply {
-                load(
-                    (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).toJioFile().reader()
-                )
-            }["org.gradle.java.home"].toString(),
+            (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).loadProperties()["org.gradle.java.home"].toString(),
         )
     }
 }
@@ -151,7 +149,7 @@ interface ComputeContextFiles : ProcessContextFiles {
 
     companion object {
         const val BRIAR_EXTRACT_METADATA_FILE_NAME = "metadata.json"
-        const val BRIAR_EXTRACT_MINIMAL_METADATA_FILE_NAME = "metadata_minimal.json"
+        const val BRIAR_EXTRACT_MINIMAL_METADATA_FILE_NAME = "metadata_minimal.cbor"
     }
 
 
@@ -169,16 +167,29 @@ interface ComputeContextFiles : ProcessContextFiles {
     val latestJpSnapshot get() = snapshotFolder["latest.jps"]
     val rTaskOutputs get() = om2Home["rTaskOutputs"]
     val briarExtractsFolder: JioFile
-    val sbatchOutputFolder get() = om2Home["output"]
+    val briarGlobalCacheFolder: JioFile
 
-    val sBatchScript get() = mFile(defaultPathPrefix["home/mjgroth/extract.sh"].cpath, LinuxFileSystem)
-    val sBatchScriptJson get() = mFile(sBatchScript.cpath + ".json", LinuxFileSystem)
+    private val batchTaskFolder get() = om2Home["batch"]
+
+
+    fun batchTaskFiles(batchTaskId: BatchTaskId) = BatchTaskFiles(batchTaskFolder[batchTaskId.name])
+
 
     val brs1Folder get() = briarDataFolder["${BRS.name}1"]
     val bts1Folder get() = briarDataFolder["${BTS.name}1"]
 
     val cacheFolder: JioFile
 
+}
+
+enum class BatchTaskId {
+    extract
+}
+
+class BatchTaskFiles(private val root: FsFile) {
+    val outputFolder by lazy { root["output"] }
+    val sBatchScript by lazy { mFile(root["script.sh"].cpath, LinuxFileSystem) }
+    val sBatchScriptJson by lazy { mFile(sBatchScript.cpath + ".json", LinuxFileSystem) }
 }
 
 

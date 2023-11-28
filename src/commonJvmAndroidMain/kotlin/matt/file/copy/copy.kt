@@ -34,18 +34,24 @@ private const val DEFAULT_OVERWRITE = false
 fun copyPathWithAttributes(
     source: JioFile,
     target: JioFile,
-    overwrite: Boolean = DEFAULT_OVERWRITE
+    overwrite: Boolean = DEFAULT_OVERWRITE,
+    definitelyMkDirs: Boolean
 ) {
     if (source.isDir()) {
         Files.walkFileTree(
             source.toJFile().toPath(),
             EnumSet.of(FileVisitOption.FOLLOW_LINKS),
             Int.MAX_VALUE,
-            DirCopyFileVisitor(source = source, target = target, overwrite = overwrite)
+            DirCopyFileVisitor(
+                source = source,
+                target = target,
+                overwrite = overwrite,
+                definitelyMkDirs = definitelyMkDirs
+            )
         )
     } else {
 //        println("copying $source to $target with attributes")
-        copyFileWithAttributes(source, target, overwrite = overwrite)
+        copyFileWithAttributes(source, target, overwrite = overwrite, definitelyMkDirs = definitelyMkDirs)
 
     }
 
@@ -55,7 +61,8 @@ fun copyPathWithAttributes(
 private class DirCopyFileVisitor(
     private val source: JioFile,
     private val target: JioFile,
-    private val overwrite: Boolean = DEFAULT_OVERWRITE
+    private val overwrite: Boolean = DEFAULT_OVERWRITE,
+    private val definitelyMkDirs: Boolean
 ) : FileVisitor<Path?> {
     override fun preVisitDirectory(
         dir: Path?,
@@ -111,8 +118,11 @@ private class DirCopyFileVisitor(
     ): FileVisitResult {
         copyFileWithAttributes(
             from = with(source.fileSystem) { file!!.toMFile().toJioFile() },
-            to = with(target.fileSystem) { target.toJFile().toPath().resolve(source.toJFile().toPath().relativize(file)).toMFile() },
-            overwrite = overwrite
+            to = with(target.fileSystem) {
+                target.toJFile().toPath().resolve(source.toJFile().toPath().relativize(file)).toMFile()
+            },
+            overwrite = overwrite,
+            definitelyMkDirs = definitelyMkDirs
         )
         return FileVisitResult.CONTINUE
     }
@@ -131,8 +141,12 @@ private class DirCopyFileVisitor(
 private fun copyFileWithAttributes(
     from: JioFile,
     to: JioFile,
-    overwrite: Boolean
+    overwrite: Boolean,
+    definitelyMkDirs: Boolean
 ) {
+    if (definitelyMkDirs) {
+        Files.createDirectories(to.parent!!.toJFile().toPath())
+    }
     Files.copy(
         from.toJFile().toPath(),
         to.toJFile().toPath(),

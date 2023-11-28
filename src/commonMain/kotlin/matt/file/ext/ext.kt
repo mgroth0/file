@@ -1,15 +1,44 @@
 package matt.file.ext
 
+import matt.lang.assertions.require.requireNotEndsWith
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.fName
-import matt.lang.require.requireNotEndsWith
 import matt.model.code.delegate.SimpleGetter
 import matt.prim.str.lower
 import kotlin.jvm.JvmInline
 
-val FsFile.mExtension
-    get() = fName.substringAfter(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }
-        ?.let(::FileExtension)
+fun FsFile.finalExtensionOrNull(): FileExtension? {
+    return fName.substringAfterLast(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }?.let(::FileExtension)
+}
+
+val FsFile.singleExtensionOrNullIfNoDots: FileExtension?
+    get() {
+        val numDots = fName.count { it == '.' }
+        if (numDots == 0) return null
+        check(numDots == 1) {
+            "multiple dots in $fName"
+        }
+        val afterDot = fName.substringAfter(".", missingDelimiterValue = "")
+        check(afterDot.isNotEmpty())
+        return FileExtension(afterDot)
+    }
+
+val FsFile.mightHaveAnExtension get() = "." in name
+
+val FsFile.singleExtension: FileExtension
+    get() {
+        check(fName.count { it == '.' } == 1) {
+            "multiple or 0 dots in name of $path"
+        }
+        val afterDot = fName.substringAfter(".", missingDelimiterValue = "")
+        check(afterDot.isNotEmpty())
+        return FileExtension(afterDot)
+    }
+
+
+enum class FrameFileType(val extension: FileExtension) {
+    Png(FileExtension.PNG), Jpg(matt.file.ext.FileExtension.JPG)
+}
 
 class FileExtension(input: String) {
 
@@ -21,7 +50,9 @@ class FileExtension(input: String) {
             }
 
         val STATUS by ext /*my invention*/
-
+        val C by ext
+        val O by ext
+        val A by ext
         val TEX by ext
         val AU3 by ext
         val JSON by ext
@@ -108,6 +139,12 @@ class FileExtension(input: String) {
 
         val CRDOWNLOAD by ext
 
+        val IMG by ext
+        val ISO by ext
+
+        val PPTX by ext
+        val PPT by ext
+
 
     }
 
@@ -117,7 +154,8 @@ class FileExtension(input: String) {
         }
     }
 
-    val id = input.removePrefix(".").lower()
+    /*todo: allow this to be case sensitive*/
+    private val id = input.removePrefix(".").lower()
 
     override fun equals(other: Any?): Boolean {
         return other is FileExtension && other.id == id

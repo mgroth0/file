@@ -3,7 +3,7 @@ package matt.file.ext.weird
 import matt.file.JvmMFile
 import matt.file.ext.IndexFolder
 import matt.file.toJioFile
-import matt.lang.require.requirePositive
+import matt.lang.assertions.require.requirePositive
 
 fun JvmMFile.getNextSubIndexedFile(
     filename: String,

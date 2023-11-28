@@ -1,9 +1,18 @@
+@file:JvmName("PropsJvmAndroidKt")
+
 package matt.file.props
 
 import matt.file.props.propthing.saveConvertForProps
+import matt.file.toMacJioFile
 import matt.lang.file.toJFile
 import matt.lang.model.file.FsFile
 import java.util.*
+
+
+fun Properties(file: FsFile): Properties = matt.collect.props.Properties(file.toMacJioFile().inputStream())
+
+fun FsFile.loadProperties() = Properties(this)
+
 
 fun Properties.writeToSortedWithoutTimestampComments(file: FsFile) {
     val rawProps = this

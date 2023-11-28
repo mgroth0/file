@@ -8,6 +8,7 @@ import matt.lang.anno.DoesNotAlwaysWork
 import matt.lang.err
 import matt.lang.file.toJFile
 import matt.lang.model.file.FsFile
+import matt.log.warn.warn
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -48,9 +49,10 @@ class ZipFiles {
                 //read the file and write to ZipOutputStream
                 val fis = FileInputStream(filePath)
                 val buffer = ByteArray(1024)
-                var len: Int
+                warn("Before K2, I did not have to initialize len below...")
+                var len: Int? = null
                 while (fis.read(buffer).also { len = it } > 0) {
-                    zos.write(buffer, 0, len)
+                    zos.write(buffer, 0, len!!)
                 }
                 zos.closeEntry()
                 fis.close()
@@ -102,9 +104,10 @@ class ZipFiles {
                 //read the file and write to ZipOutputStream
                 val fis = FileInputStream(file.toJFile())
                 val buffer = ByteArray(1024)
-                var len: Int
+                warn("Before K2, I did not have to initialize len below...")
+                var len: Int? = null
                 while (fis.read(buffer).also { len = it } > 0) {
-                    zos.write(buffer, 0, len)
+                    zos.write(buffer, 0, len!!)
                 }
 
                 //Close the zip entry to write to zip file

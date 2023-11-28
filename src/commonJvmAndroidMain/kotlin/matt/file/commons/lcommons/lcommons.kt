@@ -1,17 +1,17 @@
 package matt.file.commons.lcommons
 
+import matt.file.JioFile
 import matt.file.commons.CACHE_FOLDER
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.JPROFILER_APP_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
-import matt.file.commons.VOLUMES_FOLDER
+import matt.file.commons.StupidLinuxVOLUMES_FOLDER
 import matt.file.commons.YOUR_KIT_APP_FOLDER
 import matt.file.context.ComputeContextFiles
 import matt.lang.anno.SeeURL
 import matt.lang.anno.optin.ExperimentalMattCode
 import matt.lang.model.file.FsFile
 import matt.model.code.jvm.agentpath.MAC_LIBJPROFILERTI_PATH
-import matt.model.code.sys.LinuxFileSystem
 
 @OptIn(ExperimentalMattCode::class)
 class LocalComputeContextFiles : ComputeContextFiles {
@@ -20,9 +20,11 @@ class LocalComputeContextFiles : ComputeContextFiles {
     private val fakeOmFs = fakeRemoteFs["om"]
     override val defaultPathPrefix = fakeOmFs
     override val briarDataFolder: FsFile
-        get() = VOLUMES_FOLDER.withinFileSystem(LinuxFileSystem)["Untitled"]  /*the hard drive is case-sensitive!*/
+        get() = StupidLinuxVOLUMES_FOLDER["Untitled"]  /*the hard drive is case-sensitive!*/
     override val briarExtractsFolder
         get() = DATA_FOLDER["BriarExtracts"]
+    override val briarGlobalCacheFolder: JioFile
+        get() = DATA_FOLDER["BriarExtractsGlobalCache"]
     override val libjprofilertiPath: String
         get() = MAC_LIBJPROFILERTI_PATH
     override val jpenable: FsFile

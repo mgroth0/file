@@ -2,6 +2,7 @@ package matt.file.commons
 
 
 import matt.file.JioFile
+import matt.file.commons.IdeProject.all
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
 import matt.file.numbered.NumberedFiles
@@ -10,16 +11,17 @@ import matt.file.toJioFile
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.SubRoots
 import matt.lang.anno.SeeURL
+import matt.lang.assertions.require.requireIs
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.FsFileNameImpl
 import matt.lang.model.file.MacFileSystem
 import matt.lang.model.file.types.asFolder
-import matt.lang.require.requireIs
 import matt.lang.sysprop.props.UserDir
 import matt.lang.sysprop.props.UserHome
 import matt.lang.userName
 import matt.model.code.idea.ProjectIdea
 import matt.model.code.sys.Linux
+import matt.model.code.sys.LinuxFileSystem
 import matt.model.code.sys.Mac
 import matt.model.code.sys.NewMac
 import matt.model.code.sys.OldMac
@@ -36,6 +38,7 @@ const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 val USER_HOME by lazy { mFile(thisMachine.homeDir, thisMachine.fileSystem) }
 
 val VOLUMES_FOLDER by lazy { mFile("/Volumes", MacFileSystem) }
+val StupidLinuxVOLUMES_FOLDER by lazy { mFile("/Volumes", LinuxFileSystem) }
 
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
@@ -45,6 +48,19 @@ val REGISTERED_FOLDER by lazy {
             ?: matt.file.ext.createTempDir(prefix = "registered")
     }
 }
+val VIDEO_INDEX_FOLDER = REGISTERED_FOLDER["VideoIndex"]
+val CHROMEDRIVER_FOLDER by lazy {
+    REGISTERED_FOLDER["chromedriver"]
+}
+val CHROMEDRIVER_EXECUTABLE by lazy {
+    CHROMEDRIVER_FOLDER["chromedriver"]
+}
+
+val CHROMEDRIVER_LAST_DOWNLOAD_FILE by lazy {
+    CHROMEDRIVER_FOLDER["last-downloaded-version.json"]
+}
+
+val STATUS_FOLDER = REGISTERED_FOLDER + "status"
 val BACKUP_FOLDER by lazy {
     REGISTERED_FOLDER["backup"]
 }
@@ -81,6 +97,7 @@ val JPROFILER_APP_FOLDER by lazy {
     SYS_APPLICATIONS_FOLDER["JProfiler.app"]
 }
 val DATA_FOLDER by lazy { REGISTERED_FOLDER.resolve("data").toJioFile() }
+val DATA_IARPA_FOLDER = DATA_FOLDER["iarpa"]
 val DEEPHYS_DATA_FOLDER by lazy { DATA_FOLDER["deephy"] }
 val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
 
@@ -113,7 +130,9 @@ val KJG_DATA_FOLDER by lazy { DATA_FOLDER.resolve("kjg") } //}
 
 
 val GRADLE_PROPERTIES_FILE_NAME by lazy { "gradle.properties" }
-
+val gradlePropertiesFile by lazy {
+    all.folder[GRADLE_PROPERTIES_FILE_NAME].toJioFile()
+}
 
 //object CommonFileNames {
 
@@ -162,7 +181,7 @@ private val projectFolder by lazy {
     when (thisMachine) {
         is NewMac, is Windows -> IDE_FOLDER
         is OpenMind           -> mFile(thisMachine.homeDir, thisMachine.fileSystem).toJioFile()
-        else                   -> NOT_IMPLEMENTED
+        else                  -> NOT_IMPLEMENTED
     }
 }
 
@@ -171,6 +190,8 @@ interface LocatedIdeProject : ProjectIdea {
     val folder: JioFile
 }
 
+class AnIdeProject(override val folder: JioFile): LocatedIdeProject
+
 enum class IdeProject : LocatedIdeProject {
     /*this should be automatically generated*/
     kcomp, all, dnn, hep;
@@ -178,6 +199,9 @@ enum class IdeProject : LocatedIdeProject {
     override val folder by lazy { projectFolder + name }
     val subRootFolders by lazy { SubRoots.entries.map { folder + it.name } }
 }
+
+val LocatedIdeProject.gradleFolder get() = folder + "gradle"
+val LocatedIdeProject.yarnLockFile get() = folder + "yarn.lock"
 
 
 val JAR_FOLDER by lazy { REGISTERED_FOLDER + "jar" }
@@ -271,3 +295,5 @@ const val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"
 const val PRIV_FOLD_NAME = ".private"
 
 
+
+const val HIDDEN_VAGRANT_FOLDER_NAME = ".vagrant"

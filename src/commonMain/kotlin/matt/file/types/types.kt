@@ -1,7 +1,7 @@
 package matt.file.types
 
 import matt.file.ext.FileExtension
-import matt.file.ext.mExtension
+import matt.file.ext.singleExtension
 import matt.lang.`is`
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.types.Applescript
@@ -28,6 +28,8 @@ import matt.lang.model.file.types.Mp3
 import matt.lang.model.file.types.Mp4
 import matt.lang.model.file.types.Pdf
 import matt.lang.model.file.types.Png
+import matt.lang.model.file.types.Ppt
+import matt.lang.model.file.types.Pptx
 import matt.lang.model.file.types.Properties
 import matt.lang.model.file.types.Python
 import matt.lang.model.file.types.Svg
@@ -91,7 +93,7 @@ fun <T : FileType> FsFile.forceType(t: T): TypedFile<T> {
 
 private fun FsFile.getTypedFromExtension(): TypedFile<*> {
 
-    val fileType = when (mExtension) {
+    val fileType = when (singleExtension) {
         FileExtension.KT                       -> Kotlin
         FileExtension.PY                       -> Python
         FileExtension.JAVA                     -> Java
@@ -125,6 +127,8 @@ private fun FsFile.getTypedFromExtension(): TypedFile<*> {
         FileExtension.LOG                      -> Log
         FileExtension.TXT                      -> Txt
         FileExtension.DS_Store                 -> DsStore
+        FileExtension.PPT                      -> Ppt
+        FileExtension.PPTX                     -> Pptx
         else                                   -> Unknown
     }
 
