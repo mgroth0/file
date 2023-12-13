@@ -3,6 +3,7 @@ package matt.file.commons
 
 import matt.file.JioFile
 import matt.file.commons.IdeProject.all
+import matt.file.commons.ec2commons.DEFAULT_UBUNTU_HOME_FOLDER
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
 import matt.file.numbered.NumberedFiles
@@ -297,3 +298,12 @@ const val PRIV_FOLD_NAME = ".private"
 
 
 const val HIDDEN_VAGRANT_FOLDER_NAME = ".vagrant"
+
+
+class RedisCertFiles(private val dir: FsFile) {
+    fun mkdirs() = dir.toJioFile().mkdirs()
+    val privateKeyFile = dir["redis-private.key"]
+    val csrFile = dir["redis.csr"]
+    val certFile = dir["redis.cert"]
+}
+val remoteSharableCertFiles = RedisCertFiles(DEFAULT_UBUNTU_HOME_FOLDER)

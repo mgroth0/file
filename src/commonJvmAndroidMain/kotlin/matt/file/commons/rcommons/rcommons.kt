@@ -8,7 +8,7 @@ import matt.file.commons.rcommons.OpenMindFiles.OM2_HOME
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om2
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om5
 import matt.file.construct.mFile
-import matt.file.context.ComputeContextFiles
+import matt.file.context.BriarContextFiles
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.model.file.FileOrURL
@@ -17,7 +17,7 @@ import matt.lang.versions.CURRENT_JPROFILER_VERSION
 import matt.model.code.sys.LinuxFileSystem
 
 
-class OpenMindComputeContextFiles : ComputeContextFiles {
+class OpenMindComputeContextFiles : BriarContextFiles {
     override val defaultPathPrefix: FileOrURL = FSRoot(LinuxFileSystem)
     private val OM_LOCAL_FOLDER by lazy {
         mFile("/local", LinuxFileSystem)
@@ -37,7 +37,7 @@ class OpenMindComputeContextFiles : ComputeContextFiles {
     override val yourKitAttachScript: FsFile
         get() = TODO("Not yet implemented")
 
-    override val cacheFolder
+    override val briarCacheFolder
         get() = OM2_HOME["cache"]["remote_compute_context"].toJioFile()
 }
 

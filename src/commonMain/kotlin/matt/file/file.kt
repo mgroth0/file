@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.lang.anno.Duplicated
 import matt.lang.anno.optin.ExperimentalMattCode
+import matt.lang.assertions.require.requireEquals
 import matt.lang.assertions.require.requireNot
 import matt.lang.model.file.CommonFile
 import matt.lang.model.file.FileOrURL
@@ -14,6 +15,7 @@ import matt.lang.model.file.FsFilePath
 import matt.lang.model.file.MacFileSystem
 import matt.lang.model.file.constructFilePath
 import matt.lang.model.file.exts.contains
+import matt.lang.model.file.withinFileSystem
 import matt.model.data.message.AbsMacFile
 import matt.model.data.message.MacFile
 import matt.model.obj.text.ReadableFile
@@ -77,6 +79,14 @@ class FSRoot(override val fileSystem: FileSystem) : FsFile {
 fun FilePath.toFsFile() = mFile(path, MacFileSystem)
 fun FilePath.toMFile() = mFile(path, MacFileSystem)
 fun FilePath.toMacFile() = MacFile(filePath)
+
+
+fun FsFile.verifyToAbsMacFile(): AbsMacFile {
+    requireEquals(this.fileSystem, MacFileSystem)
+    require(this.isAbsolute)
+    return toAbsMacFile()
+}
+
 fun FilePath.toAbsMacFile() = AbsMacFile(filePath)
 
 
@@ -90,7 +100,7 @@ open class FsFileImpl(
 
     @ExperimentalMattCode("need thorough testing for crazy stuff like this. This could result in have a CaseSensitive FsFilePath in a case-insensitive filesystem...")
     final override fun withinFileSystem(newFileSystem: FileSystem): FsFile {
-        return FsFileImpl(fsFilePath, newFileSystem)
+        return FsFileImpl(fsFilePath.withinFileSystem(newFileSystem), newFileSystem)
     }
 
 //    override val parent: FsFile?

@@ -37,7 +37,7 @@ val FsFile.singleExtension: FileExtension
 
 
 enum class FrameFileType(val extension: FileExtension) {
-    Png(FileExtension.PNG), Jpg(matt.file.ext.FileExtension.JPG)
+    Png(FileExtension.PNG), Jpg(FileExtension.JPG)
 }
 
 class FileExtension(input: String) {
@@ -99,6 +99,7 @@ class FileExtension(input: String) {
         val ZSHRC by ext
         val ZSH by ext
         val SCPT by ext
+        val SCSS by ext
 
         val TIF by ext
         val TIFF by ext

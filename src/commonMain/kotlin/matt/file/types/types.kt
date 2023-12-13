@@ -32,6 +32,7 @@ import matt.lang.model.file.types.Ppt
 import matt.lang.model.file.types.Pptx
 import matt.lang.model.file.types.Properties
 import matt.lang.model.file.types.Python
+import matt.lang.model.file.types.RasterImage
 import matt.lang.model.file.types.Svg
 import matt.lang.model.file.types.Tiff
 import matt.lang.model.file.types.Toml
@@ -50,8 +51,10 @@ import matt.model.obj.text.ReadableFile
 fun typedFile(fsFile: FsFile) = fsFile.typed()
 fun FsFile.typed() = when (this) {
     is TypedFile<*> -> this
-    else            -> getTypedFromExtension()
+    else            -> TypedFile(this, getTypedFromExtension())
 }
+
+fun FsFile.verifyToImagePath() = TypedFile(this, getTypedFromExtension() as RasterImage)
 
 
 fun <T : FileType> FsFile.checkType(t: T) = typed().checkType(t)
@@ -91,9 +94,10 @@ fun <T : FileType> FsFile.forceType(t: T): TypedFile<T> {
 //    return this as TypedFile<T>
 //}
 
-private fun FsFile.getTypedFromExtension(): TypedFile<*> {
 
-    val fileType = when (singleExtension) {
+fun FsFile.getTypedFromExtension(): FileType {
+
+    return when (singleExtension) {
         FileExtension.KT                       -> Kotlin
         FileExtension.PY                       -> Python
         FileExtension.JAVA                     -> Java
@@ -132,7 +136,6 @@ private fun FsFile.getTypedFromExtension(): TypedFile<*> {
         else                                   -> Unknown
     }
 
-    return TypedFile(this, fileType)
 }
 
 

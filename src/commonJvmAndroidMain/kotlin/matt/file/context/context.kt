@@ -8,6 +8,7 @@ import matt.file.JioFile
 import matt.file.commons.GRADLE_PROPERTIES_FILE_NAME
 import matt.file.commons.JPROFILER_CONFIG_NAME
 import matt.file.commons.USER_HOME
+import matt.file.commons.ec2commons.Ec2Files
 import matt.file.commons.hcommons.HerokuExecutionContextFiles
 import matt.file.commons.lcommons.LocalComputeContextFiles
 import matt.file.commons.rcommons.OpenMindComputeContextFiles
@@ -15,6 +16,8 @@ import matt.file.commons.rcommons.OpenMindFiles
 import matt.file.construct.mFile
 import matt.file.context.BriarDataSplit.BRS
 import matt.file.context.BriarDataSplit.BTS
+import matt.file.context.ContainerType.Docker
+import matt.file.context.ContainerType.Singularity
 import matt.file.props.loadProperties
 import matt.file.thismachine.thisMachine
 import matt.file.toJioFile
@@ -22,7 +25,6 @@ import matt.lang.context.DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_MAC_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
 import matt.lang.model.file.FileOrURL
-import matt.lang.model.file.FileSystem
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.MacFileSystem
 import matt.lang.model.file.UnsafeFilePath
@@ -35,6 +37,7 @@ import matt.lang.platform.OsEnum.Mac
 import matt.lang.platform.OsEnum.Windows
 import matt.model.code.sys.LinuxFileSystem
 import matt.model.code.sys.OpenMind
+import matt.model.code.sys.WindowsFileSystem
 
 /*needs to be unsealed for class delegation (in Tests for example)*/
 interface UnsealedProcessContext : HasOs
@@ -56,17 +59,31 @@ sealed interface ProcessContext : UnsealedProcessContext {
     }
 
     val files: ProcessContextFiles
+    val needsModules: Boolean
+    val usesJavaIn: ContainerType?
+    val javaHome: UnsafeFilePath?
+    val taskLabel: String
+    override val os: OsEnum
+
 }
+
+val ProcessContext.fileSystem
+    get() = when (os) {
+        Mac     -> MacFileSystem
+        Linux   -> LinuxFileSystem
+        Windows -> WindowsFileSystem
+    }
+
+enum class ContainerType { Singularity, Docker }
 
 @Serializable
 sealed interface ComputeContext : ProcessContext {
     override val files: ComputeContextFiles
-    val taskLabel: String
-    val needsModules: Boolean
-    val usesJavaInSingularity: Boolean
-    val javaHome: UnsafeFilePath?
-    override val os: OsEnum
-    val fileSystem: FileSystem
+}
+
+@Serializable
+sealed interface BriarComputeContext : ComputeContext {
+    override val files: BriarContextFiles
 }
 
 val ComputeContext.shellPathContext
@@ -89,27 +106,25 @@ sealed class ComputeContextImpl : ExecutionContextImpl(), ComputeContext
 
 @Serializable
 @SerialName("OM")
-data object OpenMindComputeContext : ComputeContextImpl() {
+data object OpenMindComputeContext : ComputeContextImpl(), BriarComputeContext {
     override val needsModules = true
     override val javaHome = null
-    override val usesJavaInSingularity = true
+    override val usesJavaIn = Singularity
     override val taskLabel = "OpenMind"
     override val os = Linux
     override val files by lazy {
         OpenMindComputeContextFiles()
     }
 
-    override val fileSystem: FileSystem
-        get() = LinuxFileSystem
 
 }
 
 @Serializable
 @SerialName("Local")
-data object LocalComputeContext : ComputeContextImpl() {
+data object LocalComputeContext : ComputeContextImpl(), BriarComputeContext {
     override val os = Mac
     override val needsModules = false
-    override val usesJavaInSingularity = false
+    override val usesJavaIn = null
     override val javaHome by lazy {
         GRADLE_JAVA_HOME.toUnsafe()
     }
@@ -118,8 +133,6 @@ data object LocalComputeContext : ComputeContextImpl() {
         LocalComputeContextFiles()
     }
 
-    override val fileSystem: FileSystem
-        get() = MacFileSystem
 }
 
 
@@ -127,7 +140,27 @@ data object LocalComputeContext : ComputeContextImpl() {
 @SerialName("Heroku")
 data object HerokuProcessContext : ExecutionContextImpl() {
     override val files: ProcessContextFiles get() = HerokuExecutionContextFiles
+    override val needsModules = false
+    override val usesJavaIn = Docker
+    override val javaHome get() = TODO("Not sure what to do here since it is in docker")
+    override val taskLabel = "Heroku"
     override val os: OsEnum get() = Linux
+}
+
+
+const val EC2_JAVA_VERSION = 17
+
+@Serializable
+@SerialName("Ec2")
+data object Ec2ProcessContext : ExecutionContextImpl(), ComputeContext {
+    override val files get() = Ec2Files
+    override val needsModules = false
+    override val usesJavaIn = null
+    override val javaHome by lazy {
+        UnsafeFilePath("/usr/lib/jvm/java-$EC2_JAVA_VERSION-openjdk-arm64")
+    }
+    override val os: OsEnum get() = Linux
+    override val taskLabel = "EC2"
 }
 
 val GRADLE_JAVA_HOME by lazy {
@@ -143,44 +176,54 @@ interface ProcessContextFiles {
     val jpenable: FsFile
     val jProfilerConfigFile: FsFile
     val yourKitAttachScript: FsFile
+    val om2Home: FsFile
+    val tempFolder get() = om2Home["temp"]
+    val snapshotFolder get() = tempFolder["jprofiler"]
+    val latestJpSnapshot get() = snapshotFolder["latest.jps"]
 }
 
 interface ComputeContextFiles : ProcessContextFiles {
 
+
+    val defaultPathPrefix: FileOrURL
+    override val om2Home
+        get() = mFile(
+            defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].cpath,
+            LinuxFileSystem
+        ).toJioFile()
+
+    override val jProfilerConfigFile: FsFile get() = om2Home[JPROFILER_CONFIG_NAME]
+    val jarsFolder get() = om2Home["jars"]
+
+    val rTaskOutputs get() = om2Home["rTaskOutputs"]
+
+    private val batchTaskFolder get() = om2Home["batch"]
+    fun batchTaskFiles(batchTaskId: BatchTaskId) = BatchTaskFiles(batchTaskFolder[batchTaskId.name])
+
+
+}
+
+
+interface BriarContextFiles : ComputeContextFiles {
     companion object {
         const val BRIAR_EXTRACT_METADATA_FILE_NAME = "metadata.json"
         const val BRIAR_EXTRACT_MINIMAL_METADATA_FILE_NAME = "metadata_minimal.cbor"
     }
 
-
-    val defaultPathPrefix: FileOrURL
     val briarDataFolder: FsFile
-    val om2Home
-        get() = mFile(
-            defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].cpath,
-            LinuxFileSystem
-        ).toJioFile()
-    override val jProfilerConfigFile: FsFile get() = om2Home[JPROFILER_CONFIG_NAME]
-    val jarsFolder get() = om2Home["jars"]
-    val tempFolder get() = om2Home["temp"]
-    val snapshotFolder get() = tempFolder["jprofiler"]
-    val latestJpSnapshot get() = snapshotFolder["latest.jps"]
-    val rTaskOutputs get() = om2Home["rTaskOutputs"]
+
     val briarExtractsFolder: JioFile
     val briarGlobalCacheFolder: JioFile
 
-    private val batchTaskFolder get() = om2Home["batch"]
 
-
-    fun batchTaskFiles(batchTaskId: BatchTaskId) = BatchTaskFiles(batchTaskFolder[batchTaskId.name])
 
 
     val brs1Folder get() = briarDataFolder["${BRS.name}1"]
     val bts1Folder get() = briarDataFolder["${BTS.name}1"]
 
-    val cacheFolder: JioFile
-
+    val briarCacheFolder: JioFile
 }
+
 
 enum class BatchTaskId {
     extract

@@ -4,6 +4,7 @@ package matt.file.ext
 
 import matt.collect.itr.recurse.DEFAULT_INCLUDE_SELF
 import matt.collect.itr.recurse.recurse
+import matt.file.FsFileImpl
 import matt.file.JioFile
 import matt.file.JvmMFile
 import matt.file.commons.DS_STORE
@@ -207,6 +208,14 @@ fun FsFile.resRepExt(newExt: FileExtension) = mFile(
     parentFile!!.cpath + JioFile.separator + toJFile().nameWithoutExtension + "." + newExt.afterDot,
     fileSystem = fileSystem
 )
+
+fun FsFile.verifyWithNoSingleExtension(): FsFileImpl {
+    check(name.count { it == '.' } == 1)
+    return mFile(
+        parentFile!!.cpath + JioFile.separator + toJFile().nameWithoutExtension,
+        fileSystem = fileSystem
+    )
+}
 
 
 internal class IndexFolder(val f: FsFile) {

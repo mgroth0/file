@@ -7,14 +7,14 @@ import matt.file.commons.JPROFILER_APP_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
 import matt.file.commons.StupidLinuxVOLUMES_FOLDER
 import matt.file.commons.YOUR_KIT_APP_FOLDER
-import matt.file.context.ComputeContextFiles
+import matt.file.context.BriarContextFiles
 import matt.lang.anno.SeeURL
 import matt.lang.anno.optin.ExperimentalMattCode
 import matt.lang.model.file.FsFile
 import matt.model.code.jvm.agentpath.MAC_LIBJPROFILERTI_PATH
 
 @OptIn(ExperimentalMattCode::class)
-class LocalComputeContextFiles : ComputeContextFiles {
+class LocalComputeContextFiles : BriarContextFiles {
 
     private val fakeRemoteFs = REGISTERED_FOLDER["remote"]
     private val fakeOmFs = fakeRemoteFs["om"]
@@ -27,6 +27,7 @@ class LocalComputeContextFiles : ComputeContextFiles {
         get() = DATA_FOLDER["BriarExtractsGlobalCache"]
     override val libjprofilertiPath: String
         get() = MAC_LIBJPROFILERTI_PATH
+
     override val jpenable: FsFile
         get() = JPROFILER_APP_FOLDER["Contents"]["Resources"]["app"]["bin"]["jpenable"]
 
@@ -35,6 +36,6 @@ class LocalComputeContextFiles : ComputeContextFiles {
     override val yourKitAttachScript: FsFile
         get() = YOUR_KIT_APP_FOLDER["Contents"]["Resources"]["bin"]["attach.sh"]
 
-    override val cacheFolder
+    override val briarCacheFolder
         get() = CACHE_FOLDER["local_compute_context"]
 }

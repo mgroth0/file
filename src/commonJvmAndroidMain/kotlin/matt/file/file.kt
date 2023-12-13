@@ -26,6 +26,7 @@ import matt.lang.model.file.FileSystem
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.FsFilePath
 import matt.lang.model.file.MacFileSystem
+import matt.model.code.sys.LinuxFileSystem
 import matt.model.data.byte.ByteSize
 import matt.model.obj.path.PathLike
 import matt.model.obj.text.MightExistAndWritableText
@@ -54,8 +55,18 @@ fun FsFile.toJioFile() = JioFile(this)
 fun File.toMacJioFile() = macJioFile(this)
 fun FilePath.toMacJioFile() = macJioFile(this)
 fun macJioFile(path: String): JioFile = mFile(path, MacFileSystem).toJioFile()
+fun linuxJioFile(path: String): JioFile = mFile(path, LinuxFileSystem).toJioFile()
 fun macJioFile(file: File): JioFile = mFile(file, MacFileSystem).toJioFile()
 fun macJioFile(path: FilePath): JioFile = mFile(path.path, MacFileSystem).toJioFile()
+context(FileSystem)
+fun jioFile(path: String) = mFile(path).toJioFile()
+
+fun createDyingTempFileWithText(text: String): FsFile {
+    val f = JioFile.createTempFile("dying", ".temp")
+    f.toJFile().deleteOnExit()
+    f.text = text
+    return f
+}
 
 class JioFile(
     path: FsFilePath,

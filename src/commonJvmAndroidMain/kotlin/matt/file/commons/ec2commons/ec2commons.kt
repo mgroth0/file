@@ -1,0 +1,30 @@
+package matt.file.commons.ec2commons
+
+import matt.file.commons.REGISTERED_FOLDER
+import matt.file.commons.lcommons.LocalComputeContextFiles
+import matt.file.construct.mFile
+import matt.file.context.ComputeContextFiles
+import matt.lang.model.file.FsFile
+import matt.model.code.sys.LinuxFileSystem
+
+
+object Ec2Files : ComputeContextFiles {
+
+
+    override val jpenable get() = TODO()
+    override val libjprofilertiPath: String
+        get() = TODO("Not yet implemented")
+    override val defaultPathPrefix =
+        DEFAULT_UBUNTU_HOME_FOLDER[REGISTERED_FOLDER.name][LocalComputeContextFiles().defaultPathPrefix.name]
+    override val yourKitAttachScript: FsFile
+        get() = TODO("Not yet implemented")
+
+}
+
+
+val DEFAULT_UBUNTU_HOME_FOLDER by lazy {
+    mFile("/home/${DEFAULT_UBUNTU_USER}", LinuxFileSystem)
+
+}
+
+const val DEFAULT_UBUNTU_USER = "ubuntu"

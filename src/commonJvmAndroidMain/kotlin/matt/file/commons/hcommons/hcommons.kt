@@ -15,4 +15,6 @@ object HerokuExecutionContextFiles : ProcessContextFiles {
     override val jProfilerConfigFile: FsFile = FSRoot(LinuxFileSystem).resolve(REMOTE_JPOFILER_CONFIG_FILE_NAME)
     override val yourKitAttachScript: FsFile
         get() = TODO("Not yet implemented")
+    override val om2Home: FsFile
+        get() = TODO("Not yet implemented")
 }
