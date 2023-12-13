@@ -1,6 +1,7 @@
 package matt.file.types
 
 import matt.file.ext.FileExtension
+import matt.file.ext.mightHaveAnExtension
 import matt.file.ext.singleExtension
 import matt.lang.`is`
 import matt.lang.model.file.FsFile
@@ -12,6 +13,7 @@ import matt.lang.model.file.types.DsStore
 import matt.lang.model.file.types.Exe
 import matt.lang.model.file.types.FileType
 import matt.lang.model.file.types.Folder
+import matt.lang.model.file.types.FolderType
 import matt.lang.model.file.types.Groovy
 import matt.lang.model.file.types.Html
 import matt.lang.model.file.types.Icns
@@ -97,44 +99,50 @@ fun <T : FileType> FsFile.forceType(t: T): TypedFile<T> {
 
 fun FsFile.getTypedFromExtension(): FileType {
 
-    return when (singleExtension) {
-        FileExtension.KT                       -> Kotlin
-        FileExtension.PY                       -> Python
-        FileExtension.JAVA                     -> Java
-        FileExtension.GROOVY                   -> Groovy
-        FileExtension.SH                       -> UnknownShellType
-        FileExtension.ZSHRC, FileExtension.ZSH -> Zsh
-        FileExtension.SCPT                     -> BinaryApplescript
-        FileExtension.APPLESCRIPT              -> Applescript
-        FileExtension.ZIP                      -> Zip
-        FileExtension.JAR                      -> Jar
-        FileExtension.KEXE                     -> Kexe
-        FileExtension.EXE                      -> Exe
-        FileExtension.DMG                      -> Dmg
-        FileExtension.JSON                     -> Json
-        FileExtension.CBOR                     -> Cbor
-        FileExtension.XML                      -> Xml
-        FileExtension.HTML                     -> Html
-        FileExtension.MD                       -> Markdown
-        FileExtension.PNG                      -> Png
-        FileExtension.JPG, FileExtension.JPEG  -> Jpg
-        FileExtension.TIF, FileExtension.TIFF  -> Tiff
-        FileExtension.SVG                      -> Svg
-        FileExtension.ICN                      -> Icns
-        FileExtension.ICO                      -> Ico
-        FileExtension.MP3                      -> Mp3
-        FileExtension.MP4                      -> Mp4
-        FileExtension.PDF                      -> Pdf
-        FileExtension.PROPERTIES               -> Properties
-        FileExtension.YAML, FileExtension.YML  -> Yaml
-        FileExtension.TOML                     -> Toml
-        FileExtension.LOG                      -> Log
-        FileExtension.TXT                      -> Txt
-        FileExtension.DS_Store                 -> DsStore
-        FileExtension.PPT                      -> Ppt
-        FileExtension.PPTX                     -> Pptx
-        else                                   -> Unknown
+    if (!mightHaveAnExtension) return FolderType
+
+    return when {
+        !mightHaveAnExtension -> FolderType
+        else                  -> when (singleExtension) {
+            FileExtension.KT                       -> Kotlin
+            FileExtension.PY                       -> Python
+            FileExtension.JAVA                     -> Java
+            FileExtension.GROOVY                   -> Groovy
+            FileExtension.SH                       -> UnknownShellType
+            FileExtension.ZSHRC, FileExtension.ZSH -> Zsh
+            FileExtension.SCPT                     -> BinaryApplescript
+            FileExtension.APPLESCRIPT              -> Applescript
+            FileExtension.ZIP                      -> Zip
+            FileExtension.JAR                      -> Jar
+            FileExtension.KEXE                     -> Kexe
+            FileExtension.EXE                      -> Exe
+            FileExtension.DMG                      -> Dmg
+            FileExtension.JSON                     -> Json
+            FileExtension.CBOR                     -> Cbor
+            FileExtension.XML                      -> Xml
+            FileExtension.HTML                     -> Html
+            FileExtension.MD                       -> Markdown
+            FileExtension.PNG                      -> Png
+            FileExtension.JPG, FileExtension.JPEG  -> Jpg
+            FileExtension.TIF, FileExtension.TIFF  -> Tiff
+            FileExtension.SVG                      -> Svg
+            FileExtension.ICN                      -> Icns
+            FileExtension.ICO                      -> Ico
+            FileExtension.MP3                      -> Mp3
+            FileExtension.MP4                      -> Mp4
+            FileExtension.PDF                      -> Pdf
+            FileExtension.PROPERTIES               -> Properties
+            FileExtension.YAML, FileExtension.YML  -> Yaml
+            FileExtension.TOML                     -> Toml
+            FileExtension.LOG                      -> Log
+            FileExtension.TXT                      -> Txt
+            FileExtension.DS_Store                 -> DsStore
+            FileExtension.PPT                      -> Ppt
+            FileExtension.PPTX                     -> Pptx
+            else                                   -> Unknown
+        }
     }
+
 
 }
 
