@@ -61,7 +61,6 @@ val CHROMEDRIVER_LAST_DOWNLOAD_FILE by lazy {
     CHROMEDRIVER_FOLDER["last-downloaded-version.json"]
 }
 
-val STATUS_FOLDER = REGISTERED_FOLDER + "status"
 val BACKUP_FOLDER by lazy {
     REGISTERED_FOLDER["backup"]
 }

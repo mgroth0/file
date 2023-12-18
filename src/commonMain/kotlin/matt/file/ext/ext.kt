@@ -49,7 +49,6 @@ class FileExtension(input: String) {
                 SimpleGetter(FileExtension(it.lower()))
             }
 
-        val STATUS by ext /*my invention*/
         val C by ext
         val O by ext
         val A by ext
