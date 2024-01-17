@@ -114,6 +114,13 @@ fun JvmMFile.hasAnyExtension(
     return extensions.any { it == ext }
 }
 
+fun JvmMFile.hasAnyFinalExtension(
+    extensions: ExtensionSet,
+): Boolean {
+    val ext = finalExtension
+    return extensions.any { it == ext }
+}
+
 
 var JvmMFile.writableForOwner: Boolean
     get() = NOT_IMPLEMENTED

@@ -147,7 +147,6 @@ fun FsFile.getTypedFromExtension(): FileType {
 }
 
 
-/*TODO: INTEGRATE WITH MAGNUM*/
 fun ReadableFile.requireIsExistingFolder(): Folder {
     return when {
         this.isDir() -> asFolder()

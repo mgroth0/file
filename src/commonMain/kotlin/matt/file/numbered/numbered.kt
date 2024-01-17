@@ -2,9 +2,11 @@ package matt.file.numbered
 
 import matt.file.construct.mFile
 import matt.file.toIoFile
+import matt.lang.anno.MergeWith
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.fName
 
+@MergeWith(id = 34206385)
 fun FsFile.next(): FsFile {
     var ii = 0
     while (true) {
@@ -16,6 +18,7 @@ fun FsFile.next(): FsFile {
     }
 }
 
+@MergeWith(id = 34206385)
 fun FsFile.withNumber(num: Int): FsFile {
     return if ("." !in fName) mFile(
         "$filePath ($num)",
@@ -29,7 +32,7 @@ fun FsFile.withNumber(num: Int): FsFile {
     )
 }
 
-
+@MergeWith(id = 34206385)
 fun FsFile.numberedSequence() = sequence {
     yield(this@numberedSequence)
     var i = 2
@@ -38,4 +41,5 @@ fun FsFile.numberedSequence() = sequence {
     }
 }
 
+@MergeWith(id = 34206385)
 fun FsFile.firstNonExistingFromNumberedSequence() = numberedSequence().first { it.toIoFile().doesNotExist }

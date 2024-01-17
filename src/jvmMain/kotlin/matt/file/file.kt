@@ -3,9 +3,11 @@
 package matt.file
 
 import matt.file.thismachine.thisMachine
+import matt.lang.model.file.FileSystemResolver
 
-actual val guessRuntimeFileSystem by lazy {
-    thisMachine.fileSystem
+actual val guessRuntimeFileSystemResolver: FileSystemResolver by lazy {
+
+    thisMachine
 }
 
 

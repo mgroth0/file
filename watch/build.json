@@ -12,6 +12,11 @@
       "path": ":k:obs"
     },
     {
+      "type": "Lib",
+      "cfg": "jvmMainImplementation",
+      "key": "dir-watcher"
+    },
+    {
       "type": "Project",
       "cfg": "jvmTestImplementation",
       "path": ":k:test"

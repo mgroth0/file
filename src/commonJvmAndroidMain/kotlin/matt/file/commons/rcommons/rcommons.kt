@@ -33,9 +33,9 @@ class OpenMindComputeContextFiles : BriarContextFiles {
     override val libjprofilertiPath: String
         get() = "/opt/jprofiler${CURRENT_JPROFILER_VERSION.substringBefore(".")}/bin/linux-x64/libjprofilerti.so"
     override val jpenable: FsFile
-        get() = TODO("Not yet implemented")
+        get() = TODO()
     override val yourKitAttachScript: FsFile
-        get() = TODO("Not yet implemented")
+        get() = TODO()
 
     override val briarCacheFolder
         get() = OM2_HOME["cache"]["remote_compute_context"].toJioFile()
@@ -66,7 +66,6 @@ object OpenMindFiles {
 enum class OpenMindUserStorageLocation {
     om2,
     om5;
-
     fun forUser(user: String) = mFile("/$name/user/$user", LinuxFileSystem)
     fun forMe() = forUser(OM_USER)
 }

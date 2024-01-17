@@ -1,5 +1,4 @@
-@file:JavaIoFileIsOk
-@file:JvmName("FileJvmAndroidKt")
+@file:[JavaIoFileIsOk JvmName("FileJvmAndroidKt")]
 
 package matt.file
 
@@ -12,7 +11,7 @@ import matt.file.ext.hasExtension
 import matt.file.ext.mkparents
 import matt.file.ext.writableForEveryone
 import matt.file.thismachine.thisMachine
-import matt.io.ExternalSource
+import matt.io.ByteArrayExternalSource
 import matt.io.LoadResult
 import matt.io.NotFound
 import matt.io.Success
@@ -23,6 +22,7 @@ import matt.lang.model.file.CaseSensitivity.CaseInSensitive
 import matt.lang.model.file.CaseSensitivity.CaseSensitive
 import matt.lang.model.file.FilePath
 import matt.lang.model.file.FileSystem
+import matt.lang.model.file.FileSystemResolver
 import matt.lang.model.file.FsFile
 import matt.lang.model.file.FsFilePath
 import matt.lang.model.file.MacFileSystem
@@ -38,7 +38,6 @@ import java.io.FileNotFoundException
 import java.io.FilenameFilter
 import java.io.RandomAccessFile
 import java.net.URI
-import java.net.URL
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import kotlin.streams.asSequence
@@ -61,10 +60,12 @@ fun macJioFile(path: FilePath): JioFile = mFile(path.path, MacFileSystem).toJioF
 context(FileSystem)
 fun jioFile(path: String) = mFile(path).toJioFile()
 
-fun createDyingTempFileWithText(text: String): FsFile {
+fun createDyingTempFile(withText: String? = null): FsFile {
     val f = JioFile.createTempFile("dying", ".temp")
     f.toJFile().deleteOnExit()
-    f.text = text
+    if (withText != null) {
+        f.text = withText
+    }
     return f
 }
 
@@ -78,7 +79,7 @@ class JioFile(
     Appendable,
     PathLike<JvmMFile>,
     WritableFile,
-    ExternalSource<ByteArray> {
+    ByteArrayExternalSource {
 
 
     fun lastModified() = toJFile().lastModified()
@@ -198,7 +199,7 @@ class JioFile(
 
         val separatorChar by lazy { File.separatorChar }
         val separator: String by lazy { File.separator }
-        const val unixSeparator: String = "/"
+        val unixSeparator: String = MacFileSystem.separator
 
         /*these are colons meant to delimit lists of files*/
         @Deprecated("I can't think of any use case of this other than to cause bugs")
@@ -209,22 +210,31 @@ class JioFile(
         val pathSeparator: String by lazy { File.pathSeparator }
 
 
-        fun listRoots() = File.listRoots().map { mFile(it.path, thisMachine.fileSystem) }.toTypedArray()
+        fun listRoots() = File.listRoots().map { mFile(it.path, thisMachine.fileSystemFor(it.path)) }.toTypedArray()
 
         fun createTempFile(
             prefix: String,
             suffix: String?,
             directory: JioFile?
-        ) = with(thisMachine.fileSystem) { mFile(File.createTempFile(prefix, suffix, directory?.toJFile())) }
+        ) = run {
+            val f = File.createTempFile(prefix, suffix, directory?.toJFile())
+            with(thisMachine.fileSystemFor(f.path)) { mFile(f) }
+        }
 
         fun createTempFile(
             prefix: String,
             suffix: String?
-        ) = with(thisMachine.fileSystem) { mFile(File.createTempFile(prefix, suffix)) }
+        ) = run {
+            val f = File.createTempFile(prefix, suffix)
+            with(thisMachine.fileSystemFor(f.path)) { mFile(f) }
+        }
 
     }
 
     val identityGetter by lazy {
+
+
+
         when (fileSystem.caseSensitivity) {
             CaseSensitive   -> {
                 { s: String -> s }
@@ -382,32 +392,9 @@ class JioFile(
     }
 
     override operator fun plus(other: String): JioFile {
+
         return resolve(other)
     }
-
-    //  fun onModifyRecursive(op: ()->Unit) {
-    //
-    //	val watchService: WatchService = toPath().fileSystem.newWatchService()
-    //
-    //	// register all subfolders
-    //	Files.walkFileTree(this.toPath(), object: SimpleFileVisitor<Path>() {
-    //	  @Throws(IOException::class) override fun preVisitDirectory(
-    //		dir: Path,
-    //		attrs: BasicFileAttributes
-    //	  ): FileVisitResult {
-    //		dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
-    //		return FileVisitResult.CONTINUE
-    //	  }
-    //	})
-    //
-    //	watchService.poll()
-    //	watchService.poll(100, MILLISECONDS)
-    //	val e = watchService.take()
-    //	e.pollEvents().forEach {
-    //	  it.context()
-    //	}
-    //
-    //  }
 
 
     fun copyTo(
@@ -463,10 +450,7 @@ class JioFile(
 //
 //}
 
-interface URLLike {
-    fun toJavaURL(): URL
-    fun toJavaURI(): URI
-}
+
 
 fun Array<JioFile>.withExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
 fun Iterable<JioFile>.withExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
@@ -519,6 +503,6 @@ fun Sequence<JioFile>.withAnyExtension(
     exts: ExtensionSet
 ) = filter { it.hasAnyExtension(exts) }
 
-expect val guessRuntimeFileSystem: FileSystem
+expect val guessRuntimeFileSystemResolver: FileSystemResolver
 
 

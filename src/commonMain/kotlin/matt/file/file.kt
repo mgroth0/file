@@ -32,7 +32,7 @@ value class Src(private val path: String) : FileOrURL {
         get() = path
 
     override fun resolve(other: String): FileOrURL {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun toString(): String {
@@ -44,14 +44,14 @@ class UnknownFileOrURL(path: String) : FileOrURL {
     override val cpath = path
 
     override fun resolve(other: String): FileOrURL {
-        TODO("Not yet implemented")
+        TODO()
     }
 
 }
 
 class FSRoot(override val fileSystem: FileSystem) : FsFile {
     override fun withinFileSystem(newFileSystem: FileSystem): FsFile {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override val fsFilePath: FsFilePath

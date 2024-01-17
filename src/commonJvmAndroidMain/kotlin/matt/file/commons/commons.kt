@@ -25,7 +25,6 @@ import matt.model.code.sys.Linux
 import matt.model.code.sys.LinuxFileSystem
 import matt.model.code.sys.Mac
 import matt.model.code.sys.NewMac
-import matt.model.code.sys.OldMac
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.Windows
 import matt.model.code.sys.WindowsFileSystem
@@ -36,7 +35,7 @@ const val DEFAULT_GITHUB_BRANCH_NAME = "master"
 
 ///*need things like this to all be in objects because they are instantiated lazily, and therefore wont be a memory leak issue when trying to have dynamic intelliJ plugins... in general this is definitely the best design and I'm sure this pattern has even broader advantages*/
 //object CommonFiles {
-val USER_HOME by lazy { mFile(thisMachine.homeDir, thisMachine.fileSystem) }
+val USER_HOME by lazy { mFile(thisMachine.homeDir, thisMachine.fileSystemFor(thisMachine.homeDir)) }
 
 val VOLUMES_FOLDER by lazy { mFile("/Volumes", MacFileSystem) }
 val StupidLinuxVOLUMES_FOLDER by lazy { mFile("/Volumes", LinuxFileSystem) }
@@ -44,12 +43,13 @@ val StupidLinuxVOLUMES_FOLDER by lazy { mFile("/Volumes", LinuxFileSystem) }
 const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
-    with(thisMachine.fileSystem) {
+    with(USER_HOME.fileSystem) {
         thisMachine.registeredDir?.let { USER_HOME[it].toJioFile() }
             ?: matt.file.ext.createTempDir(prefix = "registered")
     }
 }
-val VIDEO_INDEX_FOLDER = REGISTERED_FOLDER["VideoIndex"]
+const val BRAINSTORM_KEY_FILE_NAME = ".BRAINSTORM"
+val VIDEO_INDEX_FOLDER by lazy { REGISTERED_FOLDER["VideoIndex"] }
 val CHROMEDRIVER_FOLDER by lazy {
     REGISTERED_FOLDER["chromedriver"]
 }
@@ -116,9 +116,12 @@ class LogContext(parentFolder: FsFile) {
 val mattLogContext by lazy { LogContext(parentFolder = REGISTERED_FOLDER) }
 
 
-val USER_DIR by lazy { mFile(UserDir.get(), thisMachine.fileSystem) }
+val USER_DIR by lazy { mFile(UserDir.get(), thisMachine.fileSystemFor(UserDir.get())) }
 val TEMP_DIR by lazy { REGISTERED_FOLDER["tmp"].apply { mkdir() } }
-val WEB_TMP_DIR by lazy { mFile("/tmp", thisMachine.fileSystem).also { it.toJioFile().mkdir() } }
+val WEB_TMP_DIR by lazy {
+    val s = "/tmp"
+    mFile(s, thisMachine.fileSystemFor(s)).also { it.toJioFile().mkdir() }
+}
 
 
 //fun ValJson.Companion.load() = Json.decodeFromString<ValJson>(VAL_JSON_FILE.readText())
@@ -180,7 +183,7 @@ val KJG_NAV_KEY = "NAV"
 private val projectFolder by lazy {
     when (thisMachine) {
         is NewMac, is Windows -> IDE_FOLDER
-        is OpenMind           -> mFile(thisMachine.homeDir, thisMachine.fileSystem).toJioFile()
+        is OpenMind           -> mFile(thisMachine.homeDir, thisMachine.fileSystemFor(thisMachine.homeDir)).toJioFile()
         else                  -> NOT_IMPLEMENTED
     }
 }
@@ -190,7 +193,7 @@ interface LocatedIdeProject : ProjectIdea {
     val folder: JioFile
 }
 
-class AnIdeProject(override val folder: JioFile): LocatedIdeProject
+class AnIdeProject(override val folder: JioFile) : LocatedIdeProject
 
 enum class IdeProject : LocatedIdeProject {
     /*this should be automatically generated*/
@@ -210,14 +213,12 @@ val JAR_INSIGHT_FOLDER by lazy { JAR_FOLDER + "insight" }
 val DNN_FOLDER by lazy {
     when (thisMachine) {
         NewMac -> IDE_FOLDER + "dnn"
-        OldMac -> REGISTERED_FOLDER["todo/science/dnn"]
         else   -> null
     }
 }
 val HEP_FOLDER by lazy {
     when (thisMachine) {
         NewMac -> IDE_FOLDER + "hep"
-        OldMac -> REGISTERED_FOLDER["todo/science/hep"]
         else   -> null
     }
 }
@@ -225,7 +226,7 @@ val HEP_FOLDER by lazy {
 const val GRADLEW_NAME = "gradlew"
 
 
-val desktopFolder by lazy { with(thisMachine.fileSystem) { mFile(UserHome.get())["Desktop"] } }
+val desktopFolder by lazy { with(thisMachine.fileSystemFor(UserHome.get())) { mFile(UserHome.get())["Desktop"] } }
 
 const val CHANGELIST_MD = "changelist.md"
 
@@ -295,7 +296,6 @@ const val REMOTE_JPOFILER_CONFIG_FILE_NAME = "jprofiler_config_remote.xml"
 const val PRIV_FOLD_NAME = ".private"
 
 
-
 const val HIDDEN_VAGRANT_FOLDER_NAME = ".vagrant"
 
 
@@ -305,4 +305,5 @@ class RedisCertFiles(private val dir: FsFile) {
     val csrFile = dir["redis.csr"]
     val certFile = dir["redis.cert"]
 }
+
 val remoteSharableCertFiles = RedisCertFiles(DEFAULT_UBUNTU_HOME_FOLDER)

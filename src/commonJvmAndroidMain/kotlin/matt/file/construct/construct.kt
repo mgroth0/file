@@ -41,7 +41,7 @@ fun File.toMFile(): JioFile = mFile(this.path, this@FileSystem).toJioFile()
 
 fun JioFile.toMFile() = this
 
-fun File.toMFile(fs: FileSystem) = with(fs) {toMFile()}
+fun File.toMFile(fs: FileSystem) = with(fs) { toMFile() }
 
 
 fun File.toSFile() = MacFile(path)

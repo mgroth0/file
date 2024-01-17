@@ -9,15 +9,21 @@ import matt.lang.model.file.FsFile
 import matt.log.AppendLogger
 
 
-class LogFileLogger(val file: FsFile) : AppendLogger(file.toJioFile().bufferedWriter().apply { }) {
+class LogFileLogger(
+    val file: FsFile,
+    val backupFolder: FsFile
+) : AppendLogger(file.toJioFile().bufferedWriter().apply { }) {
     init {
         file.parent?.toIoFile()?.mkdirs()
     }
 
     override fun postLog() {
-        if (file.toJioFile().readLines().size > 1000) {
+        val existingText = file.toJioFile().text
+        if (existingText.lines().size > 1000) {
+            val previousFile = backupFolder[System.currentTimeMillis().toString() + ".log"]
+            previousFile.toJioFile().text = existingText
             file.toJioFile().writeText(
-                "overwriting log file since it has > 1000 lines. Did this because I'm experiencing hanging and thought it might be this huge file. Todo: backup before delete"
+                "overwriting log file since it has > 1000 lines. Did this because I'm experiencing hanging and thought it might be this huge file. Put existing text in $previousFile"
             )
         }
     }

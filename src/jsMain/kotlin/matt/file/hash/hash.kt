@@ -7,10 +7,10 @@ internal actual fun myMd5Digest(): MyMd5Digest = JsMd5HashDigest()
 
 class JsMd5HashDigest : MyMd5Digest() {
     override fun update(bytes: ByteArray) {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun digest(): MD5 {
-        TODO("Not yet implemented")
+        TODO()
     }
 }

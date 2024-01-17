@@ -24,6 +24,7 @@ fun JvmMFile.recursiveMD5(
     ignoreAllWithPathParts: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS,
     ignoreAllWithPathPartsContaining: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS_CONTAINING
 ): MD5 {
+    
     val md = myMd5Digest() as JvmMd5HashDigest
     md.updateFromFileRecursively(
         file = this,

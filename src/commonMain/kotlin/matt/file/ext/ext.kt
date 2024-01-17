@@ -35,6 +35,16 @@ val FsFile.singleExtension: FileExtension
         return FileExtension(afterDot)
     }
 
+val FsFile.finalExtension: FileExtension
+    get() {
+        check(fName.count { it == '.' } >= 1) {
+            "0 dots in name of $path"
+        }
+        val afterDot = fName.substringAfterLast(".", missingDelimiterValue = "")
+        check(afterDot.isNotEmpty())
+        return FileExtension(afterDot)
+    }
+
 
 enum class FrameFileType(val extension: FileExtension) {
     Png(FileExtension.PNG), Jpg(FileExtension.JPG)
@@ -76,6 +86,7 @@ class FileExtension(input: String) {
         val MP4 by ext
         val TS by ext
         val PORT by ext
+        val POM by ext
         val COMP by ext
         val COMP_MEM by ext
         val MODEL by ext
@@ -85,6 +96,7 @@ class FileExtension(input: String) {
         val JPG by ext
         val SVG by ext
         val PY by ext
+        val PYC by ext
         val JAVA by ext
         val GROOVY by ext
         val TXT by ext

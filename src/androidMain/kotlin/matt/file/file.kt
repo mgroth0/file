@@ -2,12 +2,14 @@
 
 package matt.file
 
-import matt.lang.model.file.FileSystem
+import matt.file.thismachine.thisMachine
+import matt.lang.model.file.FileSystemResolver
 import matt.log.warn.warn
-import matt.model.code.sys.LinuxFileSystem
 
 
-actual val guessRuntimeFileSystem: FileSystem by lazy {
+actual val guessRuntimeFileSystemResolver: FileSystemResolver by lazy {
+    warn("Android file case-sensitivity depends on where the file is located. (on a SD card or not etc.)")
     warn(GUESS_FS_WARNING)
-    LinuxFileSystem
+    thisMachine
+//    LinuxFileSystem
 }

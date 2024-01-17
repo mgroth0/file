@@ -164,10 +164,9 @@ data object Ec2ProcessContext : ExecutionContextImpl(), ComputeContext {
 }
 
 val GRADLE_JAVA_HOME by lazy {
-    with(thisMachine.fileSystem) {
-        mFile(
-            (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).loadProperties()["org.gradle.java.home"].toString(),
-        )
+    val s = (USER_HOME + ".gradle" + GRADLE_PROPERTIES_FILE_NAME).loadProperties()["org.gradle.java.home"].toString()
+    with(thisMachine.fileSystemFor(s)) {
+        mFile(s)
     }
 }
 
@@ -214,8 +213,6 @@ interface BriarContextFiles : ComputeContextFiles {
 
     val briarExtractsFolder: JioFile
     val briarGlobalCacheFolder: JioFile
-
-
 
 
     val brs1Folder get() = briarDataFolder["${BRS.name}1"]

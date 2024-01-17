@@ -13,11 +13,11 @@ object Ec2Files : ComputeContextFiles {
 
     override val jpenable get() = TODO()
     override val libjprofilertiPath: String
-        get() = TODO("Not yet implemented")
+        get() = TODO()
     override val defaultPathPrefix =
         DEFAULT_UBUNTU_HOME_FOLDER[REGISTERED_FOLDER.name][LocalComputeContextFiles().defaultPathPrefix.name]
     override val yourKitAttachScript: FsFile
-        get() = TODO("Not yet implemented")
+        get() = TODO()
 
 }
 

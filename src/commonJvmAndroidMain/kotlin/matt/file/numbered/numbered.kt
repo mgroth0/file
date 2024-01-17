@@ -2,11 +2,12 @@ package matt.file.numbered
 
 import matt.file.ext.FileExtension
 import matt.file.toIoFile
+import matt.lang.anno.MergeWith
 import matt.lang.model.file.fName
 import matt.lang.model.file.types.Folder
 import matt.prim.str.isInt
 
-/*TODO: MERGE THIS CODE WITH nextFileThatDoesNotExistWithNameLike and COMMON CODE*/
+@MergeWith(id = 34206385)
 class NumberedFiles(
     private val folder: Folder,
     val prefix: String,
