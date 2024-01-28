@@ -1,6 +1,5 @@
 package matt.file.commons.rcommons
 
-import matt.file.FSRoot
 import matt.file.JioFile
 import matt.file.commons.IDE_FOLDER
 import matt.file.commons.REGISTERED_FOLDER
@@ -9,16 +8,17 @@ import matt.file.commons.rcommons.OpenMindUserStorageLocation.om2
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om5
 import matt.file.construct.mFile
 import matt.file.context.BriarContextFiles
+import matt.file.root
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
-import matt.lang.model.file.FileOrURL
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
+import matt.lang.model.file.ResolvableFileOrUrl
 import matt.lang.versions.CURRENT_JPROFILER_VERSION
 import matt.model.code.sys.LinuxFileSystem
 
 
-class OpenMindComputeContextFiles : BriarContextFiles {
-    override val defaultPathPrefix: FileOrURL = FSRoot(LinuxFileSystem)
+class OpenMindComputeContextFiles : BriarContextFiles() {
+    override val defaultPathPrefix: ResolvableFileOrUrl<*> = LinuxFileSystem.root()
     private val OM_LOCAL_FOLDER by lazy {
         mFile("/local", LinuxFileSystem)
     }
@@ -32,9 +32,9 @@ class OpenMindComputeContextFiles : BriarContextFiles {
 
     override val libjprofilertiPath: String
         get() = "/opt/jprofiler${CURRENT_JPROFILER_VERSION.substringBefore(".")}/bin/linux-x64/libjprofilerti.so"
-    override val jpenable: FsFile
+    override val jpenable: AnyFsFile
         get() = TODO()
-    override val yourKitAttachScript: FsFile
+    override val yourKitAttachScript: AnyFsFile
         get() = TODO()
 
     override val briarCacheFolder

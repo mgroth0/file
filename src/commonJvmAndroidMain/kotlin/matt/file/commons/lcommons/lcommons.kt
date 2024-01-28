@@ -9,17 +9,15 @@ import matt.file.commons.StupidLinuxVOLUMES_FOLDER
 import matt.file.commons.YOUR_KIT_APP_FOLDER
 import matt.file.context.BriarContextFiles
 import matt.lang.anno.SeeURL
-import matt.lang.anno.optin.ExperimentalMattCode
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.model.code.jvm.agentpath.MAC_LIBJPROFILERTI_PATH
 
-@OptIn(ExperimentalMattCode::class)
-class LocalComputeContextFiles : BriarContextFiles {
+class LocalComputeContextFiles : BriarContextFiles() {
 
     private val fakeRemoteFs = REGISTERED_FOLDER["remote"]
     private val fakeOmFs = fakeRemoteFs["om"]
     override val defaultPathPrefix = fakeOmFs
-    override val briarDataFolder: FsFile
+    override val briarDataFolder: AnyFsFile
         get() = StupidLinuxVOLUMES_FOLDER["Untitled"]  /*the hard drive is case-sensitive!*/
     override val briarExtractsFolder
         get() = DATA_FOLDER["BriarExtracts"]
@@ -28,12 +26,12 @@ class LocalComputeContextFiles : BriarContextFiles {
     override val libjprofilertiPath: String
         get() = MAC_LIBJPROFILERTI_PATH
 
-    override val jpenable: FsFile
+    override val jpenable: AnyFsFile
         get() = JPROFILER_APP_FOLDER["Contents"]["Resources"]["app"]["bin"]["jpenable"]
 
 
     @SeeURL("https://www.yourkit.com/docs/java-profiler/2023.5/help/console_attach_wizard.jsp")
-    override val yourKitAttachScript: FsFile
+    override val yourKitAttachScript: AnyFsFile
         get() = YOUR_KIT_APP_FOLDER["Contents"]["Resources"]["bin"]["attach.sh"]
 
     override val briarCacheFolder

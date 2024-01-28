@@ -3,11 +3,11 @@ package matt.file.sync
 import matt.file.ext.backup.backup
 import matt.file.ext.backup.defaultBackupFolder
 import matt.file.toJioFile
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 
 class SynchronizedFileManager(
-    private val file: FsFile,
-    private val backupFolder: FsFile = file.defaultBackupFolder
+    private val file: AnyFsFile,
+    private val backupFolder: AnyFsFile = file.defaultBackupFolder
 ) {
 
     var scheduledFinalBackup: Boolean = false

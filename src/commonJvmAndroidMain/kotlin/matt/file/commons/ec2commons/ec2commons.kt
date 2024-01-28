@@ -4,11 +4,11 @@ import matt.file.commons.REGISTERED_FOLDER
 import matt.file.commons.lcommons.LocalComputeContextFiles
 import matt.file.construct.mFile
 import matt.file.context.ComputeContextFiles
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.model.code.sys.LinuxFileSystem
 
 
-object Ec2Files : ComputeContextFiles {
+object Ec2Files : ComputeContextFiles() {
 
 
     override val jpenable get() = TODO()
@@ -16,7 +16,7 @@ object Ec2Files : ComputeContextFiles {
         get() = TODO()
     override val defaultPathPrefix =
         DEFAULT_UBUNTU_HOME_FOLDER[REGISTERED_FOLDER.name][LocalComputeContextFiles().defaultPathPrefix.name]
-    override val yourKitAttachScript: FsFile
+    override val yourKitAttachScript: AnyFsFile
         get() = TODO()
 
 }

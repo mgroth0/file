@@ -13,7 +13,7 @@ import matt.lang.NOT_IMPLEMENTED
 import matt.lang.SubRoots
 import matt.lang.anno.SeeURL
 import matt.lang.assertions.require.requireIs
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.FsFileNameImpl
 import matt.lang.model.file.MacFileSystem
 import matt.lang.model.file.types.asFolder
@@ -44,11 +44,25 @@ const val M2_FILE_NAME = ".m2"
 val M2 by lazy { USER_HOME + M2_FILE_NAME }
 val REGISTERED_FOLDER by lazy {
     with(USER_HOME.fileSystem) {
-        thisMachine.registeredDir?.let { USER_HOME[it].toJioFile() }
+        val reg = thisMachine.registeredDir
+        reg?.let {
+            val reg2 = USER_HOME[it]
+            reg2.toJioFile()
+        }
             ?: matt.file.ext.createTempDir(prefix = "registered")
     }
 }
-const val BRAINSTORM_KEY_FILE_NAME = ".BRAINSTORM"
+
+
+object AndroidFiles {
+    val PUSHED_FOLDER_NAME = "pushed".lowercase() /*case sensitive*/
+    val KEYS_FILE_NAME = ".keys".lowercase() /*case sensitive*/
+    val dataFile = mFile("/data", LinuxFileSystem)
+    val dataDataFile = dataFile["data"]
+    val pushedFolder = dataFile["local/tmp"][PUSHED_FOLDER_NAME]
+}
+
+
 val VIDEO_INDEX_FOLDER by lazy { REGISTERED_FOLDER["VideoIndex"] }
 val CHROMEDRIVER_FOLDER by lazy {
     REGISTERED_FOLDER["chromedriver"]
@@ -104,7 +118,7 @@ val SOUND_FOLDER by lazy { REGISTERED_FOLDER + "sound" }
 
 val LOG_FOLDER by lazy { REGISTERED_FOLDER["log"].apply { mkdir() } }
 
-class LogContext(parentFolder: FsFile) {
+class LogContext(parentFolder: AnyFsFile) {
     val logFolder by lazy {
         parentFolder["log"].toJioFile().apply { mkdirs() }
     }
@@ -299,7 +313,7 @@ const val PRIV_FOLD_NAME = ".private"
 const val HIDDEN_VAGRANT_FOLDER_NAME = ".vagrant"
 
 
-class RedisCertFiles(private val dir: FsFile) {
+class RedisCertFiles(private val dir: AnyFsFile) {
     fun mkdirs() = dir.toJioFile().mkdirs()
     val privateKeyFile = dir["redis-private.key"]
     val csrFile = dir["redis.csr"]

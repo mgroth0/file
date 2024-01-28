@@ -7,10 +7,12 @@ import matt.file.JioFile
 import matt.file.toJioFile
 import matt.lang.anno.Optimization
 import matt.lang.anno.ok.JavaIoFileIsOk
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.FileSystem
-import matt.lang.model.file.FsFile
+import matt.model.data.message.AbsLinuxFile
 import matt.model.data.message.AbsMacFile
-import matt.model.data.message.MacFile
+import matt.model.data.message.RelLinuxFile
+import matt.model.data.message.RelMacFile
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -44,8 +46,10 @@ fun JioFile.toMFile() = this
 fun File.toMFile(fs: FileSystem) = with(fs) { toMFile() }
 
 
-fun File.toSFile() = MacFile(path)
+fun File.toRelMacFile() = RelMacFile(path)
 fun File.toAbsMacFile() = AbsMacFile(path)
+fun File.toRelLinuxFile() = RelLinuxFile(path)
+fun File.toAbsLinuxFile() = AbsLinuxFile(path)
 
 context(FileSystem)
 fun mFile(
@@ -64,7 +68,7 @@ fun mFile(
 ): JioFile = mFile(parent, this@FileSystem).toJioFile() + child
 
 fun mFile(
-    parent: FsFile,
+    parent: AnyFsFile,
     child: String
 ) = parent.resolve(child)
 
@@ -75,4 +79,4 @@ fun mFile(uri: URI): JioFile = mFile(File(uri))
 context(FileSystem)
 fun mFile(path: String): JioFile = mFile(path, this@FileSystem).toJioFile()
 
-fun mFile(path: FsFile): JioFile = path.toJioFile()
+fun mFile(path: AnyFsFile): JioFile = path.toJioFile()

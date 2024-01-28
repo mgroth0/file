@@ -2,12 +2,12 @@
 
 package matt.file.zip
 
-import matt.file.FsFileImpl
+import matt.file.AnyFsFileImpl
 import matt.file.toJioFile
 import matt.lang.anno.DoesNotAlwaysWork
 import matt.lang.err
 import matt.lang.file.toJFile
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.log.warn.warn
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -28,8 +28,8 @@ class ZipFiles {
      * @param zipDirName
      */
     fun zipDirectory(
-        dir: FsFileImpl,
-        zipDirName: FsFileImpl
+        dir: AnyFsFileImpl,
+        zipDirName: AnyFsFileImpl
     ) {
 
         err(problem)
@@ -70,8 +70,8 @@ class ZipFiles {
      * @throws IOException
      */
     @Throws(IOException::class)
-    private fun populateFilesList(dir: FsFile) {
-        val files: Array<out FsFile> = dir.toJioFile().listFiles()!!
+    private fun populateFilesList(dir: AnyFsFile) {
+        val files: Array<out AnyFsFile> = dir.toJioFile().listFiles()!!
         for (file in files) {
             if (file.toJFile().isFile) filesListInDir.add(file.toJFile().absolutePath) else populateFilesList(file)
         }
@@ -88,7 +88,7 @@ class ZipFiles {
          * @param zipFileName
          */
         fun zipSingleFile(
-            file: FsFileImpl,
+            file: AnyFsFileImpl,
             zipFileName: String
         ) {
 

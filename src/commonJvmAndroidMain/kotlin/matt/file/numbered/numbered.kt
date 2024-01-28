@@ -4,12 +4,12 @@ import matt.file.ext.FileExtension
 import matt.file.toIoFile
 import matt.lang.anno.MergeWith
 import matt.lang.model.file.fName
-import matt.lang.model.file.types.Folder
+import matt.lang.model.file.types.AnyFolder
 import matt.prim.str.isInt
 
 @MergeWith(id = 34206385)
 class NumberedFiles(
-    private val folder: Folder,
+    private val folder: AnyFolder,
     val prefix: String,
     val extension: FileExtension
 ) {

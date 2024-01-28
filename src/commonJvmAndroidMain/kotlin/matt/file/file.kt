@@ -18,13 +18,13 @@ import matt.io.Success
 import matt.lang.anno.EnforcedMin
 import matt.lang.anno.ok.JavaIoFileIsOk
 import matt.lang.file.toJFile
+import matt.lang.model.file.AnyFsFile
+import matt.lang.model.file.AnyResolvableFilePath
 import matt.lang.model.file.CaseSensitivity.CaseInSensitive
 import matt.lang.model.file.CaseSensitivity.CaseSensitive
-import matt.lang.model.file.FilePath
+import matt.lang.model.file.CaseSensitivityAwareFilePath
 import matt.lang.model.file.FileSystem
 import matt.lang.model.file.FileSystemResolver
-import matt.lang.model.file.FsFile
-import matt.lang.model.file.FsFilePath
 import matt.lang.model.file.MacFileSystem
 import matt.model.code.sys.LinuxFileSystem
 import matt.model.data.byte.ByteSize
@@ -48,19 +48,19 @@ internal const val GUESS_FS_WARNING =
     "I need to consider that the filesystem of files might change depending if they are on an external device. I have experience a mac external drive having a different case sensitivity and I have also heard it happens with android SD cards a lot!"
 
 
-actual fun FsFile.toIoFile(): IoFile = toJioFile()
-fun FsFile.toJioFile() = JioFile(this)
+actual fun AnyFsFile.toIoFile(): IoFile<*> = toJioFile()
+fun AnyFsFile.toJioFile() = JioFile(this)
 
 fun File.toMacJioFile() = macJioFile(this)
-fun FilePath.toMacJioFile() = macJioFile(this)
+fun AnyResolvableFilePath.toMacJioFile() = macJioFile(this)
 fun macJioFile(path: String): JioFile = mFile(path, MacFileSystem).toJioFile()
 fun linuxJioFile(path: String): JioFile = mFile(path, LinuxFileSystem).toJioFile()
 fun macJioFile(file: File): JioFile = mFile(file, MacFileSystem).toJioFile()
-fun macJioFile(path: FilePath): JioFile = mFile(path.path, MacFileSystem).toJioFile()
+fun macJioFile(path: AnyResolvableFilePath): JioFile = mFile(path.path, MacFileSystem).toJioFile()
 context(FileSystem)
 fun jioFile(path: String) = mFile(path).toJioFile()
 
-fun createDyingTempFile(withText: String? = null): FsFile {
+fun createDyingTempFile(withText: String? = null): AnyFsFile {
     val f = JioFile.createTempFile("dying", ".temp")
     f.toJFile().deleteOnExit()
     if (withText != null) {
@@ -70,16 +70,10 @@ fun createDyingTempFile(withText: String? = null): FsFile {
 }
 
 class JioFile(
-    path: FsFilePath,
+    path: CaseSensitivityAwareFilePath,
     fileSystem: FileSystem
-) : FsFileImpl(path, fileSystem),
-    matt.model.obj.stream.Streamable,
-    MightExistAndWritableText,
-    IoFile,
-    Appendable,
-    PathLike<JvmMFile>,
-    WritableFile,
-    ByteArrayExternalSource {
+) : FsFileImpl<JioFile>(path, fileSystem), matt.model.obj.stream.Streamable, MightExistAndWritableText, IoFile<JioFile>,
+    Appendable, PathLike<JvmMFile>, WritableFile<JioFile>, ByteArrayExternalSource {
 
 
     fun lastModified() = toJFile().lastModified()
@@ -98,23 +92,20 @@ class JioFile(
     fun readLines() = toJFile().readLines()
     fun bufferedWriter() = toJFile().bufferedWriter()
 
-    override val parent: JioFile? get() = super.parent?.let { JioFile(fsFile = it) }
+    override fun constructSameType(
+        convertedFsFilePath: CaseSensitivityAwareFilePath,
+        newFileSystem: FileSystem
+    ): JioFile {
+        return JioFile(convertedFsFilePath, newFileSystem)
+    }
 
-    //    override val parentFile get() = parent
-    override val name: String
-        get() = toJFile().name
+//    override val parent: JioFile? get() = super.parent?.let { JioFile(fsFile = it) }
 
     fun lines() = bufferedReader().lines().asSequence()
     fun bufferedReader() = toJFile().bufferedReader()
     fun reader() = toJFile().reader()
-    override val parentFile get() = parent
 
     override fun resolveNames(names: List<String>): JioFile {
-
-//        TestCommonThreadObject
-//        TestCommonJvmAndroidThreadObject
-//        TestAndroidThreadObject
-//        TestJvmThreadObject
 
         var f = this
         names.forEach {
@@ -124,10 +115,7 @@ class JioFile(
         return f
     }
 
-    override operator fun get(c: FilePath) = get(c.path)
-    override fun resolve(c: FilePath) = resolve(c.path)
-    override operator fun plus(c: FilePath) = get(c.path)
-    operator fun plus(c: FsFile) = get(c.path)
+    operator fun plus(c: AnyFsFile) = get(c.path)
 
     override fun relativeNamesFrom(other: JioFile): List<String> {
         return this.relativeTo(other).path.split(separator).filter { it.isNotBlank() }
@@ -156,8 +144,8 @@ class JioFile(
     }
 
 
-    override val filePath: String get() = super<FsFileImpl>.filePath
-    val userFile = File(this.cpath)
+    //    override val filePath: String get() = super<FsFileImpl>.filePath
+    val userFile = File(this.path)
 
     override fun inputStream() = userFile.inputStream()
 
@@ -183,7 +171,7 @@ class JioFile(
     constructor(
         parent: JioFile,
         child: String
-    ) : this(parent.cpath, child, parent.fileSystem)
+    ) : this(parent.path, child, parent.fileSystem)
 
     constructor(
         uri: URI,
@@ -191,7 +179,7 @@ class JioFile(
     ) : this(File(uri), fileSystem)
 
     constructor(
-        fsFile: FsFile
+        fsFile: AnyFsFile
     ) : this(fsFile.fsFilePath, fsFile.fileSystem)
 
     companion object {
@@ -234,7 +222,6 @@ class JioFile(
     val identityGetter by lazy {
 
 
-
         when (fileSystem.caseSensitivity) {
             CaseSensitive   -> {
                 { s: String -> s }
@@ -253,10 +240,6 @@ class JioFile(
 
     val fName: String get() = name
 
-
-//    override fun getParentFile(): FsFile? {
-//        return parent
-//    }
 
     /*    override fun getAbsoluteFile(): FsFile {
             return super.getAbsoluteFile().toMFile(caseSensitivity = caseSensitivity)
@@ -283,7 +266,7 @@ class JioFile(
     override fun listFilesAsList() = listFiles()?.toList()
 
     /*must remain lower since in ext.kt i look here for matching with a astring*//*MUST REMAIN LAZY because for android osFun contains a "network" op that blocks the main thread and throws an error*/
-    val idFile by lazy { File(identityGetter(filePath)) }
+    val idFile by lazy { File(identityGetter(this.path)) }
 
 
     operator fun compareTo(other: File): Int = idFile.compareTo((other.toMFile(fileSystem).idFile))
@@ -296,33 +279,11 @@ class JioFile(
         }
     }
 
-//    override fun equals(other: Any?): Boolean {
-//
-//        return if (other is FsFile) {
-//            (other.fileSystem == fileSystem
-//                    && other.path == path)
-//        } else false
-
-//        return if (other is File) {
-//            requireIs<FsFile>(other) {
-//                "$other is a ${other::class} yes, but its not an MFile"
-//            }
-//            idFile == other.idFile
-//        } else false
-
-
-//    }
-
-//    override fun hashCode() = fileSystem.hashCode() + path.hashCode()
-
-
     /*MUST KEEP THESE METHODS HERE AND NOT AS EXTENSIONS IN ORDER TO ROBUSTLY OVERRIDE KOTLIN.STDLIB'S DEFAULT FILE EXTENSIONS. OTHERWISE, I'D HAVE TO MICROMANAGE MY IMPORTS TO MAKE SURE I'M IMPORTING THE CORRECT EXTENSIONS*/
 
 
-    fun relativeTo(base: JioFile): JioFile = super.relativeTo(base).toJioFile()
+    override fun relativeTo(other: JioFile): JioFile = super.relativeTo(other).toJioFile()
     fun relativeToWithUserFiles(base: JioFile): JioFile = super.relativeTo(base).toJioFile()
-    fun resolve(other: JioFile): JioFile = super<FsFileImpl>.resolve(other).toJioFile()
-    override fun resolve(other: String) = super<FsFileImpl>.resolve(other).toJioFile()
     fun resolveSibling(relative: JioFile): JioFile = super<FsFileImpl>.resolveSibling(relative.path).toJioFile()
     override fun resolveSibling(other: String): JioFile = super<FsFileImpl>.resolveSibling(other).toJioFile()
 
@@ -376,26 +337,7 @@ class JioFile(
         }
     }
 
-    override fun exists(): Boolean {
-        return toJFile().exists()
-    }
-
-
-    final override operator fun get(item: String): JioFile {
-        return resolve(item)
-    }
-
-    //  fun toJavaIOFile() = java.io.File(user)
-
-    operator fun get(item: Char): JioFile {
-        return resolve(item.toString())
-    }
-
-    override operator fun plus(other: String): JioFile {
-
-        return resolve(other)
-    }
-
+    override fun exists() = toJFile().exists()
 
     fun copyTo(
         target: JioFile,
@@ -424,32 +366,7 @@ class JioFile(
     }
 
 
-//    override val partSep = SEP
-
-
 }
-
-//internal actual val SEP = matt.file.JioFile.separator
-
-
-//fun matt.file.JioFile.idFolder() = object : IDFolder {
-//    override val idFile: File
-//        get() = this@idFolder.idFile
-//    override val fName: String
-//        get() = this@idFolder.fName
-//    override val filePath: String
-//        get() = this@idFolder.filePath
-//    override val partSep: String
-//        get() = this@idFolder.partSep
-//
-//    override fun isDir() = this@idFolder.isDir()
-//
-//    override fun toString(): String {
-//        return "[(IDFolder) ${this@idFolder}]"
-//    }
-//
-//}
-
 
 
 fun Array<JioFile>.withExtension(ext: FileExtension) = filter { it.hasExtension(ext) }

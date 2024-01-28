@@ -5,13 +5,13 @@ import matt.file.toIoFile
 import matt.file.toJioFile
 import matt.lang.function.Produce
 import matt.lang.go
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.log.AppendLogger
 
 
 class LogFileLogger(
-    val file: FsFile,
-    val backupFolder: FsFile
+    val file: AnyFsFile,
+    val backupFolder: AnyFsFile
 ) : AppendLogger(file.toJioFile().bufferedWriter().apply { }) {
     init {
         file.parent?.toIoFile()?.mkdirs()

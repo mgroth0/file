@@ -1,7 +1,7 @@
 package matt.file
 
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 
 
 
-actual fun FsFile.toIoFile(): IoFile = TODO()
+actual fun AnyFsFile.toIoFile(): IoFile<*> = TODO()

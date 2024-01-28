@@ -1,17 +1,17 @@
 package matt.file.ext
 
 import matt.lang.assertions.require.requireNotEndsWith
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.fName
 import matt.model.code.delegate.SimpleGetter
 import matt.prim.str.lower
 import kotlin.jvm.JvmInline
 
-fun FsFile.finalExtensionOrNull(): FileExtension? {
+fun AnyFsFile.finalExtensionOrNull(): FileExtension? {
     return fName.substringAfterLast(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }?.let(::FileExtension)
 }
 
-val FsFile.singleExtensionOrNullIfNoDots: FileExtension?
+val AnyFsFile.singleExtensionOrNullIfNoDots: FileExtension?
     get() {
         val numDots = fName.count { it == '.' }
         if (numDots == 0) return null
@@ -23,9 +23,9 @@ val FsFile.singleExtensionOrNullIfNoDots: FileExtension?
         return FileExtension(afterDot)
     }
 
-val FsFile.mightHaveAnExtension get() = "." in name
+val AnyFsFile.mightHaveAnExtension get() = "." in name
 
-val FsFile.singleExtension: FileExtension
+val AnyFsFile.singleExtension: FileExtension
     get() {
         check(fName.count { it == '.' } == 1) {
             "multiple or 0 dots in name of $path"
@@ -35,7 +35,7 @@ val FsFile.singleExtension: FileExtension
         return FileExtension(afterDot)
     }
 
-val FsFile.finalExtension: FileExtension
+val AnyFsFile.finalExtension: FileExtension
     get() {
         check(fName.count { it == '.' } >= 1) {
             "0 dots in name of $path"

@@ -4,7 +4,7 @@ import matt.file.ext.FileExtension
 import matt.file.ext.mightHaveAnExtension
 import matt.file.ext.singleExtension
 import matt.lang.`is`
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.types.Applescript
 import matt.lang.model.file.types.BinaryApplescript
 import matt.lang.model.file.types.Cbor
@@ -50,35 +50,35 @@ import matt.lang.model.file.types.asFolder
 import matt.model.obj.text.ReadableFile
 
 
-fun typedFile(fsFile: FsFile) = fsFile.typed()
-fun FsFile.typed() = when (this) {
-    is TypedFile<*> -> this
-    else            -> TypedFile(this, getTypedFromExtension())
+fun typedFile(fsFile: AnyFsFile) = fsFile.typed()
+fun AnyFsFile.typed() = when (this) {
+    is TypedFile<*, *> -> this
+    else               -> TypedFile(this, getTypedFromExtension())
 }
 
-fun FsFile.verifyToImagePath() = TypedFile(this, getTypedFromExtension() as RasterImage)
+fun AnyFsFile.verifyToImagePath() = TypedFile(this, getTypedFromExtension() as RasterImage)
 
 
-fun <T : FileType> FsFile.checkType(t: T) = typed().checkType(t)
-inline fun <reified T : FileType> FsFile.checkType() = typed().checkType<T>()
-fun <T : FileType> TypedFile<*>.checkType(t: T): TypedFile<T> {
+fun <T : FileType> AnyFsFile.checkType(t: T) = typed().checkType(t)
+inline fun <reified T : FileType> AnyFsFile.checkType() = typed().checkType<T>()
+fun <T : FileType> TypedFile<*,*>.checkType(t: T): TypedFile<T,*> {
     check(fileType.`is`(t::class))
     @Suppress("UNCHECKED_CAST")
-    return this as TypedFile<T>
+    return this as TypedFile<T,*>
 }
 
-inline fun <reified T : FileType> TypedFile<*>.checkType(): TypedFile<T> {
+inline fun <reified T : FileType> TypedFile<*,*>.checkType(): TypedFile<T,*> {
     check(fileType.`is`(T::class)) {
         "typecheck failed: ${this} is not a ${T::class} file"
     }
     @Suppress("UNCHECKED_CAST")
-    return this as TypedFile<T>
+    return this as TypedFile<T,*>
 }
 
 
-fun <T : FileType> FsFile.forceType(t: T): TypedFile<T> {
+fun <T : FileType> AnyFsFile.forceType(t: T): TypedFile<T,*> {
     @Suppress("UNCHECKED_CAST")
-    return (this as? TypedFile<T>)?.takeIf { fileType == t } ?: TypedFile(this, t)
+    return (this as? TypedFile<T,*>)?.takeIf { fileType == t } ?: TypedFile(this, t)
 //    if ((this as? TypedFile<*>)?.fileType == t) return this
 //    check(fileType.`is`(t::class))
 //    @Suppress("UNCHECKED_CAST")
@@ -97,7 +97,7 @@ fun <T : FileType> FsFile.forceType(t: T): TypedFile<T> {
 //}
 
 
-fun FsFile.getTypedFromExtension(): FileType {
+fun AnyFsFile.getTypedFromExtension(): FileType {
 
     if (!mightHaveAnExtension) return FolderType
 
@@ -147,7 +147,7 @@ fun FsFile.getTypedFromExtension(): FileType {
 }
 
 
-fun ReadableFile.requireIsExistingFolder(): Folder {
+fun ReadableFile<*>.requireIsExistingFolder(): Folder<*> {
     return when {
         this.isDir() -> asFolder()
         else         -> error("$this is not a folder. Does it exist?")

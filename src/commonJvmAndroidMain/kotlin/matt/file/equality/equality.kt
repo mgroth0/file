@@ -7,9 +7,9 @@ import matt.file.hash.recursiveMD5
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.anno.optin.IncubatingMattCode
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.FsFileNameImpl
-import matt.lang.model.file.types.Folder
+import matt.lang.model.file.types.AnyFolder
 import matt.lang.model.file.types.asFolder
 import java.util.jar.JarFile
 
@@ -53,21 +53,21 @@ fun JioFile.isRecursivelyIdenticalToUsingHash(
 
 private const val DEFAULT_IGNORE_DS_STORE = true
 
-fun Folder.isRecursivelyIdenticalTo(
-    other: Folder,
+fun AnyFolder.isRecursivelyIdenticalTo(
+    other: AnyFolder,
     ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE
 ): Boolean = firstRecursiveDiff(
     other,
     ignoreDSStore
 ) != null
 
-fun Folder.firstRecursiveDiff(
-    other: Folder,
+fun AnyFolder.firstRecursiveDiff(
+    other: AnyFolder,
     ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE,
     ignoreFileNames: List<String> = listOf()
 ): String? {
 
-    fun predicate(file: FsFile) =
+    fun predicate(file: AnyFsFile) =
         (!ignoreDSStore || !file.hasName(DS_STORE)) && file.fsFileName !in (ignoreFileNames.map {
             FsFileNameImpl(it, fileSystem)
         })

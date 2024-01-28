@@ -3,35 +3,34 @@ package matt.file
 import kotlinx.serialization.Serializable
 import matt.file.construct.mFile
 import matt.lang.anno.Duplicated
+import matt.lang.anno.Open
 import matt.lang.anno.optin.ExperimentalMattCode
 import matt.lang.assertions.require.requireEquals
-import matt.lang.assertions.require.requireNot
-import matt.lang.model.file.CommonFile
-import matt.lang.model.file.FileOrURL
-import matt.lang.model.file.FilePath
+import matt.lang.model.file.AnyFsFile
+import matt.lang.model.file.CaseSensitivityAwareFilePath
 import matt.lang.model.file.FileSystem
-import matt.lang.model.file.FsFile
-import matt.lang.model.file.FsFilePath
+import matt.lang.model.file.FsFileBase
 import matt.lang.model.file.MacFileSystem
+import matt.lang.model.file.ResolvableFileOrUrl
+import matt.lang.model.file.ResolvableFilePath
 import matt.lang.model.file.constructFilePath
 import matt.lang.model.file.exts.contains
 import matt.lang.model.file.withinFileSystem
+import matt.model.data.message.AbsLinuxFile
 import matt.model.data.message.AbsMacFile
-import matt.model.data.message.MacFile
+import matt.model.data.message.RelLinuxFile
+import matt.model.data.message.RelMacFile
 import matt.model.obj.text.ReadableFile
 import matt.model.obj.text.WritableFile
-import matt.prim.str.ensurePrefix
 import kotlin.jvm.JvmInline
 
 
 /*need a FileOrURL class with guaranteed equality if path is the same*/
 @JvmInline
 @Serializable
-value class Src(private val path: String) : FileOrURL {
-    override val cpath: String
-        get() = path
+value class Src<F : ResolvableFileOrUrl<F>>(override val path: String) : ResolvableFileOrUrl<F> {
 
-    override fun resolve(other: String): FileOrURL {
+    override fun resolve(other: String): F {
         TODO()
     }
 
@@ -40,110 +39,92 @@ value class Src(private val path: String) : FileOrURL {
     }
 }
 
-class UnknownFileOrURL(path: String) : FileOrURL {
-    override val cpath = path
+class UnknownFileOrURL<F : ResolvableFileOrUrl<F>>(override val path: String) : ResolvableFileOrUrl<F> {
 
-    override fun resolve(other: String): FileOrURL {
+    override fun resolve(other: String): F {
         TODO()
     }
 
 }
 
-class FSRoot(override val fileSystem: FileSystem) : FsFile {
-    override fun withinFileSystem(newFileSystem: FileSystem): FsFile {
-        TODO()
-    }
-
-    override val fsFilePath: FsFilePath
-        get() = fileSystem.constructFilePath(fileSystem.separator)
-//            UnsafeFilePath(fileSystem.separator)
-
-    override fun get(item: String): FsFile {
-        return resolve(item)
-    }
-
-    override fun resolve(other: String): FsFile {
-        requireNot(other.startsWith(fileSystem.separatorChar))
-        return mFile(other.ensurePrefix(fileSystem.separatorChar.toString()), fileSystem)
-    }
-
-    override val isAbsolute = true
-    override val parent = null
-    override val isRoot = true
-    override fun relativeTo(other: FsFile): FsFile {
-        error("why would you ever need to relative path of the root to something else?")
-    }
+fun <F : FsFileBase<F>> F.root(): F {
+    return fileInSameFs(fileSystem.separator)
 }
 
+fun FileSystem.root() = SimpleFsFileImpl(
+    constructFilePath(separator),
+    fileSystem = this,
+)
 
-fun FilePath.toFsFile() = mFile(path, MacFileSystem)
-fun FilePath.toMFile() = mFile(path, MacFileSystem)
-fun FilePath.toMacFile() = MacFile(filePath)
+
+fun ResolvableFilePath<*>.toFsFile() = mFile(path, MacFileSystem)
+fun ResolvableFilePath<*>.toMFile() = mFile(path, MacFileSystem)
 
 
-fun FsFile.verifyToAbsMacFile(): AbsMacFile {
+fun AnyFsFile.verifyToAbsMacFile(): AbsMacFile {
     requireEquals(this.fileSystem, MacFileSystem)
     require(this.isAbsolute)
     return toAbsMacFile()
 }
 
-fun FilePath.toAbsMacFile() = AbsMacFile(filePath)
+fun ResolvableFilePath<*>.toRelMacFile() = RelMacFile(path)
+fun ResolvableFilePath<*>.toAbsMacFile() = AbsMacFile(path)
+fun ResolvableFilePath<*>.toRelLinuxFile() = RelLinuxFile(path)
+fun ResolvableFilePath<*>.toAbsLinuxFile() = AbsLinuxFile(path)
 
 
 //expect val caseSensitivityOfExecutingMachine: CaseSensitivity
 
-open class FsFileImpl(
-    override val fsFilePath: FsFilePath,
-    override val fileSystem: FileSystem
-) : CommonFile, FsFile {
+const val OVERRIDE_MEMBERS_SHOULD_BE_FINAL = "OverrideMembersShouldBeFinal"
 
+typealias AnyFsFileImpl = FsFileImpl<*>
 
-    @ExperimentalMattCode("need thorough testing for crazy stuff like this. This could result in have a CaseSensitive FsFilePath in a case-insensitive filesystem...")
-    final override fun withinFileSystem(newFileSystem: FileSystem): FsFile {
-        return FsFileImpl(fsFilePath.withinFileSystem(newFileSystem), newFileSystem)
+class SimpleFsFileImpl(
+    fsFilePath: CaseSensitivityAwareFilePath,
+    fileSystem: FileSystem
+) : FsFileImpl<SimpleFsFileImpl>(fsFilePath, fileSystem) {
+    override fun constructSameType(
+        convertedFsFilePath: CaseSensitivityAwareFilePath,
+        newFileSystem: FileSystem
+    ): SimpleFsFileImpl {
+        return SimpleFsFileImpl(convertedFsFilePath, newFileSystem)
     }
 
-//    override val parent: FsFile?
-//        get() = super.parent
+}
+
+abstract class FsFileImpl<F : FsFileImpl<F>>(
+    final override val fsFilePath: CaseSensitivityAwareFilePath,
+    final override val fileSystem: FileSystem
+) : FsFileBase<F>() {
+
+    final override fun fileInSameFs(path: String): F {
+        val convertedPath = fileSystem.constructFilePath(path)
+        return constructSameType(convertedPath, fileSystem)
+    }
+
+    @ExperimentalMattCode("need thorough testing for crazy stuff like this. This could result in have a CaseSensitive FsFilePath in a case-insensitive filesystem...")
+    final override fun withinFileSystem(newFileSystem: FileSystem): F {
+        val convertedPath = fsFilePath.withinFileSystem(newFileSystem)
+        return constructSameType(convertedPath, newFileSystem)
+    }
+
+    protected abstract fun constructSameType(
+        convertedFsFilePath: CaseSensitivityAwareFilePath,
+        newFileSystem: FileSystem
+    ): F
 
     final override val isRoot: Boolean
         get() = fsFilePath.path == fileSystem.separator
 
-    val names by lazy { cpath.split(partSep) }
-    final override val cpath: String get() = path
-
-
-    override val parent: FsFile?
+    final override val parent: F?
         get() = when {
             isRoot                         -> null
-            isAbsolute && names.size == 2  -> FSRoot(fileSystem)
+            isAbsolute && names.size == 2  -> fileInSameFs(fileSystem.root().path)
             !isAbsolute && names.size == 1 -> null
-            else                           -> mFile(names.dropLast(1).joinToString(separator = partSep), fileSystem)
+            else                           -> fileInSameFs(names.dropLast(1).joinToString(separator = partSep))
         }
-    override val parentFile: FsFileImpl? get() = parent?.let { it as FsFileImpl }
 
-    override val name: String
-        get() = names.last()
-
-    final val isRelative get() = !path.startsWith(partSep)
-
-    fun resolve(other: FsFileImpl): FsFileImpl {
-        require(other.isRelative) {
-            "$other should be relative to resolve against $this"
-        }
-        require(other.fileSystem == fileSystem)
-        return mFile(path + partSep + other.path, fileSystem)
-    }
-
-    override fun resolve(other: String): FsFileImpl {
-        return resolve(mFile(other, fileSystem))
-    }
-
-    override operator fun plus(other: String) = resolve(other)
-
-    override operator fun get(item: String): FsFileImpl {
-        return resolve(item)
-    }
+    val isRelative get() = !path.startsWith(partSep)
 
     final override val isAbsolute: Boolean
         get() = !isRelative
@@ -154,35 +135,21 @@ open class FsFileImpl(
     }
 
 
+    @Open
     @Duplicated
-    override fun relativeTo(other: FsFile): FsFile {
+    override fun relativeTo(other: F): F {
         require(this in other) {
             "$this must be in $other in order to get the relative path"
         }
         val path = fileSystem.constructFilePath(
             this.path.removePrefix(other.path).removePrefix(partSep)
         )
-        return FsFileImpl(path, fileSystem)
+        return fileInSameFs(path.path)
     }
-
-
-    final override fun equals(other: Any?): Boolean {
-        if (other !is FsFile) return false
-        return if (other.fileSystem == fileSystem) {
-            fsFilePath == other.fsFilePath
-        } else false
-    }
-
-    final override fun hashCode(): Int {
-        var result = fsFilePath.hashCode()
-        result = 31 * result + fileSystem.hashCode()
-        return result
-    }
-
 }
 
 
-expect fun FsFile.toIoFile(): IoFile
+expect fun AnyFsFile.toIoFile(): IoFile<*>
 
-interface IoFile : ReadableFile, WritableFile
+interface IoFile<F : IoFile<F>> : ReadableFile<F>, WritableFile<F>
 

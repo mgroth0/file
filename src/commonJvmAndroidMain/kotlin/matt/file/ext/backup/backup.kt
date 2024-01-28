@@ -6,14 +6,14 @@ import matt.file.ext.mkparents
 import matt.file.ext.weird.getNextSubIndexedFile
 import matt.file.toJioFile
 import matt.lang.file.toJFile
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 
-internal val FsFile.defaultBackupFolder get() = parent!! + "backups"
-val FsFile.registeredBackupFolder get() = BACKUP_FOLDER["by_path"][path.removePrefix(fileSystem.separator)]
+val AnyFsFile.defaultBackupFolder get() = parent!! + "backups"
+val AnyFsFile.registeredBackupFolder get() = BACKUP_FOLDER["by_path"][path.removePrefix(fileSystem.separator)]
 
 fun JvmMFile.backup(
     text: String? = null,
-    backupFolder: FsFile = defaultBackupFolder
+    backupFolder: AnyFsFile = defaultBackupFolder
 ) {
     doBackupWork(text = text, backupFolder = backupFolder)
 }
@@ -44,7 +44,7 @@ fun JvmMFile.doubleBackupWrite(
 
 private fun JvmMFile.doBackupWork(
     text: String? = null,
-    backupFolder: FsFile
+    backupFolder: AnyFsFile
 ) {
     val backFolderJio = backupFolder.toJioFile()
     backFolderJio.mkdirs()

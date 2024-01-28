@@ -3,7 +3,6 @@
 package matt.file.test
 
 
-import matt.file.FSRoot
 import matt.file.Src
 import matt.file.UnknownFileOrURL
 import matt.file.construct.toMFile
@@ -20,7 +19,6 @@ class FileTests: Tests() {
         UnknownFileOrURL("abc")
         @Suppress("ForbiddenMethodCall")
         File("abc").toMFile(MacFileSystem)
-        FSRoot(MacFileSystem)
     }
 
     @Test

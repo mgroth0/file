@@ -24,8 +24,8 @@ import matt.file.toJioFile
 import matt.lang.context.DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_MAC_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
-import matt.lang.model.file.FileOrURL
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
+import matt.lang.model.file.AnyResolvableFileOrUrl
 import matt.lang.model.file.MacFileSystem
 import matt.lang.model.file.UnsafeFilePath
 import matt.lang.model.file.toUnsafe
@@ -170,28 +170,28 @@ val GRADLE_JAVA_HOME by lazy {
     }
 }
 
-interface ProcessContextFiles {
-    val libjprofilertiPath: String
-    val jpenable: FsFile
-    val jProfilerConfigFile: FsFile
-    val yourKitAttachScript: FsFile
-    val om2Home: FsFile
+abstract class ProcessContextFiles {
+    abstract val libjprofilertiPath: String
+    abstract val jpenable: AnyFsFile
+    abstract val jProfilerConfigFile: AnyFsFile
+    abstract val yourKitAttachScript: AnyFsFile
+    abstract val om2Home: AnyFsFile
     val tempFolder get() = om2Home["temp"]
     val snapshotFolder get() = tempFolder["jprofiler"]
     val latestJpSnapshot get() = snapshotFolder["latest.jps"]
 }
 
-interface ComputeContextFiles : ProcessContextFiles {
+abstract class ComputeContextFiles : ProcessContextFiles() {
 
 
-    val defaultPathPrefix: FileOrURL
-    override val om2Home
+    abstract val defaultPathPrefix: AnyResolvableFileOrUrl
+    final override val om2Home
         get() = mFile(
-            defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].cpath,
+            defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].path,
             LinuxFileSystem
         ).toJioFile()
 
-    override val jProfilerConfigFile: FsFile get() = om2Home[JPROFILER_CONFIG_NAME]
+    final override val jProfilerConfigFile: AnyFsFile get() = om2Home[JPROFILER_CONFIG_NAME]
     val jarsFolder get() = om2Home["jars"]
 
     val rTaskOutputs get() = om2Home["rTaskOutputs"]
@@ -203,22 +203,22 @@ interface ComputeContextFiles : ProcessContextFiles {
 }
 
 
-interface BriarContextFiles : ComputeContextFiles {
+abstract class BriarContextFiles : ComputeContextFiles() {
     companion object {
         const val BRIAR_EXTRACT_METADATA_FILE_NAME = "metadata.json"
         const val BRIAR_EXTRACT_MINIMAL_METADATA_FILE_NAME = "metadata_minimal.cbor"
     }
 
-    val briarDataFolder: FsFile
+    abstract val briarDataFolder: AnyFsFile
 
-    val briarExtractsFolder: JioFile
-    val briarGlobalCacheFolder: JioFile
+    abstract val briarExtractsFolder: JioFile
+    abstract val briarGlobalCacheFolder: JioFile
 
 
     val brs1Folder get() = briarDataFolder["${BRS.name}1"]
     val bts1Folder get() = briarDataFolder["${BTS.name}1"]
 
-    val briarCacheFolder: JioFile
+    abstract val briarCacheFolder: JioFile
 }
 
 
@@ -226,10 +226,10 @@ enum class BatchTaskId {
     extract
 }
 
-class BatchTaskFiles(private val root: FsFile) {
+class BatchTaskFiles(private val root: AnyFsFile) {
     val outputFolder by lazy { root["output"] }
-    val sBatchScript by lazy { mFile(root["script.sh"].cpath, LinuxFileSystem) }
-    val sBatchScriptJson by lazy { mFile(sBatchScript.cpath + ".json", LinuxFileSystem) }
+    val sBatchScript by lazy { mFile(root["script.sh"].path, LinuxFileSystem) }
+    val sBatchScriptJson by lazy { mFile(sBatchScript.path + ".json", LinuxFileSystem) }
 }
 
 

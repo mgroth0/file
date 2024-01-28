@@ -4,7 +4,7 @@ package matt.file.ext
 
 import matt.collect.itr.recurse.DEFAULT_INCLUDE_SELF
 import matt.collect.itr.recurse.recurse
-import matt.file.FsFileImpl
+import matt.file.AnyFsFileImpl
 import matt.file.JioFile
 import matt.file.JvmMFile
 import matt.file.commons.DS_STORE
@@ -15,12 +15,12 @@ import matt.file.types.requireIsExistingFolder
 import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.EnforcedMin
 import matt.lang.file.toJFile
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.FileSystem
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.ensureSuffix
 import matt.lang.model.file.fName
 import matt.lang.userHome
 import matt.log.warn.warn
-import matt.prim.str.ensureSuffix
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -33,7 +33,7 @@ context(FileSystem)
 fun createTempDir(
     prefix: String = "tmp",
     suffix: String? = null,
-    directory: FsFile? = null
+    directory: AnyFsFile? = null
 ) =
     createTempDir(prefix, suffix, directory?.toJFile()).toMFile()
 
@@ -43,7 +43,7 @@ context(FileSystem)
 fun createTempFile(
     prefix: String = "tmp",
     suffix: String? = null,
-    directory: FsFile? = null
+    directory: AnyFsFile? = null
 ) = createTempFile(prefix, suffix, directory?.toJFile()).toMFile()
 
 
@@ -57,7 +57,7 @@ fun createTempFile(
 
 
 fun String.writeToFile(
-    f: FsFile,
+    f: AnyFsFile,
     mkdirs: Boolean = true
 ) {
     if (mkdirs) {
@@ -67,9 +67,9 @@ fun String.writeToFile(
 }
 
 
-fun <T : FsFile> Iterable<T>.filterHasExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
+fun <T : AnyFsFile> Iterable<T>.filterHasExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
 
-fun <T : FsFile> Sequence<T>.filterHasExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
+fun <T : AnyFsFile> Sequence<T>.filterHasExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
 
 //
 //@Suppress("unused")
@@ -141,10 +141,10 @@ var JvmMFile.writableForEveryone: Boolean
     }
 
 
-fun FsFile.relativeToOrSelf(base: FsFile): FsFile =
+fun AnyFsFile.relativeToOrSelf(base: AnyFsFile): AnyFsFile =
     with(fileSystem) { toJFile().relativeToOrSelf(base.toJFile()).toMFile() }
 
-fun FsFile.relativeToOrNull(base: FsFile): FsFile? =
+fun AnyFsFile.relativeToOrNull(base: AnyFsFile): AnyFsFile? =
     with(fileSystem) { toJFile().relativeToOrNull(base.toJFile())?.toMFile() }
 
 
@@ -193,16 +193,16 @@ val JvmMFile.unixNlink get() = Files.getAttribute(this.toJFile().toPath(), "unix
 val JvmMFile.hardLinkCount get() = unixNlink
 
 
-infix fun FsFile.hasExtension(extension: FileExtension) = mightHaveAnExtension && singleExtension == extension
+infix fun AnyFsFile.hasExtension(extension: FileExtension) = mightHaveAnExtension && singleExtension == extension
 
 
 infix fun JvmMFile.withExtension(ext: FileExtension): JvmMFile {
     with(fileSystem) {
-        if ("." !in this@withExtension.fName) mFile(this@withExtension.cpath + "." + ext)
+        if ("." !in this@withExtension.fName) mFile(this@withExtension.path + "." + ext)
         return when (this@withExtension.fName.substringAfterLast(".")) {
             ext.afterDot -> this@withExtension
             else         -> mFile(
-                this@withExtension.cpath.substringBeforeLast(".") + ext.withPrefixDot
+                this@withExtension.path.substringBeforeLast(".") + ext.withPrefixDot
             )
         }
     }
@@ -213,21 +213,21 @@ fun JvmMFile.appendln(line: String) {
     append(line + "\n")
 }
 
-fun FsFile.resRepExt(newExt: FileExtension) = mFile(
-    parentFile!!.cpath + JioFile.separator + toJFile().nameWithoutExtension + "." + newExt.afterDot,
+fun AnyFsFile.resRepExt(newExt: FileExtension) = mFile(
+    parent!!.path + JioFile.separator + toJFile().nameWithoutExtension + "." + newExt.afterDot,
     fileSystem = fileSystem
 )
 
-fun FsFile.verifyWithNoSingleExtension(): FsFileImpl {
+fun AnyFsFile.verifyWithNoSingleExtension(): AnyFsFileImpl {
     check(name.count { it == '.' } == 1)
     return mFile(
-        parentFile!!.cpath + JioFile.separator + toJFile().nameWithoutExtension,
+        parent!!.path + JioFile.separator + toJFile().nameWithoutExtension,
         fileSystem = fileSystem
     )
 }
 
 
-internal class IndexFolder(val f: FsFile) {
+internal class IndexFolder(val f: AnyFsFile) {
     val name = f.fName
     val index = name.toInt()
     operator fun plus(other: JvmMFile) = f[other]
@@ -308,15 +308,15 @@ fun JvmMFile.append(
 }
 
 
-fun FsFile.walk(direction: FileWalkDirection = FileWalkDirection.TOP_DOWN) =
+fun AnyFsFile.walk(direction: FileWalkDirection = FileWalkDirection.TOP_DOWN) =
     (this.toJFile()).walk(direction = direction).map {
         with(fileSystem) {
             it.toMFile()
         }
     }
 
-fun FsFile.walkTopDown() = walk(direction = FileWalkDirection.TOP_DOWN)
-fun FsFile.walkBottomUp() = walk(direction = FileWalkDirection.BOTTOM_UP)
+fun AnyFsFile.walkTopDown() = walk(direction = FileWalkDirection.TOP_DOWN)
+fun AnyFsFile.walkBottomUp() = walk(direction = FileWalkDirection.BOTTOM_UP)
 
 
 

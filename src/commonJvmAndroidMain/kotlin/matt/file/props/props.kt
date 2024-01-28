@@ -5,16 +5,16 @@ package matt.file.props
 import matt.file.props.propthing.saveConvertForProps
 import matt.file.toMacJioFile
 import matt.lang.file.toJFile
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import java.util.*
 
 
-fun Properties(file: FsFile): Properties = matt.collect.props.Properties(file.toMacJioFile().inputStream())
+fun Properties(file: AnyFsFile): Properties = matt.collect.props.Properties(file.toMacJioFile().inputStream())
 
-fun FsFile.loadProperties() = Properties(this)
+fun AnyFsFile.loadProperties() = Properties(this)
 
 
-fun Properties.writeToSortedWithoutTimestampComments(file: FsFile) {
+fun Properties.writeToSortedWithoutTimestampComments(file: AnyFsFile) {
     val rawProps = this
     /*
         * See: `${}` Properties::store

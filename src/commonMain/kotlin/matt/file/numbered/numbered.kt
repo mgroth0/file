@@ -3,11 +3,11 @@ package matt.file.numbered
 import matt.file.construct.mFile
 import matt.file.toIoFile
 import matt.lang.anno.MergeWith
-import matt.lang.model.file.FsFile
+import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.fName
 
 @MergeWith(id = 34206385)
-fun FsFile.next(): FsFile {
+fun AnyFsFile.next(): AnyFsFile {
     var ii = 0
     while (true) {
         val f = mFile(path + ii.toString(),fileSystem)
@@ -19,13 +19,13 @@ fun FsFile.next(): FsFile {
 }
 
 @MergeWith(id = 34206385)
-fun FsFile.withNumber(num: Int): FsFile {
+fun AnyFsFile.withNumber(num: Int): AnyFsFile {
     return if ("." !in fName) mFile(
-        "$filePath ($num)",
+        "$path ($num)",
         fileSystem
     )
     else mFile(
-        filePath.substringBeforeLast(".") + " ($num)." + filePath.substringAfterLast(
+        path.substringBeforeLast(".") + " ($num)." + path.substringAfterLast(
             "."
         ),
         fileSystem
@@ -33,7 +33,7 @@ fun FsFile.withNumber(num: Int): FsFile {
 }
 
 @MergeWith(id = 34206385)
-fun FsFile.numberedSequence() = sequence {
+fun AnyFsFile.numberedSequence() = sequence {
     yield(this@numberedSequence)
     var i = 2
     while (true) {
@@ -42,4 +42,4 @@ fun FsFile.numberedSequence() = sequence {
 }
 
 @MergeWith(id = 34206385)
-fun FsFile.firstNonExistingFromNumberedSequence() = numberedSequence().first { it.toIoFile().doesNotExist }
+fun AnyFsFile.firstNonExistingFromNumberedSequence() = numberedSequence().first { it.toIoFile().doesNotExist }
