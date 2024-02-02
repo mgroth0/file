@@ -96,9 +96,7 @@ val ComputeContext.shellPathContext
 
 @Serializable
 sealed class ExecutionContextImpl : ProcessContext {
-    final override fun toString(): String {
-        return this::class.simpleName!!
-    }
+    final override fun toString(): String = this::class.simpleName!!
 }
 
 @Serializable

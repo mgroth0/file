@@ -7,8 +7,8 @@ import matt.file.commons.DS_STORE
 import matt.file.construct.toMFile
 import matt.file.ext.walk
 import matt.model.data.hash.md5.MD5
-import java.security.MessageDigest
 import matt.prim.base64.encodeToURLBase64WithoutPadding
+import java.security.MessageDigest
 
 actual fun myMd5Digest(): MyMd5Digest = JvmMd5HashDigest()
 
@@ -24,7 +24,7 @@ fun JvmMFile.recursiveMD5(
     ignoreAllWithPathParts: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS,
     ignoreAllWithPathPartsContaining: List<String> = DEFAULT_IGNORE_ALL_WITH_PATH_PARTS_CONTAINING
 ): MD5 {
-    
+
     val md = myMd5Digest() as JvmMd5HashDigest
     md.updateFromFileRecursively(
         file = this,
@@ -78,9 +78,7 @@ class JvmMd5HashDigest : MyMd5Digest() {
         }
     }
 
-    override fun digest(): MD5 {
-        return MD5(md.digest().encodeToURLBase64WithoutPadding())
-    }
+    override fun digest(): MD5 = MD5(md.digest().encodeToURLBase64WithoutPadding())
 
 
 }

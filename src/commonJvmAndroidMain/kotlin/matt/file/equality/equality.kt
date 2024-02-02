@@ -13,9 +13,7 @@ import matt.lang.model.file.types.AnyFolder
 import matt.lang.model.file.types.asFolder
 import java.util.jar.JarFile
 
-infix fun JioFile.hasIdenticalDataToUsingHash(other: JioFile): Boolean {
-    return md5() == other.md5()
-}
+infix fun JioFile.hasIdenticalDataToUsingHash(other: JioFile): Boolean = md5() == other.md5()
 
 @SeeURL("https://stackoverflow.com/a/22819255/6596010")
 infix fun JioFile.hasIdenticalDataTo(other: JioFile): Boolean {
@@ -44,12 +42,10 @@ fun JioFile.isRecursivelyIdenticalToUsingHash(
     other: JioFile,
     ignoreDSStore: Boolean = true,
     ignoreFileNames: List<String> = listOf()
-): Boolean {
-    return recursiveMD5(ignoreDSStore = ignoreDSStore, ignoreFileNames = ignoreFileNames) == other.recursiveMD5(
-        ignoreDSStore = ignoreDSStore,
-        ignoreFileNames = ignoreFileNames
-    )
-}
+): Boolean = recursiveMD5(ignoreDSStore = ignoreDSStore, ignoreFileNames = ignoreFileNames) == other.recursiveMD5(
+    ignoreDSStore = ignoreDSStore,
+    ignoreFileNames = ignoreFileNames
+)
 
 private const val DEFAULT_IGNORE_DS_STORE = true
 

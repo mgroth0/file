@@ -95,9 +95,7 @@ class JioFile(
     override fun constructSameType(
         convertedFsFilePath: CaseSensitivityAwareFilePath,
         newFileSystem: FileSystem
-    ): JioFile {
-        return JioFile(convertedFsFilePath, newFileSystem)
-    }
+    ): JioFile = JioFile(convertedFsFilePath, newFileSystem)
 
 //    override val parent: JioFile? get() = super.parent?.let { JioFile(fsFile = it) }
 
@@ -117,13 +115,9 @@ class JioFile(
 
     operator fun plus(c: AnyFsFile) = get(c.path)
 
-    override fun relativeNamesFrom(other: JioFile): List<String> {
-        return this.relativeTo(other).path.split(separator).filter { it.isNotBlank() }
-    }
+    override fun relativeNamesFrom(other: JioFile): List<String> = this.relativeTo(other).path.split(separator).filter { it.isNotBlank() }
 
-    fun relativeNamesFromWithUserFiles(other: JioFile): List<String> {
-        return this.relativeToWithUserFiles(other).path.split(separator).filter { it.isNotBlank() }
-    }
+    fun relativeNamesFromWithUserFiles(other: JioFile): List<String> = this.relativeToWithUserFiles(other).path.split(separator).filter { it.isNotBlank() }
 
     override fun append(c: Char): java.lang.Appendable {
         this.toJFile().appendText(c.toString())
@@ -139,9 +133,7 @@ class JioFile(
         csq: CharSequence?,
         start: Int,
         end: Int
-    ): java.lang.Appendable {
-        return append(csq!!.subSequence(start, end))
-    }
+    ): java.lang.Appendable = append(csq!!.subSequence(start, end))
 
 
     //    override val filePath: String get() = super<FsFileImpl>.filePath
@@ -149,13 +141,9 @@ class JioFile(
 
     override fun inputStream() = userFile.inputStream()
 
-    override fun isDir(): Boolean {
-        return toJFile().isDirectory()
-    }
+    override fun isDir(): Boolean = toJFile().isDirectory()
 
-    override fun size(): ByteSize {
-        return ByteSize(Files.size(toJFile().toPath()))
-    }
+    override fun size(): ByteSize = ByteSize(Files.size(toJFile().toPath()))
 
     constructor(
         file: File,
@@ -220,8 +208,6 @@ class JioFile(
     }
 
     val identityGetter by lazy {
-
-
         when (fileSystem.caseSensitivity) {
             CaseSensitive   -> {
                 { s: String -> s }
@@ -246,9 +232,7 @@ class JioFile(
         }*/
 
 
-    fun siblings(): List<JioFile> {
-        return parent!!.listFiles()!!.filter { it != this }
-    }
+    fun siblings(): List<JioFile> = parent!!.listFiles()!!.filter { it != this }
 
     fun listFiles(): Array<JioFile>? = with(fileSystem) {
         toJFile().listFiles()?.map { it.toMFile() }?.toTypedArray()
@@ -271,12 +255,10 @@ class JioFile(
 
     operator fun compareTo(other: File): Int = idFile.compareTo((other.toMFile(fileSystem).idFile))
 
-    override fun load(): LoadResult<ByteArray> {
-        return try {
-            Success(bytes)
-        } catch (e: FileNotFoundException) {
-            NotFound(e)
-        }
+    override fun load(): LoadResult<ByteArray> = try {
+        Success(bytes)
+    } catch (e: FileNotFoundException) {
+        NotFound(e)
     }
 
     /*MUST KEEP THESE METHODS HERE AND NOT AS EXTENSIONS IN ORDER TO ROBUSTLY OVERRIDE KOTLIN.STDLIB'S DEFAULT FILE EXTENSIONS. OTHERWISE, I'D HAVE TO MICROMANAGE MY IMPORTS TO MAKE SURE I'M IMPORTING THE CORRECT EXTENSIONS*/
@@ -345,9 +327,7 @@ class JioFile(
         bufferSize: Int = DEFAULT_BUFFER_SIZE
     ): JioFile = with(fileSystem) { userFile.copyTo(target.toJFile(), overwrite, bufferSize).toMFile() }
 
-    override fun mkdirs(): Boolean {
-        return toJFile().mkdirs()
-    }
+    override fun mkdirs(): Boolean = toJFile().mkdirs()
 
     override fun mkdir() {
         toJFile().mkdir()

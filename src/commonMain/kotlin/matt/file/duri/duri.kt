@@ -28,5 +28,5 @@ private fun constructDataUri(
 private fun constructPreEncodedDataUri(
     mimeType: MimeType,
     base64EncodedData: String
-) = "data:${mimeType.identifier};base64,${base64EncodedData}"
+) = "data:${mimeType.identifier};base64,$base64EncodedData"
 

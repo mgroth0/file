@@ -19,18 +19,16 @@ fun AnyFsFile.next(): AnyFsFile {
 }
 
 @MergeWith(id = 34206385)
-fun AnyFsFile.withNumber(num: Int): AnyFsFile {
-    return if ("." !in fName) mFile(
-        "$path ($num)",
-        fileSystem
-    )
-    else mFile(
-        path.substringBeforeLast(".") + " ($num)." + path.substringAfterLast(
-            "."
-        ),
-        fileSystem
-    )
-}
+fun AnyFsFile.withNumber(num: Int): AnyFsFile = if ("." !in fName) mFile(
+    "$path ($num)",
+    fileSystem
+)
+else mFile(
+    path.substringBeforeLast(".") + " ($num)." + path.substringAfterLast(
+        "."
+    ),
+    fileSystem
+)
 
 @MergeWith(id = 34206385)
 fun AnyFsFile.numberedSequence() = sequence {

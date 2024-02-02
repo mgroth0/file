@@ -6,7 +6,7 @@ import matt.file.props.propthing.saveConvertForProps
 import matt.file.toMacJioFile
 import matt.lang.file.toJFile
 import matt.lang.model.file.AnyFsFile
-import java.util.*
+import java.util.Properties
 
 
 fun Properties(file: AnyFsFile): Properties = matt.collect.props.Properties(file.toMacJioFile().inputStream())
@@ -17,10 +17,10 @@ fun AnyFsFile.loadProperties() = Properties(this)
 fun Properties.writeToSortedWithoutTimestampComments(file: AnyFsFile) {
     val rawProps = this
     /*
-        * See: `${}` Properties::store
-        * https://stackoverflow.com/a/6184414/6596010
-        * Don't want timestamp comment. Also I want the entries sorted to avoid pointless commits
-        * */
+     * See: `${}` Properties::store
+     * https://stackoverflow.com/a/6184414/6596010
+     * Don't want timestamp comment. Also I want the entries sorted to avoid pointless commits
+     * */
     file.toJFile().outputStream().use { os ->
 
         val bw = os.bufferedWriter()
@@ -35,8 +35,8 @@ fun Properties.writeToSortedWithoutTimestampComments(file: AnyFsFile) {
                 true,
                 escUnicode
             )/* No need to escape embedded and trailing spaces for value, hence
-                   * pass false to flag.
-                   */
+             * pass false to flag.
+             */
             stringValue = saveConvertForProps(
                 stringValue,
                 false,

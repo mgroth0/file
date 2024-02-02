@@ -2,7 +2,6 @@
 
 package matt.file.test
 
-
 import matt.file.Src
 import matt.file.UnknownFileOrURL
 import matt.file.construct.toMFile
@@ -12,18 +11,18 @@ import matt.test.Tests
 import java.io.File
 import kotlin.test.Test
 
-class FileTests: Tests() {
+class FileTests : Tests() {
     @Test
-    fun constructClasses() = assertRunsInOneMinute {
-        Src("fake")
-        UnknownFileOrURL("abc")
-        @Suppress("ForbiddenMethodCall")
-        File("abc").toMFile(MacFileSystem)
-    }
+    fun constructClasses() =
+        assertRunsInOneMinute {
+            Src("fake")
+            UnknownFileOrURL("abc")
+            @Suppress("ForbiddenMethodCall")
+            File("abc").toMFile(MacFileSystem)
+        }
 
     @Test
-    fun initObjects() = assertRunsInOneMinute {
-
-    }
-
+    fun initObjects() =
+        assertRunsInOneMinute {
+        }
 }

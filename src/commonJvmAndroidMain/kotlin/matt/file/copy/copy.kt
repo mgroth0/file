@@ -22,7 +22,7 @@ import java.nio.file.attribute.DosFileAttributeView
 import java.nio.file.attribute.FileOwnerAttributeView
 import java.nio.file.attribute.PosixFileAttributeView
 import java.nio.file.attribute.UserDefinedFileAttributeView
-import java.util.*
+import java.util.EnumSet
 import kotlin.io.path.fileAttributesView
 import kotlin.io.path.fileAttributesViewOrNull
 
@@ -30,7 +30,7 @@ import kotlin.io.path.fileAttributesViewOrNull
 private const val DEFAULT_OVERWRITE = false
 
 @SeeURL("https://stackoverflow.com/a/18691793/6596010")
-        /*NOTE: This method is not thread-safe.*/
+/*NOTE: This method is not thread-safe.*/
 fun copyPathWithAttributes(
     source: JioFile,
     target: JioFile,

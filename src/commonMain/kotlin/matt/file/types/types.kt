@@ -69,7 +69,7 @@ fun <T : FileType> TypedFile<*,*>.checkType(t: T): TypedFile<T,*> {
 
 inline fun <reified T : FileType> TypedFile<*,*>.checkType(): TypedFile<T,*> {
     check(fileType.`is`(T::class)) {
-        "typecheck failed: ${this} is not a ${T::class} file"
+        "typecheck failed: $this is not a ${T::class} file"
     }
     @Suppress("UNCHECKED_CAST")
     return this as TypedFile<T,*>
@@ -147,9 +147,7 @@ fun AnyFsFile.getTypedFromExtension(): FileType {
 }
 
 
-fun ReadableFile<*>.requireIsExistingFolder(): Folder<*> {
-    return when {
-        this.isDir() -> asFolder()
-        else         -> error("$this is not a folder. Does it exist?")
-    }
+fun ReadableFile<*>.requireIsExistingFolder(): Folder<*> = when {
+    this.isDir() -> asFolder()
+    else         -> error("$this is not a folder. Does it exist?")
 }

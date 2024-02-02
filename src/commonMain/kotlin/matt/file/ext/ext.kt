@@ -7,9 +7,7 @@ import matt.model.code.delegate.SimpleGetter
 import matt.prim.str.lower
 import kotlin.jvm.JvmInline
 
-fun AnyFsFile.finalExtensionOrNull(): FileExtension? {
-    return fName.substringAfterLast(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }?.let(::FileExtension)
-}
+fun AnyFsFile.finalExtensionOrNull(): FileExtension? = fName.substringAfterLast(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }?.let(::FileExtension)
 
 val AnyFsFile.singleExtensionOrNullIfNoDots: FileExtension?
     get() {
@@ -53,6 +51,8 @@ enum class FrameFileType(val extension: FileExtension) {
 class FileExtension(input: String) {
 
     companion object {
+
+
 
         private val ext
             get() = matt.lang.delegation.provider {
@@ -157,6 +157,7 @@ class FileExtension(input: String) {
         val PPTX by ext
         val PPT by ext
 
+        fun kotlin(script: Boolean) = if (script) KTS else KT
 
     }
 
@@ -169,13 +170,9 @@ class FileExtension(input: String) {
     /*todo: allow this to be case sensitive*/
     private val id = input.removePrefix(".").lower()
 
-    override fun equals(other: Any?): Boolean {
-        return other is FileExtension && other.id == id
-    }
+    override fun equals(other: Any?): Boolean = other is FileExtension && other.id == id
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
+    override fun hashCode(): Int = id.hashCode()
 
     val afterDot = id
     val withPrefixDot = ".$id"
@@ -184,6 +181,8 @@ class FileExtension(input: String) {
     val isImage by lazy {
         this in IMAGE_EXTENSIONS
     }
+
+
 
 }
 

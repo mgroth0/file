@@ -36,6 +36,17 @@ fun JioFile.onChange(
         op()
     }
 }
+//
+//context(CoroutineScope)
+//fun JioFile.onChangeNew(
+//    pollInterval: Duration, /*lower will make cleanup faster, but probably use a bit more cpu*/
+//    op: Op
+//) {
+//    val prop = createRecursiveLastModifiedProp(checkInterval)
+//    prop.onChange {
+//        op()
+//    }
+//}
 
 context(CoroutineScope)
 fun JioFile.createRecursiveLastModifiedProp(checkInterval: Duration) = launchWatchProperty(checkInterval) {

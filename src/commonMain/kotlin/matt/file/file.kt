@@ -34,9 +34,7 @@ value class Src<F : ResolvableFileOrUrl<F>>(override val path: String) : Resolva
         TODO()
     }
 
-    override fun toString(): String {
-        return path
-    }
+    override fun toString(): String = path
 }
 
 class UnknownFileOrURL<F : ResolvableFileOrUrl<F>>(override val path: String) : ResolvableFileOrUrl<F> {
@@ -47,9 +45,7 @@ class UnknownFileOrURL<F : ResolvableFileOrUrl<F>>(override val path: String) : 
 
 }
 
-fun <F : FsFileBase<F>> F.root(): F {
-    return fileInSameFs(fileSystem.separator)
-}
+fun <F : FsFileBase<F>> F.root(): F = fileInSameFs(fileSystem.separator)
 
 fun FileSystem.root() = SimpleFsFileImpl(
     constructFilePath(separator),
@@ -86,9 +82,7 @@ class SimpleFsFileImpl(
     override fun constructSameType(
         convertedFsFilePath: CaseSensitivityAwareFilePath,
         newFileSystem: FileSystem
-    ): SimpleFsFileImpl {
-        return SimpleFsFileImpl(convertedFsFilePath, newFileSystem)
-    }
+    ): SimpleFsFileImpl = SimpleFsFileImpl(convertedFsFilePath, newFileSystem)
 
 }
 

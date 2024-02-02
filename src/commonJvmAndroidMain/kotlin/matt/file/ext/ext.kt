@@ -21,6 +21,7 @@ import matt.lang.model.file.ensureSuffix
 import matt.lang.model.file.fName
 import matt.lang.userHome
 import matt.log.warn.warn
+import matt.model.code.FormatterConfig
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -184,9 +185,7 @@ val JvmMFile.ensureAbsolute get() = apply { require(isAbsolute) { "$this is not 
 val JvmMFile.absolutePathEnforced: String get() = ensureAbsolute.path
 
 
-operator fun JvmMFile.plus(item: Char): JvmMFile {
-    return resolve(item.toString())
-}
+operator fun JvmMFile.plus(item: Char): JvmMFile = resolve(item.toString())
 
 
 val JvmMFile.unixNlink get() = Files.getAttribute(this.toJFile().toPath(), "unix:nlink").toString().toInt()
@@ -246,12 +245,10 @@ infix fun JvmMFile.withLastNameExtension(s: String) = mFile(abspath.removeSuffix
 fun JvmMFile.moveInto(
     newParent: JvmMFile,
     overwrite: Boolean = false
-): JvmMFile {
-    return (if (overwrite) Files.move(
-        this.toJFile().toPath(), (newParent + this.name).toJFile().toPath(), StandardCopyOption.REPLACE_EXISTING
-    )
-    else Files.move(this.toJFile().toPath(), (newParent + this.name).toJFile().toPath())).toFile().toMFile(fileSystem)
-}
+): JvmMFile = (if (overwrite) Files.move(
+    this.toJFile().toPath(), (newParent + this.name).toJFile().toPath(), StandardCopyOption.REPLACE_EXISTING
+)
+else Files.move(this.toJFile().toPath(), (newParent + this.name).toJFile().toPath())).toFile().toMFile(fileSystem)
 
 
 /*calling this 'mkdir' like I used to could cause errors since it shares a name with the shell command*/
@@ -321,3 +318,22 @@ fun AnyFsFile.walkBottomUp() = walk(direction = FileWalkDirection.BOTTOM_UP)
 
 
 
+
+
+interface KotlinFormatterConfigInter : FormatterConfig {
+    val linter: MyKotlinLinter
+    val script: Boolean
+}
+
+interface MyKotlinLinterProvider {
+    fun linterFor(
+        editorConfig: String
+    ): MyKotlinLinter
+}
+
+interface MyKotlinLinter {
+    fun formatKotlinCode(
+        kotlinCode: String,
+        asScript: Boolean,
+    ): String
+}

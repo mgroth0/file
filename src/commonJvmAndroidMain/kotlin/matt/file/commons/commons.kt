@@ -28,6 +28,7 @@ import matt.model.code.sys.NewMac
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.Windows
 import matt.model.code.sys.WindowsFileSystem
+import matt.prim.str.lower
 
 
 const val DEFAULT_GITHUB_BRANCH_NAME = "master"
@@ -155,6 +156,7 @@ val gradlePropertiesFile by lazy {
 
 
 val DS_STORE = FsFileNameImpl(".DS_Store", MacFileSystem)
+val DS_STORE_NAME_LOWER = DS_STORE.name.lower()
 const val MODULE_INFO_JAVA_NAME = "module-info.java"
 const val ANDROID_MANIFEST_NAME = "AndroidManifest.xml"
 const val BUILDSRC_FILE_NAME = "buildSrc"

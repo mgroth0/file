@@ -1,4 +1,4 @@
- 
+
 package matt.file.icongen
 
 enum class Icon {
