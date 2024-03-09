@@ -1,9 +1,9 @@
 package matt.file.equality
 
 import matt.file.JioFile
-import matt.file.commons.DS_STORE
-import matt.file.hash.md5
-import matt.file.hash.recursiveMD5
+import matt.file.commons.fnames.DS_STORE
+import matt.file.hash.common.md5
+import matt.file.hash.j.recursiveMD5
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.anno.optin.IncubatingMattCode
@@ -35,27 +35,29 @@ infix fun JioFile.hasIdenticalDataTo(other: JioFile): Boolean {
     } while (val1 >= 0)
 
     return true
-
 }
 
 fun JioFile.isRecursivelyIdenticalToUsingHash(
     other: JioFile,
     ignoreDSStore: Boolean = true,
     ignoreFileNames: List<String> = listOf()
-): Boolean = recursiveMD5(ignoreDSStore = ignoreDSStore, ignoreFileNames = ignoreFileNames) == other.recursiveMD5(
-    ignoreDSStore = ignoreDSStore,
-    ignoreFileNames = ignoreFileNames
-)
+): Boolean =
+    recursiveMD5(ignoreDSStore = ignoreDSStore, ignoreFileNames = ignoreFileNames) ==
+        other.recursiveMD5(
+            ignoreDSStore = ignoreDSStore,
+            ignoreFileNames = ignoreFileNames
+        )
 
 private const val DEFAULT_IGNORE_DS_STORE = true
 
 fun AnyFolder.isRecursivelyIdenticalTo(
     other: AnyFolder,
     ignoreDSStore: Boolean = DEFAULT_IGNORE_DS_STORE
-): Boolean = firstRecursiveDiff(
-    other,
-    ignoreDSStore
-) != null
+): Boolean =
+    firstRecursiveDiff(
+        other,
+        ignoreDSStore
+    ) != null
 
 fun AnyFolder.firstRecursiveDiff(
     other: AnyFolder,
@@ -64,34 +66,37 @@ fun AnyFolder.firstRecursiveDiff(
 ): String? {
 
     fun predicate(file: AnyFsFile) =
-        (!ignoreDSStore || !file.hasName(DS_STORE)) && file.fsFileName !in (ignoreFileNames.map {
-            FsFileNameImpl(it, fileSystem)
-        })
+        (!ignoreDSStore || !file.hasName(DS_STORE)) && file.fsFileName !in (
+            ignoreFileNames.map {
+                FsFileNameImpl(it, myFileSystem)
+            }
+        )
 
-    val files = this.toJioFile().listFiles()!!.filter(::predicate)
+    val files = toJioFile().listFiles()!!.filter(::predicate)
     val otherFiles = other.toJioFile().listFiles()!!.filter(::predicate)
 
-    if (files.size != otherFiles.size) return "${this.path}: size ${files.size} is different from ${otherFiles.size}"
+    if (files.size != otherFiles.size) return "$path: size ${files.size} is different from ${otherFiles.size}"
 
 
     files.forEach { file ->
-        check(file.isAbsolute)
+        check(file.isAbs)
         val otherFile =
-            otherFiles.firstOrNull { it.name == file.name } ?: return "${this.path}: otherFiles has no ${file.name}"
-        check(otherFile.isAbsolute)
+            otherFiles.firstOrNull { it.name == file.name } ?: return "$path: otherFiles has no ${file.name}"
+        check(otherFile.isAbs)
         if (file.isDir()) {
-            if (!otherFile.isDir()) return "${this.path}: $otherFile is not a dir"
-            val rResult = file.asFolder().firstRecursiveDiff(
-                otherFile.asFolder(),
-                ignoreDSStore = ignoreDSStore,
-                ignoreFileNames = ignoreFileNames
-            )
+            if (!otherFile.isDir()) return "$path: $otherFile is not a dir"
+            val rResult =
+                file.asFolder().firstRecursiveDiff(
+                    otherFile.asFolder(),
+                    ignoreDSStore = ignoreDSStore,
+                    ignoreFileNames = ignoreFileNames
+                )
             if (rResult != null) {
                 return rResult
             }
         } else {
-            if (otherFile.isDir()) return "${this.path}: $otherFile is a dir"
-            if (!file.hasIdenticalDataTo(otherFile)) return "${this.path}: $otherFile has different data"
+            if (otherFile.isDir()) return "$path: $otherFile is a dir"
+            if (!file.hasIdenticalDataTo(otherFile)) return "$path: $otherFile has different data"
         }
     }
 
@@ -104,9 +109,9 @@ fun AnyFolder.firstRecursiveDiff(
 
 @IncubatingMattCode
 fun JarFile.firstRecursiveDifference(other: JarFile): String? {
-    val mySize = this.size()
+    val mySize = size()
     val otherSize = other.size()
-    if (mySize!=otherSize) {
+    if (mySize != otherSize) {
         return "number of entries is different between $mySize, $otherSize"
     }
     val myEntries = entries()
@@ -131,7 +136,6 @@ fun JarFile.firstRecursiveDifference(other: JarFile): String? {
         if (myEntry.crc != otherEntry.crc) {
             return "crc of ${myEntry.name} is different between ${myEntry.crc},${otherEntry.crc}"
         }
-
     }
     return null
 }

@@ -22,5 +22,5 @@ enum class Icon() {
     loop(),
     slide(),
     folder(),
-    gradle();
+    gradle()
 }

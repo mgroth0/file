@@ -3,8 +3,9 @@ package matt.file.props.propthing
 import java.util.HexFormat
 
 
-/*THIS ORIGINAL CAME FROM java.util.properties CODE*/
-/*
+/*THIS ORIGINAL CAME FROM java.util.properties CODE
+
+
  * Converts unicodes to encoded &#92;uxxxx and escapes
  * special characters with a preceding slash
  */
@@ -14,7 +15,7 @@ internal fun saveConvertForProps(
     escapeUnicode: Boolean
 ): String {
     val len = theString.length
-    var bufLen = len*2
+    var bufLen = len * 2
     if (bufLen < 0) {
         bufLen = Int.MAX_VALUE
     }
@@ -22,8 +23,10 @@ internal fun saveConvertForProps(
     val hex = HexFormat.of().withUpperCase()
     for (x in 0 until len) {
         val aChar = theString[x]
-        // Handle common case first, selecting largest block that
-        // avoids the specials below
+        /*
+        Handle common case first, selecting largest block that
+        avoids the specials below
+         */
         if (aChar.code > 61 && aChar.code < 127) {
             if (aChar == '\\') {
                 outBuffer.append('\\')
@@ -64,12 +67,13 @@ internal fun saveConvertForProps(
                 outBuffer.append(aChar)
             }
 
-            else               -> if ((aChar.code < 0x0020 || aChar.code > 0x007e) and escapeUnicode) {
-                outBuffer.append("\\u")
-                outBuffer.append(hex.toHexDigits(aChar))
-            } else {
-                outBuffer.append(aChar)
-            }
+            else               ->
+                if ((aChar.code < 0x0020 || aChar.code > 0x007e) and escapeUnicode) {
+                    outBuffer.append("\\u")
+                    outBuffer.append(hex.toHexDigits(aChar))
+                } else {
+                    outBuffer.append(aChar)
+                }
         }
     }
     return outBuffer.toString()

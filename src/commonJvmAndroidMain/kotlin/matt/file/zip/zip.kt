@@ -2,13 +2,14 @@
 
 package matt.file.zip
 
-import matt.file.AnyFsFileImpl
+import matt.file.common.AnyFsFileImpl
 import matt.file.toJioFile
 import matt.lang.anno.DoesNotAlwaysWork
-import matt.lang.err
+import matt.lang.common.err
+import matt.lang.file.isNonDirSysRecognizedFile
 import matt.lang.file.toJFile
 import matt.lang.model.file.AnyFsFile
-import matt.log.warn.warn
+import matt.log.warn.common.warn
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -35,17 +36,19 @@ class ZipFiles {
 
         try {
             populateFilesList(dir)
-            //now zip files one by one
-            //create ZipOutputStream to write to the zip file
+            /*
+            now zip files one by one
+            create ZipOutputStream to write to the zip file
+             */
             val fos = FileOutputStream(zipDirName.toJFile())
             val zos = ZipOutputStream(fos)
             for (filePath in filesListInDir) {
                 println("Zipping $filePath")
-                //for ZipEntry we need to keep only relative file path, so we used substring on absolute path
-                check(dir.isAbsolute)
+                /* for ZipEntry we need to keep only relative file path, so we used substring on absolute path */
+                check(dir.isAbs)
                 val ze = ZipEntry(filePath.substring(dir.path.length + 1, filePath.length))
                 zos.putNextEntry(ze)
-                //read the file and write to ZipOutputStream
+                /* read the file and write to ZipOutputStream */
                 val fis = FileInputStream(filePath)
                 val buffer = ByteArray(1024)
                 warn("Before K2, I did not have to initialize len below...")
@@ -72,7 +75,7 @@ class ZipFiles {
     private fun populateFilesList(dir: AnyFsFile) {
         val files: Array<out AnyFsFile> = dir.toJioFile().listFiles()!!
         for (file in files) {
-            if (file.toJFile().isFile) filesListInDir.add(file.toJFile().absolutePath) else populateFilesList(file)
+            if (file.isNonDirSysRecognizedFile()) filesListInDir.add(file.abspath) else populateFilesList(file)
         }
     }
 
@@ -94,13 +97,13 @@ class ZipFiles {
             err(problem)
 
             try {
-                //create ZipOutputStream to write to the zip file
+                /* create ZipOutputStream to write to the zip file */
                 val fos = FileOutputStream(zipFileName)
                 val zos = ZipOutputStream(fos)
-                //add a new Zip Entry to the ZipOutputStream
+                /* add a new Zip Entry to the ZipOutputStream */
                 val ze: ZipEntry = ZipEntry(file.name)
                 zos.putNextEntry(ze)
-                //read the file and write to ZipOutputStream
+                /* read the file and write to ZipOutputStream */
                 val fis = FileInputStream(file.toJFile())
                 val buffer = ByteArray(1024)
                 warn("Before K2, I did not have to initialize len below...")
@@ -109,9 +112,9 @@ class ZipFiles {
                     zos.write(buffer, 0, len!!)
                 }
 
-                //Close the zip entry to write to zip file
+                /* Close the zip entry to write to zip file */
                 zos.closeEntry()
-                //Close resources
+                /* Close resources */
                 zos.close()
                 fis.close()
                 fos.close()

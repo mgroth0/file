@@ -1,23 +1,23 @@
 package matt.file.commons.rcommons
 
 import matt.file.JioFile
-import matt.file.commons.IDE_FOLDER
-import matt.file.commons.REGISTERED_FOLDER
+import matt.file.common.root
 import matt.file.commons.rcommons.OpenMindFiles.OM2_HOME
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om2
 import matt.file.commons.rcommons.OpenMindUserStorageLocation.om5
-import matt.file.construct.mFile
+import matt.file.commons.reg.IDE_FOLDER
+import matt.file.commons.reg.REGISTERED_FOLDER
+import matt.file.construct.common.mFile
 import matt.file.context.BriarContextFiles
-import matt.file.root
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.ResolvableFileOrUrl
-import matt.lang.versions.CURRENT_JPROFILER_VERSION
 import matt.model.code.sys.LinuxFileSystem
+import matt.model.data.release.CURRENT_JPROFILER_VERSION
 
 
-class OpenMindComputeContextFiles : BriarContextFiles() {
+class OpenMindComputeContextFiles : BriarContextFiles(LinuxFileSystem) {
     override val defaultPathPrefix: ResolvableFileOrUrl<*> = LinuxFileSystem.root()
     private val OM_LOCAL_FOLDER by lazy {
         mFile("/local", LinuxFileSystem)
@@ -31,7 +31,7 @@ class OpenMindComputeContextFiles : BriarContextFiles() {
         get() = OM_LOCAL_FOLDER["dataBriarGlobalCache"].toJioFile()
 
     override val libjprofilertiPath: String
-        get() = "/opt/jprofiler${CURRENT_JPROFILER_VERSION.substringBefore(".")}/bin/linux-x64/libjprofilerti.so"
+        get() = "/opt/jprofiler${CURRENT_JPROFILER_VERSION.major}/bin/linux-x64/libjprofilerti.so"
     override val jpenable: AnyFsFile
         get() = TODO()
     override val yourKitAttachScript: AnyFsFile
@@ -59,8 +59,6 @@ object OpenMindFiles {
 
 
     val OM_DATA_FOLD = OM2_OLD_HOME["data"]
-
-
 }
 
 enum class OpenMindUserStorageLocation {

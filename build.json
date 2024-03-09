@@ -1,49 +1,60 @@
 {
-  "type": "MultiPlatformModule",
-  "dependencies": [
-    {
-      "type": "Project",
-      "cfg": "commonMainApi",
-      "path": ":k:collect"
+    "type": "MultiPlatformModule",
+    "dependencies": [
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:collect"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonJvmAndroidMainApi",
+            "path": ":k:log"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:io"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:stream"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:model"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonMainApi",
+            "path": ":k:image"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonJvmAndroidMainApi",
+            "path": ":k:async:thread"
+        },
+        {
+            "type": "Project",
+            "cfg": "commonJvmAndroidTestImplementation",
+            "path": ":k:test"
+        },
+        {
+            "type": "Project",
+            "cfg": "androidInstrumentedTestImplementation",
+            "path": ":k:test:ainstrument"
+        }
+    ],
+    "jvm": {},
+    "js": {
+        "type": "lib"
     },
-    {
-      "type": "Project",
-      "cfg": "commonJvmAndroidMainApi",
-      "path": ":k:log"
+    "android": {
+        "type": "Lib"
     },
-    {
-      "type": "Project",
-      "cfg": "commonMainApi",
-      "path": ":k:io"
-    },
-    {
-      "type": "Project",
-      "cfg": "commonMainApi",
-      "path": ":k:model"
-    },
-    {
-      "type": "Project",
-      "cfg": "commonMainApi",
-      "path": ":k:image"
-    },
-    {
-      "type": "Project",
-      "cfg": "commonJvmAndroidMainApi",
-      "path": ":k:async:thread"
-    },
-    {
-      "type": "Project",
-      "cfg": "jvmTestImplementation",
-      "path": ":k:test"
+    "native": {
+        "type": "Lib"
     }
-  ],
-  "jvm": {
-  },
-  "js": {
-    "type": "lib"
-  },
-  "android": {
-    "type": "Lib"
-  },
-  "native": "LIB"
 }

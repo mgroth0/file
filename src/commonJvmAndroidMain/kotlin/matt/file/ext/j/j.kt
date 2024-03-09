@@ -1,32 +1,40 @@
-@file:JvmName("ExtJvmAndroidKt")
 
-package matt.file.ext
+package matt.file.ext.j
 
 import matt.collect.itr.recurse.DEFAULT_INCLUDE_SELF
 import matt.collect.itr.recurse.recurse
-import matt.file.AnyFsFileImpl
 import matt.file.JioFile
 import matt.file.JvmMFile
-import matt.file.commons.DS_STORE
+import matt.file.common.AnyFsFileImpl
+import matt.file.commons.fnames.DS_STORE
 import matt.file.construct.mFile
 import matt.file.construct.toMFile
+import matt.file.ext.ExtensionSet
+import matt.file.ext.FileExtension
+import matt.file.ext.finalExtension
+import matt.file.ext.mightHaveAnExtension
+import matt.file.ext.singleExtension
+import matt.file.ext.singleExtensionOrNullIfNoDots
 import matt.file.toJioFile
 import matt.file.types.requireIsExistingFolder
-import matt.lang.NOT_IMPLEMENTED
 import matt.lang.anno.EnforcedMin
+import matt.lang.common.NOT_IMPLEMENTED
 import matt.lang.file.toJFile
+import matt.lang.j.userHome
 import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.FileSystem
 import matt.lang.model.file.ensureSuffix
 import matt.lang.model.file.fName
-import matt.lang.userHome
-import matt.log.warn.warn
+import matt.log.warn.common.warn
 import matt.model.code.FormatterConfig
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
-
+import java.nio.file.attribute.FileTime
+import kotlin.io.path.appendText
+import kotlin.io.path.bufferedReader
+import kotlin.io.path.nameWithoutExtension
 
 
 context(FileSystem)
@@ -72,31 +80,12 @@ fun <T : AnyFsFile> Iterable<T>.filterHasExtension(ext: FileExtension) = filter 
 
 fun <T : AnyFsFile> Sequence<T>.filterHasExtension(ext: FileExtension) = filter { it.hasExtension(ext) }
 
-//
-//@Suppress("unused")
-//fun FilePath.startsWithAny(
-//    atLeastOne: FilePath,
-//    vararg more: FilePath
-//): Boolean {
-//    if (startsWith(atLeastOne)) return true
-//    more.forEach { if (startsWith(it)) return true }
-//    return false
-//}
-//
-//fun FilePath.startsWithAny(
-//    atLeastOne: FilePath,
-//    vararg more: FilePath
-//): Boolean {
-//    if (startsWith(atLeastOne.toPath())) return true
-//    more.forEach { if (startsWith(it.toPath())) return true }
-//    return false
-//}
 
-fun String.toPath(): Path = FileSystems.getDefault().getPath(this.trim())
+fun String.toPath(): Path = FileSystems.getDefault().getPath(trim())
 
 
 @EnforcedMin
-fun JvmMFile.hasAnyExtension(
+fun AnyFsFile.hasAnyExtension(
     extension: FileExtension,
     vararg extensions: FileExtension
 ): Boolean {
@@ -108,15 +97,28 @@ fun JvmMFile.hasAnyExtension(
     return false
 }
 
-fun JvmMFile.hasAnyExtension(
-    extensions: ExtensionSet,
+fun AnyFsFile.hasAnyExtension(
+    extensions: ExtensionSet
 ): Boolean {
     val ext = singleExtension
     return extensions.any { it == ext }
 }
 
-fun JvmMFile.hasAnyFinalExtension(
-    extensions: ExtensionSet,
+fun AnyFsFile.hasAnyFinalExtension(
+    extension: FileExtension,
+    vararg extensions: FileExtension
+): Boolean {
+
+    val ext = finalExtension
+
+    if (extension == ext) return true
+
+    return extensions.any { it == ext }
+}
+
+
+fun AnyFsFile.hasAnyFinalExtension(
+    extensions: ExtensionSet
 ): Boolean {
     val ext = finalExtension
     return extensions.any { it == ext }
@@ -143,10 +145,10 @@ var JvmMFile.writableForEveryone: Boolean
 
 
 fun AnyFsFile.relativeToOrSelf(base: AnyFsFile): AnyFsFile =
-    with(fileSystem) { toJFile().relativeToOrSelf(base.toJFile()).toMFile() }
+    with(myFileSystem) { toJFile().relativeToOrSelf(base.toJFile()).toMFile() }
 
 fun AnyFsFile.relativeToOrNull(base: AnyFsFile): AnyFsFile? =
-    with(fileSystem) { toJFile().relativeToOrNull(base.toJFile())?.toMFile() }
+    with(myFileSystem) { toJFile().relativeToOrNull(base.toJFile())?.toMFile() }
 
 
 fun JvmMFile.writeIfDifferent(s: String) {
@@ -165,14 +167,13 @@ fun JvmMFile.clearIfTooBigThenAppendText(s: String) {
         write("cleared because over 10KB") /*got an out of memory error when limit was set as 100KB*/
     }
     append(s)
-
 }
 
 
-fun JvmMFile.recursiveLastModified(): Long {
-    var greatest = 0L
+fun JvmMFile.recursiveLastModified(): FileTime {
+    var greatest = FileTime.fromMillis(0)
     recurse { it.listFiles()?.toList() ?: listOf() }.forEach {
-        greatest = listOf(greatest, it.toJFile().lastModified()).maxOrNull()!!
+        greatest = listOf(greatest, it.lastModified()).maxOrNull()!!
     }
     return greatest
 }
@@ -181,28 +182,30 @@ fun JvmMFile.recursiveLastModified(): Long {
 fun JvmMFile.recursiveChildren(includeSelf: Boolean = DEFAULT_INCLUDE_SELF) =
     recurse(includeSelf = includeSelf) { it.listFiles()?.toList() ?: listOf() }
 
-val JvmMFile.ensureAbsolute get() = apply { require(isAbsolute) { "$this is not absolute" } }
+val JvmMFile.ensureAbsolute get() = apply { require(isAbs) { "$this is not absolute" } }
 val JvmMFile.absolutePathEnforced: String get() = ensureAbsolute.path
 
 
 operator fun JvmMFile.plus(item: Char): JvmMFile = resolve(item.toString())
 
 
-val JvmMFile.unixNlink get() = Files.getAttribute(this.toJFile().toPath(), "unix:nlink").toString().toInt()
+val JvmMFile.unixNlink get() = Files.getAttribute(this, "unix:nlink").toString().toInt()
 val JvmMFile.hardLinkCount get() = unixNlink
 
 
-infix fun AnyFsFile.hasExtension(extension: FileExtension) = mightHaveAnExtension && singleExtension == extension
+val AnyFsFile.hasKotlinExtension get() = hasExtension(FileExtension.KT) || hasExtension(FileExtension.KTS)
+infix fun AnyFsFile.hasExtension(extension: FileExtension) = mightHaveAnExtension &&  singleExtension == extension
 
 
 infix fun JvmMFile.withExtension(ext: FileExtension): JvmMFile {
-    with(fileSystem) {
+    with(myFileSystem) {
         if ("." !in this@withExtension.fName) mFile(this@withExtension.path + "." + ext)
         return when (this@withExtension.fName.substringAfterLast(".")) {
             ext.afterDot -> this@withExtension
-            else         -> mFile(
-                this@withExtension.path.substringBeforeLast(".") + ext.withPrefixDot
-            )
+            else         ->
+                mFile(
+                    this@withExtension.path.substringBeforeLast(".") + ext.withPrefixDot
+                )
         }
     }
 }
@@ -212,16 +215,17 @@ fun JvmMFile.appendln(line: String) {
     append(line + "\n")
 }
 
-fun AnyFsFile.resRepExt(newExt: FileExtension) = mFile(
-    parent!!.path + JioFile.separator + toJFile().nameWithoutExtension + "." + newExt.afterDot,
-    fileSystem = fileSystem
-)
+fun AnyFsFile.resRepExt(newExt: FileExtension) =
+    mFile(
+        parent!!.path + JioFile.separator + toJioFile().nameWithoutExtension + "." + newExt.afterDot,
+        fileSystem = myFileSystem
+    )
 
 fun AnyFsFile.verifyWithNoSingleExtension(): AnyFsFileImpl {
     check(name.count { it == '.' } == 1)
     return mFile(
-        parent!!.path + JioFile.separator + toJFile().nameWithoutExtension,
-        fileSystem = fileSystem
+        parent!!.path + JioFile.separator + toJioFile().nameWithoutExtension,
+        fileSystem = myFileSystem
     )
 }
 
@@ -239,22 +243,26 @@ internal class IndexFolder(val f: AnyFsFile) {
 /*val JvmMFile.abspath: String
     get() = toJFile().absolutePath*/
 
-infix fun JvmMFile.withLastNameExtension(s: String) = mFile(abspath.removeSuffix(fileSystem.separator) + s, fileSystem)
+infix fun JvmMFile.withLastNameExtension(s: String) = mFile(abspath.removeSuffix(myFileSystem.separator) + s, myFileSystem)
 
 
 fun JvmMFile.moveInto(
     newParent: JvmMFile,
     overwrite: Boolean = false
-): JvmMFile = (if (overwrite) Files.move(
-    this.toJFile().toPath(), (newParent + this.name).toJFile().toPath(), StandardCopyOption.REPLACE_EXISTING
-)
-else Files.move(this.toJFile().toPath(), (newParent + this.name).toJFile().toPath())).toFile().toMFile(fileSystem)
+): JvmMFile =
+    (
+        if (overwrite) Files.move(
+            this, (newParent + name), StandardCopyOption.REPLACE_EXISTING
+        )
+        else Files.move(this, (newParent + name))
+    ).toFile().toMFile(myFileSystem)
 
 
 /*calling this 'mkdir' like I used to could cause errors since it shares a name with the shell command*/
-fun JvmMFile.mkFold(child: String) = resolve(child).apply {
-    mkdir()
-}.toJioFile().requireIsExistingFolder()
+fun JvmMFile.mkFold(child: String) =
+    resolve(child).apply {
+        mkdir()
+    }.toJioFile().requireIsExistingFolder()
 
 /*calling this 'mkdir' like I used to could cause errors since it shares a name with the shell command*/
 fun JvmMFile.mkFold(int: Int) = mkFold(int.toString())
@@ -262,7 +270,7 @@ fun JvmMFile.mkFold(int: Int) = mkFold(int.toString())
 fun JvmMFile.isImage() = singleExtensionOrNullIfNoDots?.isImage == true
 
 
-val JvmMFile.url get() = toJFile().toURI().toURL()
+val JvmMFile.url get() = toUri().toURL()
 
 
 fun JvmMFile.createIfNecessary(defaultText: String? = null): Boolean {
@@ -287,13 +295,14 @@ fun JvmMFile.endsWith(other: JvmMFile) = idFile.endsWith(other.idFile)
 fun JvmMFile.endsWith(other: String): Boolean = idFile.endsWith(identityGetter(other))
 
 fun JvmMFile.mkparents() = parent!!.mkdirs()
-fun JvmMFile.tildeString() = toString().replace(userHome.removeSuffix(fileSystem.separator), "~")
+fun JvmMFile.tildeString() = toString().replace(userHome.removeSuffix(myFileSystem.separator), "~")
 
-fun JvmMFile.isBlank() = bufferedReader().run {
-    val r = read() == -1
-    close()
-    r
-}
+fun JvmMFile.isBlank() =
+    bufferedReader().run {
+        val r = read() == -1
+        close()
+        r
+    }
 
 
 fun JvmMFile.append(
@@ -301,13 +310,13 @@ fun JvmMFile.append(
     mkdirs: Boolean = true
 ) {
     if (mkdirs) mkparents()
-    toJFile().appendText(s)
+    appendText(s)
 }
 
 
 fun AnyFsFile.walk(direction: FileWalkDirection = FileWalkDirection.TOP_DOWN) =
-    (this.toJFile()).walk(direction = direction).map {
-        with(fileSystem) {
+    (toJFile()).walk(direction = direction).map {
+        with(myFileSystem) {
             it.toMFile()
         }
     }
@@ -334,6 +343,6 @@ interface MyKotlinLinterProvider {
 interface MyKotlinLinter {
     fun formatKotlinCode(
         kotlinCode: String,
-        asScript: Boolean,
+        asScript: Boolean
     ): String
 }

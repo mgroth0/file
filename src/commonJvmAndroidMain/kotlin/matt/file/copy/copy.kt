@@ -3,10 +3,9 @@ package matt.file.copy
 import matt.file.JioFile
 import matt.file.construct.toMFile
 import matt.file.toJioFile
-import matt.lang.If
 import matt.lang.anno.SeeURL
-import matt.lang.file.toJFile
-import matt.lang.go
+import matt.lang.common.If
+import matt.lang.common.go
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.file.FileVisitOption
@@ -29,8 +28,8 @@ import kotlin.io.path.fileAttributesViewOrNull
 
 private const val DEFAULT_OVERWRITE = false
 
-@SeeURL("https://stackoverflow.com/a/18691793/6596010")
 /*NOTE: This method is not thread-safe.*/
+@SeeURL("https://stackoverflow.com/a/18691793/6596010")
 fun copyPathWithAttributes(
     source: JioFile,
     target: JioFile,
@@ -39,7 +38,7 @@ fun copyPathWithAttributes(
 ) {
     if (source.isDir()) {
         Files.walkFileTree(
-            source.toJFile().toPath(),
+            source,
             EnumSet.of(FileVisitOption.FOLLOW_LINKS),
             Int.MAX_VALUE,
             DirCopyFileVisitor(
@@ -50,11 +49,8 @@ fun copyPathWithAttributes(
             )
         )
     } else {
-//        println("copying $source to $target with attributes")
         copyFileWithAttributes(source, target, overwrite = overwrite, definitelyMkDirs = definitelyMkDirs)
-
     }
-
 }
 
 
@@ -68,15 +64,17 @@ private class DirCopyFileVisitor(
         dir: Path?,
         sourceBasic: BasicFileAttributes
     ): FileVisitResult {
-        val targetDir: Path = Files.createDirectories(
-            target.toJFile().toPath().resolve(source.toJFile().toPath().relativize(dir!!))
-        )
+        val targetDir: Path =
+            Files.createDirectories(
+                target.resolve(source.relativize(dir!!))
+            )
         dir.fileAttributesViewOrNull<AclFileAttributeView>()?.go { acl ->
             targetDir.fileAttributesView<AclFileAttributeView>().acl = acl.acl
         }
         dir.fileAttributesViewOrNull<DosFileAttributeView>()?.go { dosAttrs ->
-            val sourceDosAttrs = dosAttrs
-                .readAttributes()
+            val sourceDosAttrs =
+                dosAttrs
+                    .readAttributes()
             val targetDosAttrs = targetDir.fileAttributesView<DosFileAttributeView>()
             targetDosAttrs.setArchive(sourceDosAttrs.isArchive)
             targetDosAttrs.setHidden(sourceDosAttrs.isHidden)
@@ -94,10 +92,11 @@ private class DirCopyFileVisitor(
         dir.fileAttributesViewOrNull<UserDefinedFileAttributeView>()?.go { userAttrs ->
             val targetUser = targetDir.fileAttributesView<UserDefinedFileAttributeView>()
             for (key in userAttrs.list()) {
-                val buffer: ByteBuffer = ByteBuffer.allocate(
-                    userAttrs
-                        .size(key)
-                )
+                val buffer: ByteBuffer =
+                    ByteBuffer.allocate(
+                        userAttrs
+                            .size(key)
+                    )
                 userAttrs.read(key, buffer)
                 buffer.flip()
                 targetUser.write(key, buffer)
@@ -117,10 +116,11 @@ private class DirCopyFileVisitor(
         attrs: BasicFileAttributes?
     ): FileVisitResult {
         copyFileWithAttributes(
-            from = with(source.fileSystem) { file!!.toMFile().toJioFile() },
-            to = with(target.fileSystem) {
-                target.toJFile().toPath().resolve(source.toJFile().toPath().relativize(file)).toMFile()
-            },
+            from = with(source.myFileSystem) { file!!.toMFile().toJioFile() },
+            to =
+                with(target.myFileSystem) {
+                    target.resolve(source.relativize(file!!)).toMFile()
+                },
             overwrite = overwrite,
             definitelyMkDirs = definitelyMkDirs
         )
@@ -145,11 +145,11 @@ private fun copyFileWithAttributes(
     definitelyMkDirs: Boolean
 ) {
     if (definitelyMkDirs) {
-        Files.createDirectories(to.parent!!.toJFile().toPath())
+        Files.createDirectories(to.parent!!)
     }
     Files.copy(
-        from.toJFile().toPath(),
-        to.toJFile().toPath(),
+        from,
+        to,
         StandardCopyOption.COPY_ATTRIBUTES,
         *If(overwrite).then(StandardCopyOption.REPLACE_EXISTING)
     )

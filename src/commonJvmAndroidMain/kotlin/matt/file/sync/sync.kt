@@ -35,5 +35,4 @@ class SynchronizedFileManager(
         if (ensureFinal) didFinalWrite = true
         file.toJioFile().write(text)
     }
-
 }

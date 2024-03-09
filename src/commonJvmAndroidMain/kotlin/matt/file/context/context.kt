@@ -1,15 +1,14 @@
-@file:JvmName("ContextJvmAndroidKt")
 
 package matt.file.context
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import matt.file.JioFile
-import matt.file.commons.GRADLE_PROPERTIES_FILE_NAME
-import matt.file.commons.JPROFILER_CONFIG_NAME
-import matt.file.commons.USER_HOME
 import matt.file.commons.ec2commons.Ec2Files
+import matt.file.commons.fnames.FileNames.JPROFILER_CONFIG
+import matt.file.commons.fnames.GRADLE_PROPERTIES_FILE_NAME
 import matt.file.commons.hcommons.HerokuExecutionContextFiles
+import matt.file.commons.home.USER_HOME
 import matt.file.commons.lcommons.LocalComputeContextFiles
 import matt.file.commons.rcommons.OpenMindComputeContextFiles
 import matt.file.commons.rcommons.OpenMindFiles
@@ -26,15 +25,16 @@ import matt.lang.context.DEFAULT_MAC_PROGRAM_PATH_CONTEXT
 import matt.lang.context.DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
 import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.AnyResolvableFileOrUrl
-import matt.lang.model.file.MacFileSystem
+import matt.lang.model.file.MacDefaultFileSystem
+import matt.lang.model.file.UnixFileSystem
 import matt.lang.model.file.UnsafeFilePath
 import matt.lang.model.file.toUnsafe
-import matt.lang.platform.HasOs
-import matt.lang.platform.OS
-import matt.lang.platform.OsEnum
-import matt.lang.platform.OsEnum.Linux
-import matt.lang.platform.OsEnum.Mac
-import matt.lang.platform.OsEnum.Windows
+import matt.lang.platform.common.HasOs
+import matt.lang.platform.common.OsEnum
+import matt.lang.platform.common.OsEnum.Linux
+import matt.lang.platform.common.OsEnum.Mac
+import matt.lang.platform.common.OsEnum.Windows
+import matt.lang.platform.os.OS
 import matt.model.code.sys.LinuxFileSystem
 import matt.model.code.sys.OpenMind
 import matt.model.code.sys.WindowsFileSystem
@@ -47,15 +47,17 @@ interface UnsealedProcessContext : HasOs
 sealed interface ProcessContext : UnsealedProcessContext {
 
     companion object {
-        fun detect() = when (OS) {
-            matt.lang.platform.Windows -> TODO()
-            matt.lang.platform.Linux   -> when (thisMachine) {
-                is OpenMind -> OpenMindComputeContext
-                else        -> HerokuProcessContext
-            }
+        fun detect() =
+            when (OS) {
+                matt.lang.platform.common.Windows -> TODO()
+                matt.lang.platform.common.Linux   ->
+                    when (thisMachine) {
+                        is OpenMind -> OpenMindComputeContext
+                        else        -> HerokuProcessContext
+                    }
 
-            matt.lang.platform.Mac     -> LocalComputeContext
-        }
+                matt.lang.platform.common.Mac     -> LocalComputeContext
+            }
     }
 
     val files: ProcessContextFiles
@@ -64,15 +66,15 @@ sealed interface ProcessContext : UnsealedProcessContext {
     val javaHome: UnsafeFilePath?
     val taskLabel: String
     override val os: OsEnum
-
 }
 
 val ProcessContext.fileSystem
-    get() = when (os) {
-        Mac     -> MacFileSystem
-        Linux   -> LinuxFileSystem
-        Windows -> WindowsFileSystem
-    }
+    get() =
+        when (os) {
+            Mac     -> MacDefaultFileSystem
+            Linux   -> LinuxFileSystem
+            Windows -> WindowsFileSystem
+        }
 
 enum class ContainerType { Singularity, Docker }
 
@@ -87,11 +89,12 @@ sealed interface BriarComputeContext : ComputeContext {
 }
 
 val ComputeContext.shellPathContext
-    get() = when (os) {
-        Linux   -> DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
-        Mac     -> DEFAULT_MAC_PROGRAM_PATH_CONTEXT
-        Windows -> DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
-    }
+    get() =
+        when (os) {
+            Linux   -> DEFAULT_LINUX_PROGRAM_PATH_CONTEXT
+            Mac     -> DEFAULT_MAC_PROGRAM_PATH_CONTEXT
+            Windows -> DEFAULT_WINDOWS_PROGRAM_PATH_CONTEXT
+        }
 
 
 @Serializable
@@ -113,8 +116,6 @@ data object OpenMindComputeContext : ComputeContextImpl(), BriarComputeContext {
     override val files by lazy {
         OpenMindComputeContextFiles()
     }
-
-
 }
 
 @Serializable
@@ -130,7 +131,6 @@ data object LocalComputeContext : ComputeContextImpl(), BriarComputeContext {
     override val files by lazy {
         LocalComputeContextFiles()
     }
-
 }
 
 
@@ -179,29 +179,28 @@ abstract class ProcessContextFiles {
     val latestJpSnapshot get() = snapshotFolder["latest.jps"]
 }
 
-abstract class ComputeContextFiles : ProcessContextFiles() {
+abstract class ComputeContextFiles(private val fileSystem: UnixFileSystem) : ProcessContextFiles() {
 
 
     abstract val defaultPathPrefix: AnyResolvableFileOrUrl
     final override val om2Home
-        get() = mFile(
-            defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].path,
-            LinuxFileSystem
-        ).toJioFile()
+        get() =
+            mFile(
+                defaultPathPrefix[OpenMindFiles.OM2_HOME.path.removePrefix(JioFile.unixSeparator)].path,
+                fileSystem
+            ).toJioFile()
 
-    final override val jProfilerConfigFile: AnyFsFile get() = om2Home[JPROFILER_CONFIG_NAME]
+    final override val jProfilerConfigFile: AnyFsFile get() = om2Home[JPROFILER_CONFIG]
     val jarsFolder get() = om2Home["jars"]
 
     val rTaskOutputs get() = om2Home["rTaskOutputs"]
 
     private val batchTaskFolder get() = om2Home["batch"]
     fun batchTaskFiles(batchTaskId: BatchTaskId) = BatchTaskFiles(batchTaskFolder[batchTaskId.name])
-
-
 }
 
 
-abstract class BriarContextFiles : ComputeContextFiles() {
+abstract class BriarContextFiles(fileSystem: UnixFileSystem) : ComputeContextFiles(fileSystem) {
     companion object {
         const val BRIAR_EXTRACT_METADATA_FILE_NAME = "metadata.json"
         const val BRIAR_EXTRACT_MINIMAL_METADATA_FILE_NAME = "metadata_minimal.cbor"
@@ -226,8 +225,8 @@ enum class BatchTaskId {
 
 class BatchTaskFiles(private val root: AnyFsFile) {
     val outputFolder by lazy { root["output"] }
-    val sBatchScript by lazy { mFile(root["script.sh"].path, LinuxFileSystem) }
-    val sBatchScriptJson by lazy { mFile(sBatchScript.path + ".json", LinuxFileSystem) }
+    val sBatchScript by lazy { (root["script.sh"]) }
+    val sBatchScriptJson by lazy { mFile((sBatchScript.path + ".json"), root.myFileSystem) }
 }
 
 

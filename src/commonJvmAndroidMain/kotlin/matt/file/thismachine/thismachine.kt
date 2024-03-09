@@ -1,14 +1,16 @@
 package matt.file.thismachine
 
+import matt.lang.common.substringAfterSingular
+import matt.lang.common.substringBeforeSingular
 import matt.lang.function.Op
-import matt.lang.hostname
-import matt.lang.platform.ARCH
-import matt.lang.platform.Linux
-import matt.lang.platform.Mac
-import matt.lang.platform.OS
-import matt.lang.userHome
-import matt.lang.userName
-import matt.log.warn.warn
+import matt.lang.j.hostname
+import matt.lang.j.userHome
+import matt.lang.j.userName
+import matt.lang.platform.arch.ARCH
+import matt.lang.platform.common.Linux
+import matt.lang.platform.common.Mac
+import matt.lang.platform.os.OS
+import matt.log.warn.common.warn
 import matt.model.code.sys.NewMac
 import matt.model.code.sys.OldMac
 import matt.model.code.sys.OpenMind
@@ -46,58 +48,75 @@ val thisMachine by lazy {
 
         Linux -> {
             if (hostname == "vagrant") VagrantLinuxMachine()
-            else (if (hostname.startsWith(SLURM_NODE_HOSTNAME_PREFIX)) OpenMindSlurmNode(
+            else (
+                if (hostname.startsWith(SLURM_NODE_HOSTNAME_PREFIX)) OpenMindSlurmNode(
 
-                /*sometimes it looks like "node062", other times it looks like "node062.cm.cluster"*/
+                    /*sometimes it looks like "node062", other times it looks like "node062.cm.cluster"*/
 
-                hostname.substringAfter(SLURM_NODE_HOSTNAME_PREFIX).substringBefore(".").toInt()
-            ) else when (hostname) {
-                "polestar"             -> Polestar
-                "OPENMIND-DTN.MIT.EDU" -> OpenMindDTN
-                "openmind7"            -> OpenMindMainHeadNode
-                else                   -> null
-            })?.let {
+                    hostname.substringAfterSingular(SLURM_NODE_HOSTNAME_PREFIX).substringBeforeSingular(".").toInt()
+                ) else when (hostname) {
+                    "polestar"             -> Polestar
+                    "OPENMIND-DTN.MIT.EDU" -> OpenMindDTN
+                    "openmind7"            -> OpenMindMainHeadNode
+                    else                   -> null
+                }
+            )?.let {
                 OpenMind(
                     node = it,
                     sImgLoc = System.getenv("SINGULARITY_CONTAINER"),
                     slurmJobID = System.getenv("SLURM_JOBID")
                 )
-            } ?: UnknownLinuxMachine(hostname = hostname, homeDir = userHome, isAarch64 = lazy {
+            } ?: UnknownLinuxMachine(
+                hostname = hostname, homeDir = userHome,
+                isAarch64 =
+                    lazy {
 
-                val p = ProcessBuilder("dpkg", "--print-architecture").start()
-                try {
-                    /*processRepeaper.ensureProcessEndsWithThisJvm(p)*/
-                    p.inputStream.readAllBytes()
-                        .decodeToString()
-                        .trim() in listOf("arm64", "aarch64")
-                } finally {
-                    /*Dodge requirement to use ProcessReaper here, which would have devastating effects on everything that statically depends on theis variable*/
-                    p.destroyForcibly()
-                }
-            })
+                        val p = ProcessBuilder("dpkg", "--print-architecture").start()
+                        try {
+                            /*processRepeaper.ensureProcessEndsWithThisJvm(p)*/
+                            p.inputStream.readAllBytes()
+                                .decodeToString()
+                                .trim() in listOf("arm64", "aarch64")
+                        } finally {
+                            /*Dodge requirement to use ProcessReaper here, which would have devastating effects on everything that statically depends on theis variable*/
+                            p.destroyForcibly()
+                        }
+                    }
+            )
         }
 
 
-        Mac   -> when (ARCH) {
-            "aarch64" -> when (userName) {
-                NEW_MAC_USERNAME -> NewMac
-                else             -> UnknownSiliconMacMachine(homeDir = userHome)
+        Mac   ->
+            when (ARCH) {
+                "aarch64" ->
+                    when (userName) {
+                        NEW_MAC_USERNAME -> NewMac
+                        else             -> UnknownSiliconMacMachine(homeDir = userHome)
+                    }
+
+                else      -> {
+                    warn("arch($ARCH) is not aarch64. add this new value to the when expression and remove the \"else\"")
+                    when (userName) {
+                        OLD_MAC_USERNAME -> OldMac
+                        else             -> UnknownIntelMacMachine(homeDir = userHome)
+                    }
+                }
             }
 
-            else      -> {
-                warn("arch($ARCH) is not aarch64. add this new value to the when expression and remove the \"else\"")
-                when (userName) {
-                    OLD_MAC_USERNAME -> OldMac
-                    else             -> UnknownIntelMacMachine(homeDir = userHome)
-                }
-            }
-        }
+        else  ->
+            when (userName) {
+                /*
 
-        else  -> when (userName) {
-            /*THESE MADE ME TESTING ON WINDOWS MACHINES LESS RELIABLE*/
-            /*"mgrot"        -> GAMING_WINDOWS*/
-            /*"matthewgroth" -> WINDOWS_11_PAR_WORK*/
-            else -> UnknownWindowsMachine()
-        }
+                // THESE MADE ME TESTING ON WINDOWS MACHINES LESS RELIABLE
+
+                "mgrot"        -> GAMING_WINDOWS
+
+                "matthewgroth" -> WINDOWS_11_PAR_WORK
+
+                 */
+
+
+                else -> UnknownWindowsMachine()
+            }
     }
 }

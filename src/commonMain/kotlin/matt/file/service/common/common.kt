@@ -1,4 +1,4 @@
-package matt.file.service
+package matt.file.service.common
 
 import matt.model.code.idea.ServiceIdea
 import matt.model.obj.text.ReadableFile

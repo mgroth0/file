@@ -7,7 +7,10 @@ import matt.model.code.delegate.SimpleGetter
 import matt.prim.str.lower
 import kotlin.jvm.JvmInline
 
-fun AnyFsFile.finalExtensionOrNull(): FileExtension? = fName.substringAfterLast(".", missingDelimiterValue = "").takeIf { it.isNotEmpty() }?.let(::FileExtension)
+fun AnyFsFile.finalExtensionOrNull(): FileExtension? =
+    fName.substringAfterLast(".", missingDelimiterValue = "").takeIf {
+        it.isNotEmpty()
+    }?.let(::FileExtension)
 
 val AnyFsFile.singleExtensionOrNullIfNoDots: FileExtension?
     get() {
@@ -55,17 +58,20 @@ class FileExtension(input: String) {
 
 
         private val ext
-            get() = matt.lang.delegation.provider {
-                SimpleGetter(FileExtension(it.lower()))
-            }
+            get() =
+                matt.lang.delegation.provider {
+                    SimpleGetter(FileExtension(it.lower()))
+                }
 
         val C by ext
+        val H by ext
         val O by ext
         val A by ext
         val TEX by ext
         val AU3 by ext
         val JSON by ext
         val CBOR by ext
+        val HOCON by ext
         val APP by ext
         val PDF by ext
         val BIB by ext
@@ -97,6 +103,7 @@ class FileExtension(input: String) {
         val SVG by ext
         val PY by ext
         val PYC by ext
+        val EGG_INFO = FileExtension("egg-info")
         val JAVA by ext
         val GROOVY by ext
         val TXT by ext
@@ -118,18 +125,19 @@ class FileExtension(input: String) {
         val ICO by ext
         val ICNS by ext
         val NEF by ext
-        val IMAGE_EXTENSIONS = ExtensionSet(
-            PNG,
-            JPEG,
-            JPG,
-            SVG,
-            TIF,
-            TIFF,
-            ICN,
-            ICO,
-            ICNS,
-            NEF
-        )
+        val IMAGE_EXTENSIONS =
+            ExtensionSet(
+                PNG,
+                JPEG,
+                JPG,
+                SVG,
+                TIF,
+                TIFF,
+                ICN,
+                ICO,
+                ICNS,
+                NEF
+            )
 
 
         val IML by ext
@@ -157,8 +165,16 @@ class FileExtension(input: String) {
         val PPTX by ext
         val PPT by ext
 
-        fun kotlin(script: Boolean) = if (script) KTS else KT
+        val RST by ext
 
+        val CSV by ext
+        val TSV by ext
+
+        val DYLIB by ext
+
+        val PLIST by ext
+
+        fun kotlin(script: Boolean) = if (script) KTS else KT
     }
 
     init {
@@ -181,9 +197,6 @@ class FileExtension(input: String) {
     val isImage by lazy {
         this in IMAGE_EXTENSIONS
     }
-
-
-
 }
 
 @JvmInline

@@ -3,7 +3,7 @@ package matt.file.types
 import matt.file.ext.FileExtension
 import matt.file.ext.mightHaveAnExtension
 import matt.file.ext.singleExtension
-import matt.lang.`is`
+import matt.lang.common.`is`
 import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.types.Applescript
 import matt.lang.model.file.types.BinaryApplescript
@@ -51,50 +51,37 @@ import matt.model.obj.text.ReadableFile
 
 
 fun typedFile(fsFile: AnyFsFile) = fsFile.typed()
-fun AnyFsFile.typed() = when (this) {
-    is TypedFile<*, *> -> this
-    else               -> TypedFile(this, getTypedFromExtension())
-}
+fun AnyFsFile.typed() =
+    when (this) {
+        is TypedFile<*, *> -> this
+        else               -> TypedFile(this, getTypedFromExtension())
+    }
 
 fun AnyFsFile.verifyToImagePath() = TypedFile(this, getTypedFromExtension() as RasterImage)
 
 
 fun <T : FileType> AnyFsFile.checkType(t: T) = typed().checkType(t)
 inline fun <reified T : FileType> AnyFsFile.checkType() = typed().checkType<T>()
-fun <T : FileType> TypedFile<*,*>.checkType(t: T): TypedFile<T,*> {
+fun <T : FileType> TypedFile<*, *>.checkType(t: T): TypedFile<T, *> {
     check(fileType.`is`(t::class))
     @Suppress("UNCHECKED_CAST")
-    return this as TypedFile<T,*>
+    return this as TypedFile<T, *>
 }
 
-inline fun <reified T : FileType> TypedFile<*,*>.checkType(): TypedFile<T,*> {
+inline fun <reified T : FileType> TypedFile<*, *>.checkType(): TypedFile<T, *> {
     check(fileType.`is`(T::class)) {
         "typecheck failed: $this is not a ${T::class} file"
     }
     @Suppress("UNCHECKED_CAST")
-    return this as TypedFile<T,*>
+    return this as TypedFile<T, *>
 }
 
 
-fun <T : FileType> AnyFsFile.forceType(t: T): TypedFile<T,*> {
+fun <T : FileType> AnyFsFile.forceType(t: T): TypedFile<T, *> {
     @Suppress("UNCHECKED_CAST")
-    return (this as? TypedFile<T,*>)?.takeIf { fileType == t } ?: TypedFile(this, t)
-//    if ((this as? TypedFile<*>)?.fileType == t) return this
-//    check(fileType.`is`(t::class))
-//    @Suppress("UNCHECKED_CAST")
-//    return this as TypedFile<T>
+    return (this as? TypedFile<T, *>)?.takeIf { fileType == t } ?: TypedFile(this, t)
 }
 
-//inline fun <reified T : FileType> FsFile.forceType(): TypedFile<T> {
-//
-//
-//
-//    check(fileType.`is`(T::class)) {
-//        "typecheck failed: ${this} is not a ${T::class} file"
-//    }
-//    @Suppress("UNCHECKED_CAST")
-//    return this as TypedFile<T>
-//}
 
 
 fun AnyFsFile.getTypedFromExtension(): FileType {
@@ -103,51 +90,51 @@ fun AnyFsFile.getTypedFromExtension(): FileType {
 
     return when {
         !mightHaveAnExtension -> FolderType
-        else                  -> when (singleExtension) {
-            FileExtension.KT                       -> Kotlin
-            FileExtension.PY                       -> Python
-            FileExtension.JAVA                     -> Java
-            FileExtension.GROOVY                   -> Groovy
-            FileExtension.SH                       -> UnknownShellType
-            FileExtension.ZSHRC, FileExtension.ZSH -> Zsh
-            FileExtension.SCPT                     -> BinaryApplescript
-            FileExtension.APPLESCRIPT              -> Applescript
-            FileExtension.ZIP                      -> Zip
-            FileExtension.JAR                      -> Jar
-            FileExtension.KEXE                     -> Kexe
-            FileExtension.EXE                      -> Exe
-            FileExtension.DMG                      -> Dmg
-            FileExtension.JSON                     -> Json
-            FileExtension.CBOR                     -> Cbor
-            FileExtension.XML                      -> Xml
-            FileExtension.HTML                     -> Html
-            FileExtension.MD                       -> Markdown
-            FileExtension.PNG                      -> Png
-            FileExtension.JPG, FileExtension.JPEG  -> Jpg
-            FileExtension.TIF, FileExtension.TIFF  -> Tiff
-            FileExtension.SVG                      -> Svg
-            FileExtension.ICN                      -> Icns
-            FileExtension.ICO                      -> Ico
-            FileExtension.MP3                      -> Mp3
-            FileExtension.MP4                      -> Mp4
-            FileExtension.PDF                      -> Pdf
-            FileExtension.PROPERTIES               -> Properties
-            FileExtension.YAML, FileExtension.YML  -> Yaml
-            FileExtension.TOML                     -> Toml
-            FileExtension.LOG                      -> Log
-            FileExtension.TXT                      -> Txt
-            FileExtension.DS_Store                 -> DsStore
-            FileExtension.PPT                      -> Ppt
-            FileExtension.PPTX                     -> Pptx
-            else                                   -> Unknown
-        }
+        else                  ->
+            when (singleExtension) {
+                FileExtension.KT                       -> Kotlin
+                FileExtension.PY                       -> Python
+                FileExtension.JAVA                     -> Java
+                FileExtension.GROOVY                   -> Groovy
+                FileExtension.SH                       -> UnknownShellType
+                FileExtension.ZSHRC, FileExtension.ZSH -> Zsh
+                FileExtension.SCPT                     -> BinaryApplescript
+                FileExtension.APPLESCRIPT              -> Applescript
+                FileExtension.ZIP                      -> Zip
+                FileExtension.JAR                      -> Jar
+                FileExtension.KEXE                     -> Kexe
+                FileExtension.EXE                      -> Exe
+                FileExtension.DMG                      -> Dmg
+                FileExtension.JSON                     -> Json
+                FileExtension.CBOR                     -> Cbor
+                FileExtension.XML                      -> Xml
+                FileExtension.HTML                     -> Html
+                FileExtension.MD                       -> Markdown
+                FileExtension.PNG                      -> Png
+                FileExtension.JPG, FileExtension.JPEG  -> Jpg
+                FileExtension.TIF, FileExtension.TIFF  -> Tiff
+                FileExtension.SVG                      -> Svg
+                FileExtension.ICN                      -> Icns
+                FileExtension.ICO                      -> Ico
+                FileExtension.MP3                      -> Mp3
+                FileExtension.MP4                      -> Mp4
+                FileExtension.PDF                      -> Pdf
+                FileExtension.PROPERTIES               -> Properties
+                FileExtension.YAML, FileExtension.YML  -> Yaml
+                FileExtension.TOML                     -> Toml
+                FileExtension.LOG                      -> Log
+                FileExtension.TXT                      -> Txt
+                FileExtension.DS_Store                 -> DsStore
+                FileExtension.PPT                      -> Ppt
+                FileExtension.PPTX                     -> Pptx
+                else                                   -> Unknown
+            }
     }
-
-
 }
 
 
-fun ReadableFile<*>.requireIsExistingFolder(): Folder<*> = when {
-    this.isDir() -> asFolder()
-    else         -> error("$this is not a folder. Does it exist?")
-}
+fun ReadableFile<*>.requireIsExistingFolder(): Folder<*> =
+    when {
+        isDir() -> asFolder()
+        else         -> error("$this is not a folder. Does it exist?")
+    }

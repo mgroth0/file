@@ -27,6 +27,4 @@ class WatchTests : Tests() {
             assertNull(e.cause)
         }
     }
-
-
 }

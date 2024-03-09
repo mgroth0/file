@@ -1,12 +1,13 @@
 package matt.file.log
 
 import matt.file.JioFile
-import matt.file.toIoFile
+import matt.file.expects.file.toIoFile
 import matt.file.toJioFile
+import matt.lang.common.go
 import matt.lang.function.Produce
-import matt.lang.go
 import matt.lang.model.file.AnyFsFile
-import matt.log.AppendLogger
+import matt.log.j.AppendLogger
+import kotlin.io.path.bufferedWriter
 
 
 class LogFileLogger(

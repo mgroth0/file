@@ -1,15 +1,15 @@
 package matt.file.ext.backup
 
 import matt.file.JvmMFile
-import matt.file.commons.BACKUP_FOLDER
-import matt.file.ext.mkparents
+import matt.file.commons.reg.BACKUP_FOLDER
+import matt.file.ext.j.mkparents
 import matt.file.ext.weird.getNextSubIndexedFile
 import matt.file.toJioFile
 import matt.lang.file.toJFile
 import matt.lang.model.file.AnyFsFile
 
 val AnyFsFile.defaultBackupFolder get() = parent!! + "backups"
-val AnyFsFile.registeredBackupFolder get() = BACKUP_FOLDER["by_path"][path.removePrefix(fileSystem.separator)]
+val AnyFsFile.registeredBackupFolder get() = BACKUP_FOLDER["by_path"][path.removePrefix(myFileSystem.separator)]
 
 fun JvmMFile.backup(
     text: String? = null,
@@ -19,26 +19,25 @@ fun JvmMFile.backup(
 }
 
 fun JvmMFile.doubleBackupWrite(
-    s: String,
+    s: String
 ) {
 
     mkparents()
-    toJFile().createNewFile()
+    createNewFile()
 
-    /*this is important. Extra security is always good.*/
+    /*this is important. Extra security is always good.
 
-    /*now I'm backing up version before AND after the change. */
+    now I'm backing up version before AND after the change.
 
-    /*yes, there is redundancy. In some contexts redundancy is good. Safe.*/
+    yes, there is redundancy. In some contexts redundancy is good. Safe.
 
-    /*Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
+    Obviously this is a reaction to a mistake I made (that turned out ok in the end, but scared me a lot).*/
 
     val old = readText()
 
     doBackupWork(text = old, backupFolder = defaultBackupFolder)
     writeText(s)
     doBackupWork(text = old, backupFolder = defaultBackupFolder)
-
 }
 
 
@@ -59,5 +58,4 @@ private fun JvmMFile.doBackupWork(
     val realText = text ?: readText()
 
     backupTarget.text = realText
-
 }
