@@ -2,26 +2,26 @@ package matt.file.type
 
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
+import matt.file.model.file.types.Applescript
+import matt.file.model.file.types.BinaryApplescript
+import matt.file.model.file.types.Cbor
+import matt.file.model.file.types.Icns
+import matt.file.model.file.types.Ico
+import matt.file.model.file.types.Jar
+import matt.file.model.file.types.Json
+import matt.file.model.file.types.Kexe
+import matt.file.model.file.types.Kotlin
+import matt.file.model.file.types.Log
+import matt.file.model.file.types.Markdown
+import matt.file.model.file.types.Mp4
+import matt.file.model.file.types.Png
+import matt.file.model.file.types.Python
+import matt.file.model.file.types.Svg
+import matt.file.model.file.types.Txt
+import matt.file.model.file.types.UnknownShellType
 import matt.file.types.checkType
 import matt.file.types.typedFile
 import matt.lang.model.file.FileSystem
-import matt.lang.model.file.types.Applescript
-import matt.lang.model.file.types.BinaryApplescript
-import matt.lang.model.file.types.Cbor
-import matt.lang.model.file.types.Icns
-import matt.lang.model.file.types.Ico
-import matt.lang.model.file.types.Jar
-import matt.lang.model.file.types.Json
-import matt.lang.model.file.types.Kexe
-import matt.lang.model.file.types.Kotlin
-import matt.lang.model.file.types.Log
-import matt.lang.model.file.types.Markdown
-import matt.lang.model.file.types.Mp4
-import matt.lang.model.file.types.Png
-import matt.lang.model.file.types.Python
-import matt.lang.model.file.types.Svg
-import matt.lang.model.file.types.Txt
-import matt.lang.model.file.types.UnknownShellType
 
 
 context(FileSystem)

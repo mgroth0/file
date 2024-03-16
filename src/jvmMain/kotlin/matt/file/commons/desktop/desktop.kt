@@ -6,13 +6,13 @@ import matt.file.commons.reg.REGISTERED_FOLDER
 import matt.file.commons.reg.TEST_DATA_FOLDER
 import matt.file.construct.mFile
 import matt.file.ext.FileExtension
+import matt.file.model.file.types.asFolder
 import matt.file.numbered.NumberedFiles
 import matt.file.thismachine.thisMachine
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.assertions.require.requireIs
 import matt.lang.j.userName
-import matt.lang.model.file.types.asFolder
 import matt.lang.sysprop.props.UserHome
 import matt.model.code.sys.Linux
 import matt.model.code.sys.Mac

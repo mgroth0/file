@@ -1,13 +1,13 @@
 package matt.file.type.kt
 
+import matt.file.model.file.types.Kotlin.FILE_ANNO_LINE_MARKER
+import matt.file.model.file.types.KotlinFile
 import matt.file.toJioFile
 import matt.lang.classname.common.SimpleClassName
 import matt.lang.classname.common.simpleClassName
 import matt.lang.common.substringAfterSingular
 import matt.lang.common.substringBeforeSingular
 import matt.lang.common.substringBeforeSingularOrNone
-import matt.lang.model.file.types.Kotlin.FILE_ANNO_LINE_MARKER
-import matt.lang.model.file.types.KotlinFile
 import kotlin.io.path.useLines
 
 

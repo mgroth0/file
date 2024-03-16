@@ -2,10 +2,10 @@ package matt.file.numbered
 
 import matt.file.expects.file.toIoFile
 import matt.file.ext.FileExtension
+import matt.file.model.file.types.AnyFolder
 import matt.lang.anno.MergeWith
 import matt.lang.common.substringBeforeSingular
 import matt.lang.model.file.fName
-import matt.lang.model.file.types.AnyFolder
 import matt.prim.str.isInt
 
 @MergeWith(id = 34206385)

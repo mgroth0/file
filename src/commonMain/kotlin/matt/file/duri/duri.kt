@@ -2,8 +2,8 @@ package matt.file.duri
 
 import matt.lang.anno.Optimization
 import matt.lang.mime.MimeData
+import matt.lang.mime.MimeType
 import matt.lang.mime.TextMimeData
-import matt.lang.model.file.types.MimeType
 import matt.prim.base64.encodeToBase64
 
 

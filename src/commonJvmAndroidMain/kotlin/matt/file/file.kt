@@ -55,6 +55,7 @@ import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+import java.nio.file.StandardOpenOption
 import java.nio.file.WatchEvent.Kind
 import java.nio.file.WatchEvent.Modifier
 import java.nio.file.WatchKey
@@ -252,7 +253,17 @@ class JioFile(
     }
 
     fun readChannel() = FileChannel.open(this)
-    fun writeChannel(): FileChannel = RandomAccessFile(toJFile(), "rw").channel
+    fun oldRandomAccessReadWriteChannel(): FileChannel = RandomAccessFile(toJFile(), "rw").channel
+    fun openWriteChannel(
+        createIfDoesNotExist: Boolean = false,
+        truncateExisting: Boolean = false
+    ) = FileChannel.open(
+        this,
+        StandardOpenOption.WRITE,
+        *If(createIfDoesNotExist).then(StandardOpenOption.CREATE),
+        *If(truncateExisting).then(StandardOpenOption.TRUNCATE_EXISTING)
+    )
+
 
     val fName: String get() = name
 

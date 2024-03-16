@@ -4,13 +4,13 @@ import matt.file.JioFile
 import matt.file.commons.fnames.DS_STORE
 import matt.file.hash.common.md5
 import matt.file.hash.j.recursiveMD5
+import matt.file.model.file.types.AnyFolder
+import matt.file.model.file.types.asFolder
 import matt.file.toJioFile
 import matt.lang.anno.SeeURL
 import matt.lang.anno.optin.IncubatingMattCode
 import matt.lang.model.file.AnyFsFile
 import matt.lang.model.file.FsFileNameImpl
-import matt.lang.model.file.types.AnyFolder
-import matt.lang.model.file.types.asFolder
 import java.util.jar.JarFile
 
 infix fun JioFile.hasIdenticalDataToUsingHash(other: JioFile): Boolean = md5() == other.md5()

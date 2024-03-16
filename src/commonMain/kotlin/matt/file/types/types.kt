@@ -3,50 +3,49 @@ package matt.file.types
 import matt.file.ext.FileExtension
 import matt.file.ext.mightHaveAnExtension
 import matt.file.ext.singleExtension
-import matt.lang.common.`is`
+import matt.file.model.file.types.Applescript
+import matt.file.model.file.types.BinaryApplescript
+import matt.file.model.file.types.Cbor
+import matt.file.model.file.types.Dmg
+import matt.file.model.file.types.DsStore
+import matt.file.model.file.types.Exe
+import matt.file.model.file.types.FileType
+import matt.file.model.file.types.Folder
+import matt.file.model.file.types.FolderType
+import matt.file.model.file.types.Groovy
+import matt.file.model.file.types.Html
+import matt.file.model.file.types.Icns
+import matt.file.model.file.types.Ico
+import matt.file.model.file.types.Jar
+import matt.file.model.file.types.Java
+import matt.file.model.file.types.Jpg
+import matt.file.model.file.types.Json
+import matt.file.model.file.types.Kexe
+import matt.file.model.file.types.Kotlin
+import matt.file.model.file.types.Log
+import matt.file.model.file.types.Markdown
+import matt.file.model.file.types.Mp3
+import matt.file.model.file.types.Mp4
+import matt.file.model.file.types.Pdf
+import matt.file.model.file.types.Png
+import matt.file.model.file.types.Ppt
+import matt.file.model.file.types.Pptx
+import matt.file.model.file.types.Properties
+import matt.file.model.file.types.Python
+import matt.file.model.file.types.RasterImage
+import matt.file.model.file.types.Svg
+import matt.file.model.file.types.Tiff
+import matt.file.model.file.types.Toml
+import matt.file.model.file.types.Txt
+import matt.file.model.file.types.TypedFile
+import matt.file.model.file.types.Unknown
+import matt.file.model.file.types.UnknownShellType
+import matt.file.model.file.types.Xml
+import matt.file.model.file.types.Yaml
+import matt.file.model.file.types.Zip
+import matt.file.model.file.types.Zsh
+import matt.file.model.file.types.asFolder
 import matt.lang.model.file.AnyFsFile
-import matt.lang.model.file.types.Applescript
-import matt.lang.model.file.types.BinaryApplescript
-import matt.lang.model.file.types.Cbor
-import matt.lang.model.file.types.Dmg
-import matt.lang.model.file.types.DsStore
-import matt.lang.model.file.types.Exe
-import matt.lang.model.file.types.FileType
-import matt.lang.model.file.types.Folder
-import matt.lang.model.file.types.FolderType
-import matt.lang.model.file.types.Groovy
-import matt.lang.model.file.types.Html
-import matt.lang.model.file.types.Icns
-import matt.lang.model.file.types.Ico
-import matt.lang.model.file.types.Jar
-import matt.lang.model.file.types.Java
-import matt.lang.model.file.types.Jpg
-import matt.lang.model.file.types.Json
-import matt.lang.model.file.types.Kexe
-import matt.lang.model.file.types.Kotlin
-import matt.lang.model.file.types.Log
-import matt.lang.model.file.types.Markdown
-import matt.lang.model.file.types.Mp3
-import matt.lang.model.file.types.Mp4
-import matt.lang.model.file.types.Pdf
-import matt.lang.model.file.types.Png
-import matt.lang.model.file.types.Ppt
-import matt.lang.model.file.types.Pptx
-import matt.lang.model.file.types.Properties
-import matt.lang.model.file.types.Python
-import matt.lang.model.file.types.RasterImage
-import matt.lang.model.file.types.Svg
-import matt.lang.model.file.types.Tiff
-import matt.lang.model.file.types.Toml
-import matt.lang.model.file.types.Txt
-import matt.lang.model.file.types.TypedFile
-import matt.lang.model.file.types.Unknown
-import matt.lang.model.file.types.UnknownShellType
-import matt.lang.model.file.types.Xml
-import matt.lang.model.file.types.Yaml
-import matt.lang.model.file.types.Zip
-import matt.lang.model.file.types.Zsh
-import matt.lang.model.file.types.asFolder
 import matt.model.obj.text.ReadableFile
 
 
@@ -60,27 +59,29 @@ fun AnyFsFile.typed() =
 fun AnyFsFile.verifyToImagePath() = TypedFile(this, getTypedFromExtension() as RasterImage)
 
 
-fun <T : FileType> AnyFsFile.checkType(t: T) = typed().checkType(t)
-inline fun <reified T : FileType> AnyFsFile.checkType() = typed().checkType<T>()
+fun <T : FileType> AnyFsFile.checkType(t: T) = typed().castedAsType(t)
+/*inline fun <reified T : FileType> AnyFsFile.checkType() = typed().castedAsType<T>()
+
+
+
+
 fun <T : FileType> TypedFile<*, *>.checkType(t: T): TypedFile<T, *> {
-    check(fileType.`is`(t::class))
-    @Suppress("UNCHECKED_CAST")
+    check(t::class.isInstance(fileType))
     return this as TypedFile<T, *>
 }
 
 inline fun <reified T : FileType> TypedFile<*, *>.checkType(): TypedFile<T, *> {
-    check(fileType.`is`(T::class)) {
+    check(T::class.isInstance(fileType)) {
         "typecheck failed: $this is not a ${T::class} file"
     }
-    @Suppress("UNCHECKED_CAST")
     return this as TypedFile<T, *>
 }
+*/
 
 
-fun <T : FileType> AnyFsFile.forceType(t: T): TypedFile<T, *> {
-    @Suppress("UNCHECKED_CAST")
-    return (this as? TypedFile<T, *>)?.takeIf { fileType == t } ?: TypedFile(this, t)
-}
+fun <T : FileType> AnyFsFile.forceType(t: T): TypedFile<T, *> = TypedFile(this, t)
+
+/*(this as? TypedFile<T, *>)?.takeIf { fileType == t } ?: TypedFile(this, t)*/
 
 
 
