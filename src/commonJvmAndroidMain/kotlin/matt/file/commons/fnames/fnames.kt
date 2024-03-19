@@ -31,6 +31,7 @@ object FileNames {
     const val KARMA_CONFIG_JS = "karma.conf.js"
     const val GRADLEW = "gradlew"
     const val CHANGELIST_MD = "changelist.md"
+    const val KEYS_PROPERTIES = ".keys.properties"
 }
 
 val DS_STORE = FsFileNameImpl(".DS_Store", MacDefaultFileSystem)
